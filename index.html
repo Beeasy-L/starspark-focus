@@ -768,7 +768,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&cur&&!cur
 /* ===== 初始化 ===== */
 buildNav();bindFocus();bindReview();restore();
 go(location.hash.slice(1)||'home');
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 </body>
 </html>
