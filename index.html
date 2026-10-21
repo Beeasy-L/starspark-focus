@@ -114,6 +114,24 @@ h1,h2,h3,h4{font-family:var(--serif);line-height:1.35}
 .seg button{background:var(--paper);border:1.5px solid var(--line);color:var(--ink2);border-radius:12px;
   padding:11px 4px;font-size:14px;cursor:pointer;min-height:46px;font-family:var(--sans)}
 .seg button.on{border-color:var(--gold);color:var(--gold-hi);background:rgba(242,198,109,.12)}
+.protocol-tabs{grid-template-columns:repeat(3,1fr)}
+.protocol-panel{display:none}.protocol-panel.on{display:block;animation:fade .22s ease}
+.protocol-note{color:var(--ink3);font-size:12.5px;line-height:1.8;margin:8px 0 0}
+.protocol-badge{display:inline-flex;align-items:center;min-height:28px;padding:3px 9px;border-radius:999px;
+  border:1px solid rgba(130,166,255,.38);color:var(--blue);font-size:11.5px;margin-bottom:8px}
+.precedent-list{display:grid;gap:8px;margin:10px 0}
+.precedent{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;
+  border:1px solid var(--line2);border-radius:10px;background:rgba(255,255,255,.03)}
+.precedent .p-main{min-width:0}.precedent b{display:block;color:var(--ink);font-size:13.5px}
+.precedent .p-meta{color:var(--ink3);font-size:11.5px;line-height:1.6}
+.precedent button{min-width:44px;min-height:44px;border:1px solid var(--line2);border-radius:10px;
+  background:transparent;color:var(--ink3);cursor:pointer}
+.recon-duration{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.recon-duration button{min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);
+  color:var(--ink2);font-size:14px;cursor:pointer}
+.recon-duration button:hover{border-color:var(--gold);color:var(--gold-hi)}
+.protocol-source{font-size:12px;color:var(--ink3);line-height:1.8;margin-top:10px}
+.protocol-source a{color:var(--blue)}
 .input{width:100%;background:rgba(255,255,255,.05);border:1.5px solid var(--line);border-radius:12px;
   color:var(--ink);padding:12px 14px;font-size:16px;font-family:var(--sans);margin:8px 0}
 .input::placeholder{color:var(--ink3)}
@@ -311,17 +329,21 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 
     <div class="card">
       <h3>使用说明</h3>
-      <p class="guide-lead">第一次来，只要做一件小事：选一个此刻愿意开始的任务，然后点火。其余的，交给这一段时间。</p>
+      <p class="guide-lead">第一次来，不用先制定完整计划。只要选一种启动方式，让今天的第一段专注真正开始。</p>
       <ol class="num">
-        <li><b>打开就能用。</b>不需要注册、登录或填写账号。手机浏览器可在菜单里选择“添加到主屏幕”，以后像打开 App 一样打开它。</li>
-        <li><b>去“点火”。</b>先选一个时长；第一次不知道选多久，就选默认的 25 分钟。可以写下要做的事，例如“高数第三章习题”，也可以留空。</li>
-        <li><b>按下“立即点火”。</b>火焰动画结束后，计时正式开始。此时只做刚才选的那一件事；页面切到后台、锁屏后回来，时间也会按真实经过的时间计算。</li>
-        <li><b>需要晚一点开始？</b>先选 5、10、15 或 30 分钟，再点“预约入座”。在倒计时结束前回来点火，就会记为准时入座；这一步完全可跳过。</li>
-        <li><b>中途被打断时，不用急着否定自己。</b>点“结束”后可以继续专注，也可以断链；喝水、上厕所、取快递这类合理中断可立为白名单，本次仍会铸星。</li>
-        <li><b>时间到了就会铸星。</b>每完成一段专注，当前星链加 1；断链后从新的 #1 再开始，但历史最长链会一直留下，不会被抹掉。</li>
-        <li><b>最后去“复盘”。</b>写下一件好事、一个灵感，或此刻的感受。写得很短也没关系，它是给自己留的星光，不是作业。</li>
+        <li><b>先打开，不用注册。</b>手机浏览器可从菜单选择“添加到主屏幕”，以后像 App 一样打开。你的星链、判例、统计和复盘只保存在当前浏览器。</li>
+        <li><b>去“点火”，写下这次要做的一件事。</b>例如“高数第三章习题”。写具体一点更容易开始；暂时想不到也可以留空，但建议写下来。</li>
+        <li><b>状态好，直接“立即点火”。</b>先选 15 / 25 / 45 / 60 分钟，再点按钮。第一次不知道选多久，就选 25 分钟。锁屏或切到后台后回来，会按真实经过时间继续计时。</li>
+        <li><b>不太想开始，就选“5 分钟侦查”。</b>它只要求你先坐下做 5 分钟。5 分钟到了可以结束，也可以延长为一次正式专注；结束侦查不会断开主星链。</li>
+        <li><b>现在没空，就用“预约入座”。</b>选 5 / 10 / 15 / 30 分钟，在倒计时内回来点火，会记作准时。预约时间到了仍未点火，会请你判定这次启动是否中断，不会静默消失。</li>
+        <li><b>正式专注中途被打断时，点“结束”。</b>已专注超过 80% 会记为“提前收束”；更早结束时，你可以选择继续、断链，或者把合理原因“立为判例”。</li>
+        <li><b>“立为判例”是一条永久规则。</b>例如把“接水”立为判例后，以后同样情况会默认允许，本次也会铸星。不要为了这一次舒服，把“刷手机”也立成判例；判例只有两类结果：断链，或长期允许。</li>
+        <li><b>完成就铸星。</b>当前星链加 1，历史最长链永久保留。断链只是从新的 #1 再开始，不代表之前所有努力都消失。</li>
+        <li><b>去“星链”看轨迹，去“复盘”写一点东西。</b>星图记录近 90 天，统计会区分完整完成、提前收束和判例。复盘可以只写一句。</li>
+        <li><b>定期备份。</b>在“日志”页导出 JSON。换手机、清浏览器缓存或重装前先备份；导入时会合并记录，同一记录不会重复。</li>
       </ol>
-      <p class="guide-note">你的星链、任务与复盘只保存在当前浏览器里。清理浏览器网站数据或更换设备后，记录可能无法找回；请把这里当作一份留在自己设备上的专注日记。</p>
+      <p class="guide-note">规则可以严格，态度不需要苛刻。不要用一次失败否定整条链，也不要用一次“下不为例”慢慢掏空规则。清理浏览器网站数据或更换设备后，本地记录可能无法找回，请定期导出备份。</p>
+      <p class="protocol-source">启动协议与判例机制受到 edmond《如何提高自制力？》中 CTDP / RSIP 方法的启发。它是行为训练工具，不替代专业医疗建议。<a href="https://www.zhihu.com/question/19888447/answer/1930799480401293785" target="_blank" rel="noopener">查看理论来源</a></p>
     </div>
 
     <div class="poem">星星之火，可以燎原。</div>
@@ -330,27 +352,46 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     <!-- 待点火 -->
     <div id="focusIdle">
       <div class="card">
-        <h3>选择时长</h3>
-        <div class="seg" id="durSeg">
-          <button data-min="15">15 分</button>
-          <button data-min="25" class="on">25 分</button>
-          <button data-min="45">45 分</button>
-          <button data-min="60">60 分</button>
+        <h3>这次怎么开始</h3>
+        <div class="seg protocol-tabs" id="protocolTabs">
+          <button class="on" data-mode="direct">立即点火</button>
+          <button data-mode="recon">5 分钟侦查</button>
+          <button data-mode="reserve">预约入座</button>
         </div>
-        <h4>这次要做什么（可选）</h4>
-        <input class="input" id="taskInput" placeholder="例如：高数第三章习题" maxlength="30">
-        <button class="btn primary" id="igniteBtn" style="margin-top:6px">立即点火</button>
-        <h4 style="margin-top:16px">预约入座（可选）</h4>
-        <div class="seg" id="reserveSeg" style="grid-template-columns:repeat(4,1fr)">
-          <button data-w="5">5 分</button>
-          <button data-w="10">10 分</button>
-          <button data-w="15" class="on">15 分</button>
-          <button data-w="30">30 分</button>
+        <input class="input" id="taskInput" placeholder="这次只做一件事，例如：高数第三章习题" maxlength="30">
+        <div id="durationBlock">
+          <h4>正式专注时长</h4>
+          <div class="seg" id="durSeg">
+            <button data-min="15">15 分</button>
+            <button data-min="25" class="on">25 分</button>
+            <button data-min="45">45 分</button>
+            <button data-min="60">60 分</button>
+          </div>
         </div>
-        <button class="btn ghost" id="reserveBtn" style="margin-top:10px">预约入座</button>
-        <p class="muted" id="reserveHint" style="display:none;margin-top:8px"></p>
+        <div class="protocol-panel on" id="directPanel">
+          <button class="btn primary" id="igniteBtn">立即点火</button>
+          <p class="protocol-note">适合已经有状态的时候。按钮按下后，只做上面写下的那件事。</p>
+        </div>
+        <div class="protocol-panel" id="reconPanel">
+          <span class="protocol-badge">低阻力启动</span>
+          <button class="btn primary" id="reconBtn">先专注 5 分钟</button>
+          <p class="protocol-note">5 分钟内退出不影响主星链。到了 5 分钟，可以结束，也可以延长成正式专注；这是专门跨过“开始最难”的一步。</p>
+        </div>
+        <div class="protocol-panel" id="reservePanel">
+          <h4>多久后入座</h4>
+          <div class="seg" id="reserveSeg" style="grid-template-columns:repeat(4,1fr)">
+            <button data-w="5">5 分</button>
+            <button data-w="10">10 分</button>
+            <button data-w="15" class="on">15 分</button>
+            <button data-w="30">30 分</button>
+          </div>
+          <button class="btn ghost" id="reserveBtn">预约入座</button>
+          <button class="btn primary" id="reservedStartBtn" style="display:none;margin-top:8px">现在点火入座</button>
+          <p class="muted" id="reserveHint" style="display:none;margin-top:8px"></p>
+          <p class="protocol-note">预约会在倒计时结束时提醒你入座。错过了需要做一次判定，避免“等等再开始”一直拖下去。</p>
+        </div>
       </div>
-      <p class="muted" style="text-align:center">点火即专注满一个时段，中途不刷手机</p>
+      <p class="muted" style="text-align:center">先让身体坐下，再等状态出现。</p>
     </div>
 
     <!-- 计时中 -->
@@ -401,9 +442,9 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <p class="muted" id="blocksEmpty">还没有星，去点第一簇火吧。</p>
       </div>
       <div class="card">
-        <h3>永久白名单</h3>
-        <div class="chip-list" id="whitelist"></div>
-        <p class="muted" id="wlEmpty">这些中断以后不算违规，也不会再打断你。</p>
+        <h3>判例簿</h3>
+        <div class="precedent-list" id="whitelist"></div>
+        <p class="muted" id="wlEmpty">还没有判例。合理中断可以立为永久规则；一旦立下，本协议周期内同类情况都会默认放行。</p>
       </div>
     </div>
     <div class="chain-panel" id="mapPanel">
@@ -411,7 +452,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <h3>近 90 天星图</h3>
         <p class="muted">一格是一天。星越亮，表示当天完成的专注时段越多。</p>
         <div class="star-map" id="starMap"></div>
-        <div class="map-key"><span><i></i>没有铸星</span><span><i class="k-gold"></i>完成铸星</span><span><i class="k-blue"></i>白名单铸星</span></div>
+        <div class="map-key"><span><i></i>没有铸星</span><span><i class="k-gold"></i>完成铸星</span><span><i class="k-blue"></i>判例铸星</span></div>
         <div class="day-detail" id="dayDetail"><p class="muted">点一个日期，查看那天留下的专注记录。</p></div>
       </div>
     </div>
@@ -420,6 +461,11 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <h3>专注统计</h3>
         <div class="stat-grid" id="focusStats"></div>
         <p class="stats-note">这里记录的是已经发生的投入，不拿它催促你。</p>
+      </div>
+      <div class="card">
+        <h3>启动协议</h3>
+        <div class="stat-grid" id="startupStats"></div>
+        <p class="stats-note">侦查是尝试，不是失败；启动链记录的是你愿意坐下来的次数。</p>
       </div>
     </div>
     <div class="poem">
@@ -463,6 +509,15 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v0.4.0</div>
+      <div class="logdate">2026-10-21</div>
+      <ul class="loglist">
+        <li>点火页升级为三种启动协议：立即点火、5 分钟侦查、预约入座。</li>
+        <li>新增 5 分钟低阻力侦查：提前结束不影响主星链，延长后才进入正式专注。</li>
+        <li>白名单升级为判例簿，记录判例来源、使用次数和永久约束；预约错过需要主动判定。</li>
+        <li>新增启动协议统计：直接启动、侦查转化、预约守约和连续启动。</li>
+        <li>首页使用说明重写，补充三种启动方式、判例规则、数据备份和理论来源。</li>
+      </ul>
       <div class="logver">v0.3.1</div>
       <div class="logdate">2026-10-19</div>
       <ul class="loglist">
@@ -542,7 +597,11 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 
 /* ===== 本地存储 ===== */
 const KEY='starspark_focuspro_v1';
-const defaultState=()=>({chain:{currentNo:0,bestNo:0,genesis:null},blocks:[],whitelist:[],reservation:null,reviews:{},session:null});
+const defaultState=()=>({
+  chain:{currentNo:0,bestNo:0,genesis:null},
+  blocks:[],whitelist:[],precedents:[],reservation:null,appointments:[],recons:[],
+  startup:{currentNo:0,bestNo:0,lastAt:null},reviews:{},session:null
+});
 let S=(function(){try{const r=JSON.parse(localStorage.getItem(KEY));return r?Object.assign(defaultState(),r):defaultState();}catch(e){return defaultState();}})();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 const $=(s,r=document)=>r.querySelector(s);
@@ -564,6 +623,18 @@ function hydrateState(){
   S.chain=Object.assign({currentNo:0,bestNo:0,genesis:null},S.chain||{});
   S.blocks=Array.isArray(S.blocks)?S.blocks.map(normalizeBlock).filter(Boolean):[];
   S.whitelist=Array.isArray(S.whitelist)?S.whitelist.filter(Boolean):[];
+  S.precedents=Array.isArray(S.precedents)?S.precedents.filter(Boolean):[];
+  S.appointments=Array.isArray(S.appointments)?S.appointments.filter(Boolean):[];
+  S.recons=Array.isArray(S.recons)?S.recons.filter(Boolean):[];
+  S.startup=Object.assign({currentNo:0,bestNo:0,lastAt:null},S.startup||{});
+  S.whitelist.forEach((reason,index)=>{
+    if(!S.precedents.some(p=>p.reason===reason)){
+      S.precedents.push({id:'legacy-'+index+'-'+reason,reason,scope:'global',
+        createdAt:null,lastUsedAt:null,usedCount:0,active:true});
+    }
+  });
+  const activeReasons=S.precedents.filter(p=>p.active!==false).map(p=>p.reason);
+  S.whitelist=[...new Set([...S.whitelist,...activeReasons])];
   S.reviews=S.reviews&&typeof S.reviews==='object'?S.reviews:{};
 }
 hydrateState();save();
@@ -612,6 +683,13 @@ function planMs(){return cur.planMin*60000;}
 
 function showRunning(){$('#focusIdle').style.display='none';$('#focusRunning').style.display='block';}
 function showIdle(){$('#focusIdle').style.display='block';$('#focusRunning').style.display='none';}
+function updateSessionChrome(){
+  if(!cur)return;
+  const isRecon=cur.mode==='recon';
+  $('#pauseBtn').textContent=cur.pauseTs?'继续':'暂停';
+  $('#stopBtn').textContent=isRecon?'结束侦查':'结束';
+  $('#ringState').textContent=cur.pauseTs?'已暂停':isRecon?'正在侦查':'星链燃烧中';
+}
 
 function tick(){
   if(!cur)return;
@@ -619,29 +697,73 @@ function tick(){
   $('#ringProg').setAttribute('stroke-dashoffset',String(C*(1-ratio)));
   $('#ringTime').textContent=fmt(Math.max(0,p-e)/1000);
   $('#ringTask').textContent=cur.task||'专注中';
+  if(cur.mode==='recon'&&p-e<=0){
+    if(!cur.reconPrompt){cur.reconPrompt=true;S.session=cur;save();openReconDecision();}
+    return;
+  }
   if(p-e<=0)finish('done',null,'timer');
 }
 function startTick(){clearInterval(T);tick();T=setInterval(tick,250);}
 
 let igniting=false;
-function ignite(){
+function recordStartupStart(){
+  S.startup.currentNo=Math.max(0,Number(S.startup.currentNo)||0)+1;
+  if(S.startup.currentNo>(Number(S.startup.bestNo)||0))S.startup.bestNo=S.startup.currentNo;
+  S.startup.lastAt=Date.now();
+}
+function addPrecedent(reason,scope='global'){
+  const text=String(reason||'').trim();
+  if(!text)return null;
+  let p=S.precedents.find(x=>x.reason===text&&x.active!==false);
+  if(!p){
+    p={id:'precedent-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),reason:text,scope,
+      createdAt:Date.now(),lastUsedAt:null,usedCount:0,active:true};
+    S.precedents.push(p);
+  }
+  S.whitelist=[...new Set([...S.whitelist.filter(Boolean),text])];
+  return p;
+}
+function hasPrecedent(reason){
+  return S.precedents.some(p=>p.active!==false&&p.reason===reason);
+}
+function usePrecedent(reason){
+  const p=addPrecedent(reason);
+  if(p){p.usedCount=(Number(p.usedCount)||0)+1;p.lastUsedAt=Date.now();}
+  return p;
+}
+function finalizeAppointment(status){
+  if(!S.reservation)return null;
+  const r=S.reservation;
+  const record={id:r.id||Date.now(),plannedAt:r.plannedAt,windowMin:r.windowMin,
+    status,endedAt:Date.now()};
+  S.appointments.push(record);
+  S.reservation=null;
+  save();
+  return record;
+}
+function startSession(mode){
   if(igniting)return;
   const task=$('#taskInput').value.trim();
-  cur={planMin,task,startTs:null,pausedMs:0,pauseTs:null,onTime:false};
+  cur={id:Date.now(),planMin:mode==='recon'?5:planMin,task,startTs:null,pausedMs:0,
+    pauseTs:null,onTime:false,mode,startedFrom:mode==='recon'?'recon':mode==='reserve'?'appointment':'direct'};
   igniting=true;
   playIgnite(()=>{
     let onTime=false;
     if(S.reservation){
-      if(Date.now()-S.reservation.plannedAt<=(S.reservation.windowMin||15)*60000)onTime=true;
-      S.reservation=null;
+      if(Date.now()-S.reservation.plannedAt<=(S.reservation.windowMin||15)*60000){
+        onTime=true;finalizeAppointment('arrived');
+      }
     }
     cur.startTs=Date.now();cur.onTime=onTime;
+    recordStartupStart();
     S.session=cur;save();showRunning();
-    $('#pauseBtn').textContent='暂停';$('#ringState').textContent='星链燃烧中';
+    updateSessionChrome();
     stopReserve();
     startTick();igniting=false;
   });
 }
+function ignite(){startSession('direct');}
+function igniteRecon(){startSession('recon');}
 function playIgnite(done){
   const mask=$('#igniteMask');mask.classList.add('on');
   const box=$('#igniteEmbers');box.innerHTML='';
@@ -659,11 +781,11 @@ function playIgnite(done){
 function togglePause(){
   if(cur.pauseTs){
     cur.pausedMs+=Date.now()-cur.pauseTs;cur.pauseTs=null;
-    $('#pauseBtn').textContent='暂停';$('#ringState').textContent='星链燃烧中';
+    updateSessionChrome();
     S.session=cur;save();startTick();
   }else{
     cur.pauseTs=Date.now();clearInterval(T);
-    $('#pauseBtn').textContent='继续';$('#ringState').textContent='已暂停';
+    updateSessionChrome();
     S.session=cur;save();tick();
   }
 }
@@ -673,15 +795,60 @@ function stop(){
   if(!cur.pauseTs)cur.pauseTs=Date.now();
   clearInterval(T);
   const e=elapsedMs(),ratio=e/planMs();
+  if(cur.mode==='recon'){
+    if(e<5*60000)finishRecon('abandoned');
+    else openReconDecision();
+    return;
+  }
   if(ratio>=0.8){finish('settled',null,'manual');return;}
   openJudge(e);
 }
 
+function finishRecon(status,targetMin=null){
+  if(!cur)return;
+  const e=elapsedMs();
+  S.recons.push({id:Date.now(),task:cur.task,startedAt:cur.startTs,endedAt:Date.now(),
+    seconds:Math.round(e/1000),status,targetMin,converted:status==='converted'});
+  cur=null;S.session=null;clearInterval(T);save();showIdle();
+  if(status==='abandoned')toast('侦查已结束，主星链不受影响');
+  else if(status==='completed')toast('5 分钟侦查完成，主星链不受影响');
+}
+function extendReconTo(minutes){
+  if(!cur||cur.mode!=='recon')return;
+  const e=elapsedMs();
+  if(cur.pauseTs){cur.pausedMs+=Date.now()-cur.pauseTs;cur.pauseTs=null;}
+  cur.planMin=minutes;cur.mode='focus';cur.extendedFrom='recon';cur.reconPrompt=false;
+  S.recons.push({id:Date.now(),task:cur.task,startedAt:cur.startTs,endedAt:Date.now(),
+    seconds:Math.round(e/1000),status:'converted',targetMin:minutes,converted:true});
+  S.session=cur;save();closeJudge();showRunning();updateSessionChrome();startTick();
+  toast(`已延长为 ${minutes} 分钟正式专注`);
+}
+function openReconDecision(){
+  if(!cur||cur.mode!=='recon')return;
+  if(!cur.pauseTs){cur.pauseTs=Date.now();clearInterval(T);}
+  S.session=cur;save();updateSessionChrome();
+  let target=25;
+  openDialog('5 分钟侦查完成','你已经坐下来了。现在可以收在这里，也可以把这次侦查延长成一段正式专注。',
+    '<div class="recon-duration" id="reconDuration">'+
+      [15,25,45,60].map(m=>`<button type="button" data-min="${m}" class="${m===25?'on':''}">${m} 分</button>`).join('')+
+    '</div><button class="btn primary" id="reconExtend">延长为正式专注</button>'+
+    '<button class="btn ghost" id="reconFinish" style="margin-top:10px">到此结束，不影响主链</button>'+
+    '<p class="muted" style="margin-top:8px">侦查本身只记录尝试，不增加主星链；延长后才按正式专注规则完成或收束。</p>',
+    ()=>{
+      $$('#reconDuration button').forEach(b=>b.onclick=()=>{
+        $$('#reconDuration button').forEach(x=>x.classList.remove('on'));
+        b.classList.add('on');target=+b.dataset.min;
+      });
+      $('#reconExtend').onclick=()=>extendReconTo(target);
+      $('#reconFinish').onclick=()=>{closeJudge();finishRecon('completed');};
+    });
+}
 function finish(kind,reason,endedBy){
   const e=elapsedMs();
   const block={id:Date.now(),task:cur.task,planMin:cur.planMin,actualSec:Math.round(e/1000),
     ignitedAt:cur.startTs,endedAt:Date.now(),onTime:cur.onTime,state:kind,reason:reason||null,
-    endedBy:endedBy||'timer',completedRatio:Math.min(1,Math.round(e/planMs()*1000)/1000)};
+    endedBy:endedBy||'timer',completedRatio:Math.min(1,Math.round(e/planMs()*1000)/1000),
+    startedFrom:cur.extendedFrom==='recon'?'recon':cur.startedFrom||'direct'};
   S.blocks.push(block);
   if(isSuccessBlock(block)){
     S.chain.currentNo+=1;
@@ -692,42 +859,48 @@ function finish(kind,reason,endedBy){
   cur=null;S.session=null;clearInterval(T);save();showIdle();
   if(kind==='done')toast('完整完成，铸星成功，星链 +1');
   if(kind==='settled')toast('提前收束已记录，铸星 +1');
-  if(kind==='whitelisted')toast('已立为白名单，铸星 +1');
+  if(kind==='whitelisted')toast('已立为判例，铸星 +1');
   if(kind==='broken')toast('链已断，从 #1 重新开始');
 }
 
+function openDialog(title,desc,html,onMount){
+  $('#judgeTitle').textContent=title;
+  $('#judgeDesc').textContent=desc;
+  const body=$('#judgeBody');body.innerHTML=html;
+  if(onMount)onMount();
+  $('#judgeMask').classList.add('on');
+}
 function openJudge(e){
   chosenReason=null;
-  $('#judgeTitle').textContent='中途离开 · 由你裁判';
-  $('#judgeDesc').textContent='本次已专注 '+fmt(e/1000)+'（计划 '+cur.planMin+' 分钟）。不偷放，也不一律打死——请你当裁判，规则二选一。';
-  const body=$('#judgeBody');
-  body.innerHTML=
-    '<div class="chip-list" id="reasonChips">'+REASONS.map(r=>`<span class="chip" data-r="${r}">${r}</span>`).join('')+'</div>'+
+  const allReasons=[...new Set([...REASONS,...S.precedents.filter(p=>p.active!==false).map(p=>p.reason)])];
+  openDialog('中途离开 · 由你裁判',
+    '本次已专注 '+fmt(e/1000)+'（计划 '+cur.planMin+' 分钟）。判例不是一次性的“下不为例”：允许一次，就要允许本协议周期内的同类情况。',
+    '<div class="chip-list" id="reasonChips">'+allReasons.map(r=>`<span class="chip" data-r="${escHtml(r)}">${escHtml(r)}</span>`).join('')+'</div>'+
     '<input class="input" id="customReason" placeholder="或输入其他原因" maxlength="12">'+
     '<div class="btnrow" style="margin-top:14px">'+
       '<button class="btn danger" id="jBreak">断链</button>'+
-      '<button class="btn primary" id="jWhite">立为白名单</button>'+
+      '<button class="btn primary" id="jWhite">立为判例</button>'+
     '</div>'+
     '<button class="btn ghost" id="jResume" style="margin-top:4px">继续专注</button>'+
-    '<p class="muted" style="margin-top:8px">断链：本次不铸星，链从 #1 重新。白名单：该原因以后不算违规，本次铸星。</p>';
-  $$('#reasonChips .chip').forEach(c=>c.onclick=()=>{
-    $$('#reasonChips .chip').forEach(x=>x.classList.remove('on'));
-    c.classList.add('on');chosenReason=c.dataset.r;$('#customReason').value='';
-  });
-  $('#jBreak').onclick=()=>{closeJudge();finish('broken',null,'judge');};
-  $('#jWhite').onclick=()=>{
-    const custom=$('#customReason').value.trim(),reason=custom||chosenReason;
-    if(!reason){toast('请先选择或输入原因');return;}
-    if(!S.whitelist.includes(reason))S.whitelist.push(reason);
-    closeJudge();finish('whitelisted',reason,'judge');
-  };
-  $('#jResume').onclick=()=>{
-    closeJudge();
-    if(cur.pauseTs){cur.pausedMs+=Date.now()-cur.pauseTs;cur.pauseTs=null;}
-    $('#pauseBtn').textContent='暂停';$('#ringState').textContent='星链燃烧中';
-    S.session=cur;save();startTick();
-  };
-  $('#judgeMask').classList.add('on');
+    '<p class="muted" style="margin-top:8px">断链：本次不铸星，从 #1 重新。立为判例：本次铸星，该原因以后自动放行。</p>',
+    ()=>{
+      $$('#reasonChips .chip').forEach(c=>c.onclick=()=>{
+        $$('#reasonChips .chip').forEach(x=>x.classList.remove('on'));
+        c.classList.add('on');chosenReason=c.dataset.r;$('#customReason').value='';
+      });
+      $('#jBreak').onclick=()=>{closeJudge();finish('broken',null,'judge');};
+      $('#jWhite').onclick=()=>{
+        const custom=$('#customReason').value.trim(),reason=custom||chosenReason;
+        if(!reason){toast('请先选择或输入原因');return;}
+        usePrecedent(reason);
+        closeJudge();finish('whitelisted',reason,'judge');
+      };
+      $('#jResume').onclick=()=>{
+        closeJudge();
+        if(cur.pauseTs){cur.pausedMs+=Date.now()-cur.pauseTs;cur.pauseTs=null;}
+        updateSessionChrome();S.session=cur;save();startTick();
+      };
+    });
 }
 function closeJudge(){$('#judgeMask').classList.remove('on');}
 
@@ -736,6 +909,7 @@ function renderChain(){
   renderChainNet();
   renderStarMap();
   renderFocusStats();
+  renderStartupStats();
   $('#chainCurrent').textContent=S.chain.currentNo;
   $('#chainBest').textContent=S.chain.bestNo;
   const bc=$('#blocks');bc.innerHTML='';
@@ -749,16 +923,30 @@ function renderChain(){
     bc.appendChild(d);
   });
   const wl=$('#whitelist');wl.innerHTML='';
-  $('#wlEmpty').style.display=S.whitelist.length?'none':'block';
-  S.whitelist.forEach(w=>{
-    const s=document.createElement('span');s.className='chip';s.textContent=w;
-    s.onclick=()=>{if(confirm('从白名单移除「'+w+'」？')){S.whitelist=S.whitelist.filter(x=>x!==w);save();renderChain();}};
-    wl.appendChild(s);
+  const precedents=S.precedents.filter(p=>p.active!==false);
+  $('#wlEmpty').style.display=precedents.length?'none':'block';
+  precedents.forEach(p=>{
+    const row=document.createElement('div');row.className='precedent';
+    const main=document.createElement('div');main.className='p-main';
+    const title=document.createElement('b');title.textContent=p.reason;main.appendChild(title);
+    const meta=document.createElement('div');meta.className='p-meta';
+    const date=p.createdAt?new Date(p.createdAt).toLocaleDateString():'旧版白名单';
+    meta.textContent=`${date} · 使用 ${Number(p.usedCount)||0} 次 · ${p.scope==='task'?'任务范围':'全局永久'}`;
+    main.appendChild(meta);row.appendChild(main);
+    const retire=document.createElement('button');retire.type='button';retire.textContent='撤回';
+    retire.setAttribute('aria-label','撤回判例 '+p.reason);
+    retire.onclick=()=>{
+      if(!confirm(`撤回「${p.reason}」判例？\n撤回后，同类中断会重新交由你裁判。`))return;
+      p.active=false;
+      S.whitelist=S.whitelist.filter(x=>x!==p.reason);
+      save();renderChain();
+    };
+    row.appendChild(retire);wl.appendChild(row);
   });
 }
 
 let chainView='chain';
-function blockStateLabel(b){return b.state==='done'?'完整完成':b.state==='settled'?'提前收束':b.state==='whitelisted'?'白名单铸星':'断链';}
+function blockStateLabel(b){return b.state==='done'?'完整完成':b.state==='settled'?'提前收束':b.state==='whitelisted'?'判例铸星':'断链';}
 function showChainView(view){
   chainView=['chain','map','stats'].includes(view)?view:'chain';
   $$('#chainTabs button').forEach(b=>b.classList.toggle('on',b.dataset.chainView===chainView));
@@ -801,7 +989,19 @@ function renderFocusStats(){
   const white=wins.filter(b=>b.state==='whitelisted'),reasons={};white.forEach(b=>{if(b.reason)reasons[b.reason]=(reasons[b.reason]||0)+1;});
   const reason=Object.keys(reasons).sort((a,b)=>reasons[b]-reasons[a])[0]||'暂无';
   const card=(n,l,extra='')=>`<div class="stat${extra}"><div class="n">${escHtml(n)}</div><div class="l">${escHtml(l)}</div></div>`;
-  box.innerHTML=card(minutesFor(todayWins)+' 分','今日投入')+card(todayWins.length+' 颗','今日铸星')+card(minutesFor(week)+' 分','近 7 天')+card(minutesFor(month)+' 分','近 30 天')+card(wins.length+' 次','累计铸星')+card(S.chain.bestNo+' 颗','历史最长')+card(top,'最常投入任务',' wide')+card(white.length+' 次 · '+reason,'白名单中断',' wide');
+  box.innerHTML=card(minutesFor(todayWins)+' 分','今日投入')+card(todayWins.length+' 颗','今日铸星')+card(minutesFor(week)+' 分','近 7 天')+card(minutesFor(month)+' 分','近 30 天')+card(wins.length+' 次','累计铸星')+card(S.chain.bestNo+' 颗','历史最长')+card(top,'最常投入任务',' wide')+card(white.length+' 次 · '+reason,'判例中断',' wide');
+}
+function renderStartupStats(){
+  const box=$('#startupStats');if(!box)return;
+  const direct=S.blocks.filter(b=>b.startedFrom==='direct').length;
+  const recon=S.recons||[],converted=recon.filter(r=>r.converted).length;
+  const appointments=S.appointments||[],arrived=appointments.filter(a=>a.status==='arrived').length;
+  const rate=recon.length?Math.round(converted/recon.length*100):0;
+  const arriveRate=appointments.length?Math.round(arrived/appointments.length*100):0;
+  const card=(n,l,extra='')=>`<div class="stat${extra}"><div class="n">${escHtml(n)}</div><div class="l">${escHtml(l)}</div></div>`;
+  box.innerHTML=card(S.startup.currentNo+' 次','连续启动')+card(S.startup.bestNo+' 次','最长启动')+
+    card(direct+' 次','直接点火')+card(recon.length+' 次','侦查尝试')+
+    card(converted+' 次 · '+rate+'%','侦查转正式')+card(arrived+' 次 · '+arriveRate+'%','预约守时');
 }
 
 /* ===== 星河链路：当前链燃烧，最长链留在远处 ===== */
@@ -909,7 +1109,7 @@ function bindReview(){
 }
 
 /* ===== 本地备份：只合并已完成的数据，不带正在计时状态 ===== */
-const BACKUP_SCHEMA='starspark_focuspro_backup',BACKUP_VERSION=1;
+const BACKUP_SCHEMA='starspark_focuspro_backup',BACKUP_VERSION=2;
 function persistentSnapshot(){
   const data=JSON.parse(JSON.stringify(S));data.session=null;data.reservation=null;return data;
 }
@@ -936,13 +1136,35 @@ function importBackupFile(file){
       const payload=JSON.parse(reader.result),incoming=payload&&payload.schema===BACKUP_SCHEMA?payload.data:null;
       if(!incoming||!Array.isArray(incoming.blocks)||!Array.isArray(incoming.whitelist)||!incoming.reviews||typeof incoming.reviews!=='object')throw new Error('format');
       const seen=new Set(S.blocks.map(b=>String(b.id))),oldBest=S.chain.bestNo,incomingBest=incoming.chain&&incoming.chain.bestNo;
-      let addedBlocks=0,addedReviews=0;
+      let addedBlocks=0,addedReviews=0,addedRecons=0,addedAppointments=0,addedPrecedents=0;
       incoming.blocks.map(normalizeBlock).filter(Boolean).forEach(b=>{if(b.id===undefined||seen.has(String(b.id)))return;seen.add(String(b.id));S.blocks.push(b);addedBlocks++;});
       S.blocks.sort((a,b)=>(a.endedAt||0)-(b.endedAt||0));
       S.whitelist=[...new Set([...S.whitelist,...incoming.whitelist.map(x=>String(x).trim()).filter(Boolean)])];
+      const incomingPrecedents=Array.isArray(incoming.precedents)?incoming.precedents:
+        incoming.whitelist.map((reason,index)=>({id:'import-legacy-'+index+'-'+reason,reason,scope:'global',
+          createdAt:null,lastUsedAt:null,usedCount:0,active:true}));
+      incomingPrecedents.forEach(p=>{
+        if(!p||!p.reason)return;
+        const exists=S.precedents.find(x=>x.reason===p.reason);
+        if(exists){exists.usedCount=Math.max(Number(exists.usedCount)||0,Number(p.usedCount)||0);}
+        else{S.precedents.push(Object.assign({active:true,scope:'global',usedCount:0},p));addedPrecedents++;}
+      });
+      S.whitelist=[...new Set(S.precedents.filter(p=>p.active!==false).map(p=>p.reason))];
+      const reconSeen=new Set((S.recons||[]).map(r=>String(r.id)));
+      (Array.isArray(incoming.recons)?incoming.recons:[]).forEach(r=>{
+        if(r&&r.id!==undefined&&!reconSeen.has(String(r.id))){S.recons.push(r);reconSeen.add(String(r.id));addedRecons++;}
+      });
+      const apptSeen=new Set((S.appointments||[]).map(a=>String(a.id)));
+      (Array.isArray(incoming.appointments)?incoming.appointments:[]).forEach(a=>{
+        if(a&&a.id!==undefined&&!apptSeen.has(String(a.id))){S.appointments.push(a);apptSeen.add(String(a.id));addedAppointments++;}
+      });
+      if(incoming.startup){
+        S.startup.bestNo=Math.max(Number(S.startup.bestNo)||0,Number(incoming.startup.bestNo)||0);
+        if(!S.startup.lastAt)S.startup.lastAt=incoming.startup.lastAt||null;
+      }
       Object.keys(incoming.reviews).forEach(k=>{if(!S.reviews[k]){S.reviews[k]=incoming.reviews[k];addedReviews++;}});
       rebuildChain(Math.max(oldBest,Number(incomingBest)||0));save();renderChain();renderReview();
-      $('#backupStatus').textContent=`已合并：新增 ${addedBlocks} 段专注、${addedReviews} 条复盘；重复记录已跳过。`;
+      $('#backupStatus').textContent=`已合并：新增 ${addedBlocks} 段专注、${addedReviews} 条复盘、${addedRecons} 次侦查、${addedAppointments} 条预约、${addedPrecedents} 条判例；重复记录已跳过。`;
     }catch(e){$('#backupStatus').textContent='这不是可识别的星火专注pro备份文件，当前数据没有改动。';}
   };
   reader.readAsText(file,'utf-8');
@@ -953,8 +1175,51 @@ function bindBackup(){
 }
 
 /* ===== 点火区绑定 ===== */
-let reserveT=null,reserveWindow=15;
+let reserveT=null,reserveWindow=15,startMode='direct';
+function showStartMode(mode){
+  startMode=['direct','recon','reserve'].includes(mode)?mode:'direct';
+  $$('#protocolTabs button').forEach(b=>b.classList.toggle('on',b.dataset.mode===startMode));
+  $('#directPanel').classList.toggle('on',startMode==='direct');
+  $('#reconPanel').classList.toggle('on',startMode==='recon');
+  $('#reservePanel').classList.toggle('on',startMode==='reserve');
+  $('#durationBlock').style.display=startMode==='recon'?'none':'block';
+}
+function openAppointmentMissed(){
+  if(!S.reservation)return;
+  clearInterval(reserveT);
+  $('#reserveBtn').disabled=true;
+  $('#reservedStartBtn').style.display='none';
+  openDialog('预约时间到了 · 由你裁判',
+    '预约窗口已经结束，但主星链没有断。请选择这次启动链如何处理；这个选择会成为后续同类情况的规则。',
+    '<button class="btn danger" id="apptMiss">记下未入座，启动链从零开始</button>'+
+    '<button class="btn primary" id="apptPrecedent" style="margin-top:10px">立为判例，保留启动链</button>'+
+    '<p class="muted" style="margin-top:8px">立为判例后，以后预约超时也会默认保留启动链。主星链不受这次预约影响。</p>',
+    ()=>{
+      $('#apptMiss').onclick=()=>{
+        finalizeAppointment('missed');
+        S.startup.currentNo=0;save();closeJudge();stopReserve();
+        toast('已记录预约未入座，启动链重新开始');
+      };
+      $('#apptPrecedent').onclick=()=>{
+        usePrecedent('预约超时');
+        finalizeAppointment('missed');
+        save();closeJudge();stopReserve();
+        toast('已立为判例，启动链保留');
+      };
+    });
+}
+function expireReservation(){
+  if(!S.reservation||S.reservation.missedAt)return;
+  if(hasPrecedent('预约超时')){
+    finalizeAppointment('missed');stopReserve();
+    toast('预约超时已按判例处理，启动链保留');
+    return;
+  }
+  S.reservation.missedAt=Date.now();save();
+  openAppointmentMissed();
+}
 function bindFocus(){
+  $$('#protocolTabs button').forEach(b=>b.onclick=()=>showStartMode(b.dataset.mode));
   $$('#durSeg button').forEach(b=>b.onclick=()=>{
     $$('#durSeg button').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');planMin=+b.dataset.min;});
@@ -962,9 +1227,12 @@ function bindFocus(){
     $$('#reserveSeg button').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');reserveWindow=+b.dataset.w;});
   $('#igniteBtn').onclick=ignite;
+  $('#reconBtn').onclick=igniteRecon;
+  $('#reservedStartBtn').onclick=()=>startSession('reserve');
   $('#reserveBtn').onclick=()=>{
-    S.reservation={plannedAt:Date.now(),windowMin:reserveWindow};save();
+    S.reservation={id:Date.now(),plannedAt:Date.now(),windowMin:reserveWindow};save();
     $('#reserveBtn').disabled=true;
+    $('#reservedStartBtn').style.display='block';
     $('#reserveHint').style.display='block';
     clearInterval(reserveT);updateReserve();
     reserveT=setInterval(updateReserve,500);
@@ -974,27 +1242,35 @@ function bindFocus(){
 }
 function updateReserve(){
   const hint=$('#reserveHint');
-  if(!S.reservation){hint.style.display='none';$('#reserveBtn').disabled=false;clearInterval(reserveT);return;}
+  if(!S.reservation){hint.style.display='none';$('#reserveBtn').disabled=false;$('#reservedStartBtn').style.display='none';clearInterval(reserveT);return;}
+  if(S.reservation.missedAt){hint.style.display='block';hint.innerHTML='预约时间已到，请完成本次判定。';return;}
   const remain=S.reservation.windowMin*60000-(Date.now()-S.reservation.plannedAt);
-  if(remain<=0){S.reservation=null;save();
-    hint.style.display='none';$('#reserveBtn').disabled=false;clearInterval(reserveT);return;}
-  hint.innerHTML='已预约，剩余入座时间 <b class="gold">'+fmt(remain/1000)+'</b>，在此之前点「立即点火」即算准时。';
+  if(remain<=0){expireReservation();return;}
+  hint.innerHTML='已预约，剩余入座时间 <b class="gold">'+fmt(remain/1000)+'</b>，点「现在点火入座」即算准时。';
 }
 function stopReserve(){
   clearInterval(reserveT);
   $('#reserveBtn').disabled=false;
+  $('#reservedStartBtn').style.display='none';
   $('#reserveHint').style.display='none';
 }
 function restore(){
   if(S.session){cur=S.session;showRunning();
-    if(cur.pauseTs){$('#pauseBtn').textContent='继续';$('#ringState').textContent='已暂停';tick();}
+    updateSessionChrome();
+    if(cur.pauseTs){$('#pauseBtn').textContent='继续';tick();}
     else{startTick();}
+    if(cur.mode==='recon'&&elapsedMs()>=5*60000){
+      if(!cur.reconPrompt)openReconDecision();
+      return;
+    }
     if(cur.startTs&&elapsedMs()>=planMs())finish('done',null,'timer');
   }
   if(S.reservation){
-    if(Date.now()-S.reservation.plannedAt>S.reservation.windowMin*60000){S.reservation=null;save();}
+    showStartMode('reserve');
+    if(S.reservation.missedAt){openAppointmentMissed();}
+    else if(Date.now()-S.reservation.plannedAt>S.reservation.windowMin*60000){expireReservation();}
     else{
-      $('#reserveBtn').disabled=true;$('#reserveHint').style.display='block';
+      $('#reserveBtn').disabled=true;$('#reservedStartBtn').style.display='block';$('#reserveHint').style.display='block';
       clearInterval(reserveT);updateReserve();
       reserveT=setInterval(updateReserve,500);
     }
