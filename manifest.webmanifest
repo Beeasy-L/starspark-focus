@@ -1,7 +1,7 @@
 {
-  "name": "星火-专注pro",
+  "name": "星火专注 Pro",
   "short_name": "星火专注",
-  "description": "面向大学生的专注系统：点火、专注链（星链）、铸星、每日复盘",
+  "description": "面向大学生的专注系统：启动协议、星链、国策树、每日复盘与本地静场",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
