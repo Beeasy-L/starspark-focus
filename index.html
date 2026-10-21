@@ -793,7 +793,7 @@ function toast(t){const e=document.createElement('div');e.textContent=t;
 
 /* ===== 静场：浏览器本地合成背景声 ===== */
 const SOUND_LABELS={white:'白噪',pink:'粉噪',brown:'棕噪'};
-let soundCtx=null,soundSource=null,soundGain=null,soundStopTimer=null,soundActive=false;
+let soundCtx=null,soundSource=null,soundGain=null,soundStopTimer=null,soundSuspendTimer=null,soundActive=false;
 function ensureAudioContext(){
   if(!soundCtx){
     const AC=window.AudioContext||window.webkitAudioContext;
@@ -840,12 +840,17 @@ function stopAmbient(immediate=false){
     const delay=immediate?40:700;
     soundStopTimer=setTimeout(()=>{try{src.stop()}catch(e){}},delay);
   }
+  clearTimeout(soundSuspendTimer);
+  soundSuspendTimer=setTimeout(()=>{
+    if(!soundActive&&soundCtx&&soundCtx.state==='running')soundCtx.suspend().catch(()=>{});
+  },900);
   updateSoundUI();
 }
 function startAmbient(){
   if(!S.settings.sound.enabled||!cur||cur.pauseTs||cur.soundMuted)return;
   const ctx=ensureAudioContext();
   if(!ctx)return;
+  clearTimeout(soundSuspendTimer);
   stopAmbient(true);
   const src=ctx.createBufferSource(),gain=ctx.createGain();
   src.buffer=generateNoiseBuffer(ctx,S.settings.sound.type);
