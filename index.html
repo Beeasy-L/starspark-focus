@@ -242,6 +242,13 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .chain-overflow{fill:var(--blue);font:12px var(--mono);text-anchor:middle}
 .chain-net-card-note{text-align:center;margin-top:6px}
 .guide-lead{color:var(--ink2);font-size:14px;margin-bottom:10px}
+.guide-more{margin-top:8px;border-top:1px solid var(--line2);padding-top:4px}
+.guide-more summary{cursor:pointer;list-style:none;min-height:44px;display:flex;align-items:center;
+  font-size:13.5px;color:var(--gold-hi);letter-spacing:.02em}
+.guide-more summary::-webkit-details-marker{display:none}
+.guide-more summary::after{content:"▾";margin-left:8px;font-size:11px;color:var(--ink3)}
+.guide-more[open] summary::after{content:"▴"}
+.guide-more ol{margin-top:2px}
 .guide-note{border-top:1px solid var(--line2);margin-top:13px;padding-top:11px;color:var(--ink3);font-size:12.5px;line-height:1.8}
 .chain-tabs{grid-template-columns:repeat(3,1fr);margin:14px 0 8px}
 .chain-panel{display:none}.chain-panel.on{display:block;animation:fade .25s ease}
@@ -462,19 +469,25 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
       <h3>使用说明</h3>
       <p class="guide-lead">第一次来，不用先制定完整计划。只要选一种启动方式，让今天的第一段专注真正开始。</p>
       <ol class="num">
-        <li><b>先打开，不用注册。</b>手机浏览器可从菜单选择“添加到主屏幕”，以后像 App 一样打开。你的星链、判例、统计和复盘只保存在当前浏览器。</li>
-        <li><b>去“点火”，写下这次要做的一件事。</b>例如“高数第三章习题”。写具体一点更容易开始；暂时想不到也可以留空，但建议写下来。</li>
-        <li><b>状态好，直接“立即点火”。</b>先选 15 / 25 / 45 / 60 分钟，再点按钮。第一次不知道选多久，就选 25 分钟。锁屏或切到后台后回来，会按真实经过时间继续计时。</li>
-        <li><b>不太想开始，就选“5 分钟侦查”。</b>它只要求你先坐下做 5 分钟。5 分钟到了可以结束，也可以延长为一次正式专注；结束侦查不会断开主星链。</li>
-        <li><b>现在没空，就用“预约入座”。</b>选 5 / 10 / 15 / 30 分钟，在倒计时内回来点火，会记作准时。预约时间到了仍未点火，会请你判定这次启动是否中断，不会静默消失。</li>
-        <li><b>正式专注中途被打断时，点“结束”。</b>已专注超过 80% 会记为“提前收束”；更早结束时，你可以选择继续、断链，或者把合理原因“立为判例”。</li>
-        <li><b>“立为判例”是一条永久规则。</b>例如把“接水”立为判例后，以后同样情况会默认允许，本次也会铸星。不要为了这一次舒服，把“刷手机”也立成判例；判例只有两类结果：断链，或长期允许。</li>
-        <li><b>需要背景声时，打开“静场”。</b>白噪、粉噪和棕噪都由浏览器本地生成，不联网、不录音。声音默认关闭，只有你主动开启后才会在专注时播放；锁屏或切到后台能否继续取决于浏览器。</li>
-        <li><b>完成就铸星。</b>当前星链加 1，历史最长链永久保留。断链只是从新的 #1 再开始，不代表之前所有努力都消失。</li>
-        <li><b>去“星链”看轨迹，去“复盘”写一点东西。</b>星图记录近 90 天，统计会区分完整完成、提前收束和判例。复盘可以只写一句。</li>
-        <li><b>在“复盘 → 国策树”里添加一条长期规则。</b>第一条可以直接选择模板。之后每天最多新增一个节点；没做到时可以熄灭该分支，或用“水密隔舱”短暂冻结。</li>
-        <li><b>定期备份。</b>在“日志”页导出 JSON。换手机、清浏览器缓存或重装前先备份；导入时会合并记录，同一记录不会重复。</li>
+        <li><b>先打开，不用注册。</b>手机浏览器可从菜单选择“添加到主屏幕”，以后像 App 一样打开；你的所有记录只存在当前浏览器里。</li>
+        <li><b>去“点火”，写下一件事，点「点火 · 25 分钟」。</b>状态不好就展开「更多启动方式」：5 分钟侦查、预约入座、换时长、开静场，都在里面。</li>
+        <li><b>完成就铸星，中途被打断点「结束」由你裁判。</b>去「星链」看轨迹、去「复盘」写一句；换手机或清缓存前，记得在「日志」页导出备份。</li>
       </ol>
+      <details class="guide-more">
+        <summary>更多细节：静场、判例、星图、国策树、备份</summary>
+        <ol class="num">
+          <li><b>时长与防漂移。</b>15 / 25 / 45 / 60 分钟任选，第一次不知道就选 25 分钟；锁屏或切到后台后回来，会按真实经过时间继续计时。</li>
+          <li><b>5 分钟侦查。</b>只要求你先坐下做 5 分钟。5 分钟到了可以结束，也可以延长为一次正式专注；结束侦查不会断开主星链。</li>
+          <li><b>预约入座。</b>选 5 / 10 / 15 / 30 分钟，在倒计时内回来点火会记作准时；时间到了仍未点火，会请你判定这次启动是否中断，不会静默消失。</li>
+          <li><b>提前收束与判例。</b>正式专注中途被打断时点“结束”：已专注超过 80% 会记为“提前收束”；更早结束时，可以选择继续、断链，或把合理原因“立为判例”。</li>
+          <li><b>“立为判例”是一条永久规则。</b>例如把“接水”立为判例后，以后同样情况会默认允许，本次也会铸星。不要为了这一次舒服，把“刷手机”也立成判例；判例只有两类结果：断链，或长期允许。</li>
+          <li><b>静场。</b>白噪、粉噪和棕噪都由浏览器本地生成，不联网、不录音；声音默认关闭，只有你主动开启后才会在专注时播放。</li>
+          <li><b>断链不清零。</b>当前星链加 1，历史最长链永久保留；断链只是从新的 #1 再开始，不代表之前所有努力都消失。</li>
+          <li><b>星链、星图与统计。</b>星图记录近 90 天，统计会区分完整完成、提前收束和判例；点击星图日期可以回看当天的“推进”。</li>
+          <li><b>国策树。</b>在“复盘 → 国策树”里添加长期规则，第一条可以直接选模板；之后每天最多新增一个节点，没做到时可以熄灭该分支，或用“水密隔舱”短暂冻结。</li>
+          <li><b>备份。</b>在“日志”页导出 JSON。换手机、清浏览器缓存或重装前先备份；导入时会合并记录，同一记录不会重复。</li>
+        </ol>
+      </details>
       <p class="guide-note">规则可以严格，态度不需要苛刻。不要用一次失败否定整条链，也不要用一次“下不为例”慢慢掏空规则。清理浏览器网站数据或更换设备后，本地记录可能无法找回，请定期导出备份。</p>
       <p class="protocol-source">启动协议与判例机制受到 edmond《如何提高自制力？》中 CTDP / RSIP 方法的启发。它是行为训练工具，不替代专业医疗建议。<a href="https://www.zhihu.com/question/19888447/answer/1930799480401293785" target="_blank" rel="noopener">查看理论来源</a></p>
     </div>
@@ -733,6 +746,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <li>仪式音效：划火、点亮、烟花三种声音全部用 WebAudio 现场合成，不加载任何音频文件，离线可用；仪式右上角可一键开关，默认开启。</li>
         <li>星语升级：收录 30 句星月诗词（新增 20 句），点火页今天的星语会随日期轮换，专注中也会安静显示一句。</li>
         <li>降级：系统开启「减少动态效果」时直接淡入计时；低端机自动减少烟花粒子；点火仪式中点击任意处可跳过。</li>
+        <li>首页「使用说明」压实为 3 条，静场、判例、星图、国策树、备份等细节收进「更多细节」折叠，第一次上手只读三句。</li>
       </ul>
       <div class="logver">v0.7.0</div>
       <div class="logdate">2026-10-22</div>
