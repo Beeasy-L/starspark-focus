@@ -1,12 +1,14 @@
 /* 星火-专注pro Service Worker：离线缓存，可安装 */
-const CACHE = 'starspark-focus-v8';
+const CACHE = 'starspark-focus-v9';
 const CORE = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/icon-maskable-512.png'
+  './icons/icon-maskable-512.png',
+  './assets/font-400.woff2',
+  './assets/font-700.woff2'
 ];
 
 self.addEventListener('install', (e) => {
