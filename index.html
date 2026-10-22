@@ -272,32 +272,62 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
   padding:8px 14px;font-size:13px;cursor:pointer;min-height:38px}
 .chip.on{border-color:var(--gold);color:var(--gold-hi);background:rgba(242,198,109,.12)}
 
-/* 点火动画 */
-.ignite-mask{position:fixed;inset:0;z-index:60;
-  background:radial-gradient(circle at 50% 58%,rgba(46,22,10,.92),rgba(5,8,20,.98));
-  display:none;align-items:center;justify-content:center;overflow:hidden}
+/* ===== 点火仪式 v0.8.0：火种 · 星链 · 烟花 ===== */
+.ignite-mask{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(circle at 50% 72%,rgba(48,24,12,.96) 0%,rgba(8,12,24,.985) 58%,#04060f 100%)}
 .ignite-mask.on{display:flex}
-.ignite-stage{position:relative;display:flex;flex-direction:column;align-items:center}
-.spark-flame{position:relative;width:90px;height:130px;animation:ignitePop .5s ease both}
-.flame{position:absolute;bottom:0;left:50%;border-radius:50% 0 50% 50%;transform-origin:50% 100%;
-  background:linear-gradient(180deg,#FFE69A 0%,#F2C66D 35%,#E8915B 70%,#C46A40 100%);
-  mix-blend-mode:screen;transform:translateX(-50%) rotate(45deg)}
-.f1{width:60px;height:100px;animation:flicker 1.2s ease-in-out infinite alternate}
-.f2{width:42px;height:74px;animation:flicker .9s ease-in-out infinite alternate-reverse;
-  background:linear-gradient(180deg,#FFF4C8,#FFD98A 45%,#E8915B)}
-.f3{width:26px;height:48px;animation:flicker .7s ease-in-out infinite alternate}
-@keyframes ignitePop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes flicker{
-  from{transform:translateX(-50%) rotate(45deg) scaleY(.92) scaleX(.96)}
-  to{transform:translateX(-50%) rotate(45deg) scaleY(1.08) scaleX(1.04)}}
-.ignite-embers{position:absolute;bottom:40px;left:0;right:0;height:0}
-.ignite-embers .ember-p{position:absolute;bottom:0;left:50%;width:4px;height:4px;border-radius:50%;
-  background:var(--gold-hi);box-shadow:0 0 6px var(--gold);animation:emberFly 1.4s ease-out forwards}
-@keyframes emberFly{
-  0%{opacity:1;transform:translate(0,0) scale(1)}
-  100%{opacity:0;transform:translate(var(--dx),-190px) scale(.3)}}
-.ignite-label{margin-top:30px;font-family:var(--serif);color:var(--gold-hi);font-size:20px;
-  letter-spacing:10px;animation:ignitePop .6s .15s ease both}
+.ig-stage{position:relative;width:min(88vw,360px);height:470px;display:grid;place-items:center}
+.ig-spark{position:absolute;bottom:150px;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;
+  background:#fff6d8;box-shadow:0 0 12px 4px rgba(255,214,120,.75);opacity:0;transform:translateY(90px)}
+.ig-spark::after{content:"";position:absolute;left:50%;bottom:6px;width:2px;height:82px;margin-left:-1px;
+  background:linear-gradient(180deg,rgba(255,214,120,0),rgba(255,214,120,.72))}
+.ig-glow{position:absolute;bottom:100px;left:50%;width:300px;height:300px;margin-left:-150px;border-radius:50%;opacity:0;
+  background:radial-gradient(circle,rgba(242,150,70,.3),rgba(242,150,70,.07) 45%,transparent 70%)}
+.ig-flame{position:absolute;bottom:132px;left:50%;width:120px;height:172px;margin-left:-60px;opacity:0;transform:scale(.22);
+  transform-origin:50% 100%;filter:drop-shadow(0 0 24px rgba(242,150,70,.42))}
+.ig-chain{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ig-chain path{fill:none;stroke:rgba(255,230,173,.8);stroke-width:1.2;stroke-dasharray:1;stroke-dashoffset:1;
+  filter:drop-shadow(0 0 5px rgba(255,230,173,.75))}
+.ig-chain circle{fill:#ffe6ad;opacity:0;transform-box:fill-box;transform-origin:center}
+.ig-chain .newstar{fill:#fff8dc}
+.ig-chain .newring{fill:none;stroke:rgba(255,230,173,.9);stroke-width:1.2;opacity:0;transform-box:fill-box;transform-origin:center}
+.ig-fw{position:absolute;inset:0;pointer-events:none}
+.ig-fw .p{position:absolute;width:4px;height:4px;border-radius:50%;opacity:0;
+  background:var(--fw,#ffe6ad);box-shadow:0 0 8px var(--fw,#ffe6ad);animation:igFw .95s cubic-bezier(.12,.7,.3,1) forwards}
+@keyframes igFw{0%{opacity:1;transform:translate(0,0) scale(1.15)}65%{opacity:.85}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.18)}}
+.ig-sound{position:absolute;top:calc(16px + env(safe-area-inset-top));right:16px;z-index:2;
+  background:rgba(13,18,38,.72);border:1px solid var(--line);color:var(--ink2);border-radius:999px;
+  padding:9px 14px;font-size:12px;font-family:var(--sans);cursor:pointer;min-height:40px;letter-spacing:.04em}
+.ig-sound.on{color:var(--gold-hi);border-color:rgba(242,198,109,.55)}
+.ig-skip{position:absolute;bottom:calc(20px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;
+  font-size:11.5px;color:var(--ink3);letter-spacing:.08em}
+.ig-spark.on{animation:igRise .5s cubic-bezier(.2,.7,.3,1) forwards}
+.ig-flame.on{animation:igFlame .62s cubic-bezier(.16,.84,.36,1) forwards}
+.ig-glow.on{animation:igGlow .8s ease-out forwards}
+.ig-flame.on path:nth-child(1){animation:igWob1 .9s .1s ease-in-out infinite alternate}
+.ig-flame.on path:nth-child(2){animation:igWob2 .7s .05s ease-in-out infinite alternate}
+.ig-flame.on path:nth-child(3){animation:igWob1 .55s ease-in-out infinite alternate}
+.ig-chain.on path{animation:igDraw .45s ease-out forwards}
+.ig-chain.on circle{animation:igPop .3s ease-out forwards}
+.ig-chain.on .newstar{animation:igPopBig .42s ease-out forwards}
+.ig-chain.on .newring{animation:igRing .8s ease-out forwards}
+.ig-stage.dim .ig-flame,.ig-stage.dim .ig-glow{animation:igFade .45s ease forwards}
+.ig-stage.dim .ig-chain{animation:igFade .5s ease forwards}
+@keyframes igRise{0%{opacity:0;transform:translateY(90px)}35%{opacity:1}100%{opacity:0;transform:translateY(-26px)}}
+@keyframes igFlame{0%{opacity:0;transform:scale(.22)}65%{opacity:1;transform:scale(1.03)}100%{opacity:1;transform:scale(1)}}
+@keyframes igWob1{from{transform:scaleY(.94) scaleX(1.01)}to{transform:scaleY(1.06) scaleX(.98)}}
+@keyframes igWob2{from{transform:scaleY(1.02) scaleX(.99)}to{transform:scaleY(.93) scaleX(1.02)}}
+@keyframes igGlow{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1)}}
+@keyframes igDraw{to{stroke-dashoffset:0}}
+@keyframes igPop{0%{opacity:0;transform:scale(.2)}100%{opacity:1;transform:scale(1)}}
+@keyframes igPopBig{0%{opacity:0;transform:scale(.2)}100%{opacity:1;transform:scale(1.35)}}
+@keyframes igRing{0%{opacity:.95;transform:scale(.4)}100%{opacity:0;transform:scale(3.2)}}
+@keyframes igFade{to{opacity:0}}
+/* 专注中显示的一句星语 */
+.session-poem{margin:16px auto 2px;max-width:560px;text-align:center;font-family:var(--serif);font-size:13px;
+  line-height:1.9;color:var(--gold-hi);opacity:0;transition:opacity .9s ease;letter-spacing:.02em}
+.session-poem.on{opacity:.92}
+.session-poem .poem-from{display:block;font-family:var(--sans);font-size:11px;color:var(--ink3);margin-top:2px;letter-spacing:.06em}
 
 /* 更新日志 */
 .logver{font-size:18px;font-weight:700;color:var(--redbrown);margin:16px 0 4px;font-family:var(--sans)}
@@ -567,6 +597,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
             </div>
           </div>
         </div>
+        <p class="session-poem" id="sessionPoem"></p>
         <div class="btnrow">
           <button class="btn ghost" id="pauseBtn">暂停</button>
           <button class="btn danger" id="stopBtn">结束</button>
@@ -695,6 +726,14 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v0.8.0</div>
+      <div class="logdate">2026-10-22</div>
+      <ul class="loglist">
+        <li>点火仪式重做：火种升起 → 火舌燃起 → 星链从火心射出并逐颗点亮 → 烟花绽放 → 收束进计时；每次点亮的星数随当前链长联动，最后一颗就是「这一次」。</li>
+        <li>仪式音效：划火、点亮、烟花三种声音全部用 WebAudio 现场合成，不加载任何音频文件，离线可用；仪式右上角可一键开关，默认开启。</li>
+        <li>星语升级：收录 30 句星月诗词（新增 20 句），点火页今天的星语会随日期轮换，专注中也会安静显示一句。</li>
+        <li>降级：系统开启「减少动态效果」时直接淡入计时；低端机自动减少烟花粒子；点火仪式中点击任意处可跳过。</li>
+      </ul>
       <div class="logver">v0.7.0</div>
       <div class="logdate">2026-10-22</div>
       <ul class="loglist">
@@ -775,18 +814,8 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
   </div>
 </div>
 
-<!-- 点火动画 -->
-<div class="ignite-mask" id="igniteMask">
-  <div class="ignite-stage">
-    <div class="spark-flame">
-      <div class="flame f1"></div>
-      <div class="flame f2"></div>
-      <div class="flame f3"></div>
-    </div>
-    <div class="ignite-embers" id="igniteEmbers"></div>
-    <div class="ignite-label">点 火</div>
-  </div>
-</div>
+<!-- 点火仪式（内容由 playIgnite 按当前链长动态生成） -->
+<div class="ignite-mask" id="igniteMask"></div>
 
 <script>
 /* ===== 星点背景 ===== */
@@ -806,7 +835,7 @@ const defaultState=()=>({
   chain:{currentNo:0,bestNo:0,genesis:null},
   blocks:[],whitelist:[],precedents:[],reservation:null,appointments:[],recons:[],
   startup:{currentNo:0,bestNo:0,lastAt:null},
-  settings:{sound:{enabled:false,type:'white',volume:22},simpleMode:true},
+  settings:{sound:{enabled:false,type:'white',volume:22},ceremonySound:true,simpleMode:true},
   meta:{lastExportAt:null,backupSnoozeAt:null},
   policyTree:{version:1,nodes:[],freezes:[],checks:{},events:[],lastAddDay:null},
   reviews:{},session:null
@@ -857,6 +886,7 @@ function hydrateState(){
   S.startup=Object.assign({currentNo:0,bestNo:0,lastAt:null},S.startup||{});
   S.settings=Object.assign({sound:{enabled:false,type:'white',volume:22}},S.settings||{});
   S.settings.sound=Object.assign({enabled:false,type:'white',volume:22},S.settings.sound||{});
+  S.settings.ceremonySound=S.settings.ceremonySound!==false;
   if(!['white','pink','brown'].includes(S.settings.sound.type))S.settings.sound.type='white';
   S.settings.sound.volume=Math.min(60,Math.max(0,Number(S.settings.sound.volume)||22));
   S.settings.simpleMode=S.settings.simpleMode!==false;
@@ -1058,7 +1088,8 @@ function elapsedMs(){if(!cur)return 0;
 function planMs(){return cur.planMin*60000;}
 
 function showRunning(){$('#focusIdle').style.display='none';$('#focusRunning').style.display='block';}
-function showIdle(){$('#focusIdle').style.display='block';$('#focusRunning').style.display='none';}
+function showIdle(){$('#focusIdle').style.display='block';$('#focusRunning').style.display='none';
+  const sp=$('#sessionPoem');if(sp)sp.classList.remove('on');}
 function updateSessionChrome(){
   if(!cur)return;
   const isRecon=cur.mode==='recon';
@@ -1136,6 +1167,7 @@ function startSession(mode){
     cur.startTs=Date.now();cur.onTime=onTime;
     recordStartupStart();
     S.session=cur;save();showRunning();
+    showSessionPoem();
     updateSessionChrome();
     stopReserve();
     startTick();startAmbient();igniting=false;
@@ -1143,18 +1175,167 @@ function startSession(mode){
 }
 function ignite(){startSession('direct');}
 function igniteRecon(){startSession('recon');}
+/* ===== 点火仪式 v0.8.0：火种 → 火起 → 星链 → 烟花 → 收束 ===== */
+const IG_STAR_POS=[
+  [[180,150]],
+  [[124,178],[236,178]],
+  [[104,190],[180,138],[256,190]],
+  [[96,198],[152,150],[218,156],[288,206]],
+  [[88,206],[138,162],[180,132],[228,162],[292,210]]
+];
+let igAudio=null;
+function igEnsureAudio(){
+  if(!igAudio){const AC=window.AudioContext||window.webkitAudioContext;if(AC){try{igAudio=new AC();}catch(e){return null;}}}
+  if(igAudio&&igAudio.state==='suspended'){igAudio.resume().catch(()=>{});}
+  return igAudio;
+}
+function igNoiseBuffer(ctx,dur){
+  const n=Math.max(1,Math.floor(ctx.sampleRate*dur)),b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+  return b;
+}
+/* 现场合成三种仪式音：划火、点亮、烟花；不落任何音频文件 */
+function igSound(kind){
+  if(S.settings.ceremonySound===false)return;
+  const ctx=igEnsureAudio();if(!ctx)return;
+  try{
+    const t=ctx.currentTime;
+    if(kind==='strike'){
+      const src=ctx.createBufferSource();src.buffer=igNoiseBuffer(ctx,.3);
+      const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.Q.value=.9;
+      bp.frequency.setValueAtTime(700,t);bp.frequency.exponentialRampToValueAtTime(2600,t+.18);
+      const g=ctx.createGain();g.gain.setValueAtTime(.0001,t);
+      g.gain.exponentialRampToValueAtTime(.3,t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+.3);
+      src.connect(bp);bp.connect(g);g.connect(ctx.destination);src.start(t);
+    }else if(kind==='chime'){
+      [880,1318.5].forEach((f,i)=>{
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.type='sine';o.frequency.value=f;
+        g.gain.setValueAtTime(.0001,t);
+        g.gain.exponentialRampToValueAtTime(i?.05:.11,t+.02);
+        g.gain.exponentialRampToValueAtTime(.0001,t+(i?.65:.95));
+        o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+1);
+      });
+    }else if(kind==='crackle'){
+      for(let i=0;i<4;i++){
+        const tt=t+i*.07,src=ctx.createBufferSource();src.buffer=igNoiseBuffer(ctx,.06);
+        const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=2200;
+        const g=ctx.createGain();g.gain.setValueAtTime(.0001,tt);
+        g.gain.exponentialRampToValueAtTime(Math.max(.02,.11-.02*i),tt+.008);
+        g.gain.exponentialRampToValueAtTime(.0001,tt+.06);
+        src.connect(hp);hp.connect(g);g.connect(ctx.destination);src.start(tt);
+      }
+    }
+  }catch(e){}
+}
+function igStarCount(){
+  return Math.max(1,Math.min(5,(Number(S.chain.currentNo)||0)+1));
+}
+function igStageHTML(){
+  const pos=IG_STAR_POS[igStarCount()-1];
+  const lines=pos.map(p=>`<path d="M180 318 L${p[0]} ${p[1]}"/>`).join('');
+  const stars=pos.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.2" style="animation-delay:${(0.08+i*.16).toFixed(2)}s"/>`).join('');
+  const np=pos[pos.length-1];
+  const on=S.settings.ceremonySound!==false;
+  return `<button class="ig-sound${on?' on':''}" id="igSound" type="button">音效 ${on?'开':'关'}</button>
+    <div class="ig-stage" id="igStage">
+      <div class="ig-glow"></div>
+      <svg class="ig-chain" viewBox="0 0 360 470" preserveAspectRatio="none" aria-hidden="true">
+        ${lines}${stars}
+        <circle class="newstar" cx="${np[0]}" cy="${np[1]}" r="4.4"/>
+        <circle class="newring" cx="${np[0]}" cy="${np[1]}" r="5"/>
+      </svg>
+      <svg class="ig-flame" viewBox="0 0 120 172" aria-hidden="true">
+        <defs>
+          <linearGradient id="igG1" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stop-color="#c8612f"/><stop offset=".45" stop-color="#f09a4e"/>
+            <stop offset=".82" stop-color="#ffd98a"/><stop offset="1" stop-color="#fff3c4"/>
+          </linearGradient>
+          <linearGradient id="igG2" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stop-color="#e0873f"/><stop offset=".6" stop-color="#ffd98a"/><stop offset="1" stop-color="#fff8dc"/>
+          </linearGradient>
+        </defs>
+        <path d="M60 6c16 30 40 48 40 82 0 30-18 52-40 52S20 118 20 88c0-27 17-41 26-56 3 14 7 19 13 26-2-22-2-37 1-52z" fill="url(#igG1)" opacity=".92"/>
+        <path d="M60 44c11 20 27 31 27 55 0 20-12 33-27 33s-27-13-27-33c0-18 11-27 18-38 2 11 5 15 9 20-1-15-1-26 0-37z" fill="url(#igG2)" opacity=".95"/>
+        <path d="M60 92c6 11 14 16 14 27 0 11-6 18-14 18s-14-7-14-18c0-9 6-14 9-20 1 6 3 8 5 11z" fill="#fff8dc" opacity=".95"/>
+      </svg>
+      <div class="ig-spark"></div>
+      <div class="ig-fw" id="igFw"></div>
+    </div>
+    <div class="ig-skip">点任意处跳过</div>`;
+}
+function igFireworks(host,basic){
+  if(!host)return;
+  const pos=IG_STAR_POS[igStarCount()-1];
+  const starts=[pos[0],pos[pos.length-1]];
+  const colors=['#ffe6ad','#ffd98a','#fff8dc','#f0a25a','#cfe0ff'];
+  const burst=(p,delay)=>{
+    const count=basic?12:22;
+    for(let i=0;i<count;i++){
+      const s=document.createElement('i');s.className='p';
+      const ang=Math.random()*Math.PI*2,dist=(basic?34:46)+Math.random()*(basic?60:96);
+      s.style.left=(p[0]/360*100).toFixed(2)+'%';
+      s.style.top=(p[1]/470*100).toFixed(2)+'%';
+      s.style.setProperty('--dx',(Math.cos(ang)*dist).toFixed(1)+'px');
+      s.style.setProperty('--dy',(Math.sin(ang)*dist-14).toFixed(1)+'px');
+      s.style.setProperty('--fw',colors[(Math.random()*colors.length)|0]);
+      const size=(3+Math.random()*2.4).toFixed(1)+'px';
+      s.style.width=size;s.style.height=size;
+      s.style.animationDelay=delay+'s';
+      s.style.animationDuration=(.85+Math.random()*.5).toFixed(2)+'s';
+      host.appendChild(s);
+      setTimeout(()=>{try{s.remove();}catch(e){}},2400);
+    }
+  };
+  burst(starts[0],0);
+  if(starts[1]&&starts[1]!==starts[0])burst(starts[1],.14);
+}
+function showSessionPoem(){
+  const box=$('#sessionPoem');if(!box)return;
+  const p=todayPoem();
+  box.innerHTML=`「${p.t}」<span class="poem-from">${p.a}</span>`;
+  requestAnimationFrame(()=>box.classList.add('on'));
+}
 function playIgnite(done){
-  const mask=$('#igniteMask');mask.classList.add('on');
-  const box=$('#igniteEmbers');box.innerHTML='';
-  for(let i=0;i<26;i++){
-    const p=document.createElement('span');p.className='ember-p';
-    p.style.setProperty('--dx',((Math.random()*160-80)|0)+'px');
-    p.style.marginLeft=(Math.random()*40-20)+'px';
-    p.style.animationDelay=(Math.random()*.5)+'s';
-    p.style.animationDuration=(1+Math.random()*.8)+'s';
-    box.appendChild(p);
-  }
-  setTimeout(()=>{mask.classList.remove('on');done&&done();},1900);
+  const mask=$('#igniteMask');
+  if(!mask){done&&done();return;}
+  mask.innerHTML=igStageHTML();
+  mask.classList.add('on');
+  const stage=$('#igStage'),timers=[];
+  let finished=false,igDone=false;
+  const finish=()=>{
+    if(finished)return;finished=true;
+    timers.forEach(clearTimeout);
+    mask.classList.remove('on');
+    setTimeout(()=>{try{mask.innerHTML='';}catch(e){}},420);
+    if(!igDone){igDone=true;done&&done();}
+  };
+  const sBtn=$('#igSound');
+  if(sBtn)sBtn.onclick=ev=>{ev.stopPropagation();
+    S.settings.ceremonySound=S.settings.ceremonySound===false;save();
+    const on=S.settings.ceremonySound!==false;
+    sBtn.classList.toggle('on',on);sBtn.textContent='音效 '+(on?'开':'关');
+    if(on)igSound('chime');
+  };
+  mask.onclick=finish;
+  const at=(ms,fn)=>timers.push(setTimeout(fn,ms));
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lowEnd=(navigator.deviceMemory&&navigator.deviceMemory<=4)||window.matchMedia('(max-width:340px)').matches;
+  if(reduce){at(80,()=>stage&&stage.classList.add('dim'));at(280,finish);return;}
+  at(20,()=>{const s=stage&&stage.querySelector('.ig-spark');if(s)s.classList.add('on');});
+  at(420,()=>{
+    const f=stage&&stage.querySelector('.ig-flame'),g=stage&&stage.querySelector('.ig-glow');
+    if(f)f.classList.add('on');if(g)g.classList.add('on');
+    igSound('strike');
+  });
+  at(980,()=>{
+    const c=stage&&stage.querySelector('.ig-chain');if(c)c.classList.add('on');
+    igSound('chime');
+  });
+  at(1320,()=>{igFireworks($('#igFw'),lowEnd);igSound('crackle');});
+  at(1720,()=>{igFireworks($('#igFw'),lowEnd);});
+  at(2060,()=>{if(stage)stage.classList.add('dim');});
+  at(2160,finish);
 }
 
 function togglePause(){
@@ -2026,6 +2207,7 @@ function stopReserve(){
 }
 function restore(){
   if(S.session){cur=S.session;showRunning();
+    showSessionPoem();
     updateSessionChrome();
     if(cur.pauseTs){$('#pauseBtn').textContent='继续';tick();}
     else{startTick();}
@@ -2063,15 +2245,36 @@ const STAR_POEMS=[
   {t:'昨夜星辰昨夜风。',a:'李商隐《无题》'},
   {t:'春江潮水连海平，海上明月共潮生。',a:'张若虚《春江花月夜》'},
   {t:'今夜月明人尽望，不知秋思落谁家。',a:'王建《十五夜望月》'},
-  {t:'月出皎兮，佼人僚兮。',a:'《诗经·陈风·月出》'}
+  {t:'月出皎兮，佼人僚兮。',a:'《诗经·陈风·月出》'},
+  {t:'耿斜河，疏星淡月，断云微度。',a:'宋·张元干《贺新郎·送胡邦衡待制赴新州》'},
+  {t:'时见疏星落画檐，几点流萤小。',a:'宋·叶梦得《卜算子·五月八日夜凤凰亭纳凉》'},
+  {t:'淡月朦胧，更有微微弄袖风。',a:'宋·苏轼《减字木兰花·花》'},
+  {t:'一川明月疏星，浣纱人影娉婷。',a:'宋·辛弃疾《清平乐·博山道中即事》'},
+  {t:'万籁生山，一星在水，鹤梦疑重续。',a:'清·厉鹗《百字令·月夜过七里滩》'},
+  {t:'缺月挂疏桐，漏断人初静。',a:'宋·苏轼《卜算子·黄州定慧院寓居作》'},
+  {t:'晓月坠，宿云微，无语枕频欹。',a:'南唐·李煜《喜迁莺·晓月坠》'},
+  {t:'疏星淡月秋千院，愁云恨雨芙蓉面。',a:'元·张可久《塞鸿秋·春情》'},
+  {t:'天上星河转，人间帘幕垂。',a:'宋·李清照《南歌子·天上星河转》'},
+  {t:'夜月一帘幽梦，春风十里柔情。',a:'宋·秦观《八六子·倚危亭》'},
+  {t:'一片流云无觅处，云里疏星，不共云流去。',a:'近代·王国维《蝶恋花》'},
+  {t:'星点点，月团团，倒流河汉入杯盘。',a:'金·刘著《鹧鸪天·雪照山城玉指寒》'},
+  {t:'淡月疏星共寂寥。',a:'宋·周邦彦《南乡子·咏秋夜》'},
+  {t:'天外一钩残月带三星。',a:'宋·秦观《南歌子·玉漏迢迢尽》'},
+  {t:'新月娟娟，夜寒江静山衔斗。',a:'宋·汪藻《点绛唇·新月娟娟》'},
+  {t:'淡云来往月疏疏。',a:'宋·李清照《浣溪沙·髻子伤春慵更梳》'},
+  {t:'明月如霜，好风如水，清景无限。',a:'宋·苏轼《永遇乐·彭城夜宿燕子楼》'},
+  {t:'金波银汉，潋滟无际。',a:'宋·柳永《佳人醉·暮景萧萧雨霁》'},
+  {t:'天接云涛连晓雾，星河欲转千帆舞。',a:'宋·李清照《渔家傲·天接云涛连晓雾》'},
+  {t:'月华如练，长是人千里。',a:'宋·范仲淹《御街行·秋日怀旧》'}
 ];
 function poemIndexOfDay(){
   const d=new Date(),seed=d.getFullYear()*372+d.getMonth()*31+d.getDate();
   return seed%STAR_POEMS.length;
 }
+function todayPoem(){return STAR_POEMS[poemIndexOfDay()];}
 function renderPoemOfDay(){
   const box=$('#poemOfDay');if(!box)return;
-  const p=STAR_POEMS[poemIndexOfDay()];
+  const p=todayPoem();
   box.innerHTML=`「${p.t}」<span class="poem-from">${p.a}</span>`;
 }
 function renderPoemBook(){
