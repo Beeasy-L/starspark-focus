@@ -748,6 +748,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <li>星语升级：收录 30 句星月诗词（新增 20 句），点火页今天的星语会随日期轮换，专注中也会安静显示一句。</li>
         <li>降级：系统开启「减少动态效果」时直接淡入计时；低端机自动减少烟花粒子；点火仪式中点击任意处可跳过。</li>
         <li>首页「使用说明」压实为 3 条，静场、判例、星图、国策树、备份等细节收进「更多细节」折叠，第一次上手只读三句。</li>
+        <li>部署优化：线上字体改为外部 woff2（first paint 不再等 3.8MB HTML），首屏 HTML 从 3.79MB 降到约 134KB；离线时字体由 Service Worker 缓存，不受影响。</li>
       </ul>
       <div class="logver">v0.7.0</div>
       <div class="logdate">2026-10-22</div>
