@@ -336,6 +336,38 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .session-poem.on{opacity:.92}
 .session-poem .poem-from{display:block;font-family:var(--sans);font-size:11px;color:var(--ink3);margin-top:2px;letter-spacing:.06em}
 
+/* ===== v0.9.0：今天状态卡 / 折叠关于 / 星链长卷 / 怎么用 ===== */
+.today-card{padding:18px 18px 16px;border-color:rgba(246,220,155,.35)}
+.tc-top{display:flex;align-items:center;gap:8px;font-family:var(--serif);font-size:16px;color:var(--gold-hi)}
+.tc-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px rgba(246,220,155,.8)}
+.tc-dot.warm{background:#f0a25a;box-shadow:0 0 10px rgba(240,162,90,.85)}
+.tc-dot.cool{background:#9fc6ff;box-shadow:0 0 10px rgba(159,198,255,.8)}
+.tc-hint{margin:6px 0 14px;font-size:13px;line-height:1.8;color:var(--ink2)}
+.tc-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tc-links button{background:transparent;border:1px solid var(--line);color:var(--ink2);border-radius:10px;
+  padding:8px 12px;font-size:12.5px;cursor:pointer;min-height:40px}
+.about-fold>summary{cursor:pointer;font-family:var(--serif);font-size:15px;color:var(--gold-hi);
+  min-height:44px;display:flex;align-items:center;letter-spacing:.04em;list-style:none}
+.about-fold>summary::-webkit-details-marker{display:none}
+.about-fold>summary::after{content:"▾";margin-left:8px;font-size:11px;color:var(--ink3)}
+.about-fold[open]>summary::after{content:"▴"}
+.about-fold[open]>summary{margin-bottom:10px;border-bottom:1px solid var(--line2);padding-bottom:8px}
+.chain-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.chain-scroll svg{display:block}
+.guide-steps{display:grid;gap:12px;margin-top:6px}
+.guide-step{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start}
+.guide-step svg{width:40px;height:40px}
+.guide-step b{font-family:var(--serif);color:var(--gold-hi);font-size:14px}
+.guide-step p{margin:3px 0 0;font-size:12.5px;line-height:1.8}
+#fxCanvas{position:fixed;inset:0;z-index:58;pointer-events:none;display:none}
+.mile-banner{position:fixed;left:50%;top:16%;transform:translate(-50%,-8px);z-index:59;opacity:0;
+  background:rgba(20,26,50,.96);border:1.5px solid rgba(246,220,155,.5);border-radius:14px;padding:12px 20px;
+  color:var(--gold-hi);font-size:13.5px;transition:opacity .3s ease,transform .3s ease}
+.mile-banner.on{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion: reduce){
+  .chain-scroll .star,.chain-scroll .link{transition:none !important;animation:none !important}
+}
+
 /* 更新日志 */
 .logver{font-size:18px;font-weight:700;color:var(--redbrown);margin:16px 0 4px;font-family:var(--sans)}
 .logdate{font-size:12px;color:var(--ink3);margin-bottom:6px}
@@ -345,7 +377,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 
 /* 底部移动导航 */
 .bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(13,18,38,.92);
-  backdrop-filter:blur(10px);border-top:1.5px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  backdrop-filter:blur(10px);border-top:1.5px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
 .bottomnav button{background:transparent;border:none;color:var(--ink3);display:flex;flex-direction:column;
   align-items:center;gap:3px;font-size:10.5px;cursor:pointer;padding:4px;font-family:var(--sans)}
 .bottomnav button svg{width:22px;height:22px}
@@ -421,6 +453,17 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
       <span class="small">辛弃疾 · 青玉案 · 元夕</span>
     </div>
 
+    <!-- v0.9.0：今天的状态卡（唯一答案：现在该做什么） -->
+    <div class="card today-card" id="todayCard">
+      <div class="tc-top"><span class="tc-dot" id="tcDot"></span><span class="tc-state" id="tcState">今天还没点火</span></div>
+      <p class="tc-hint" id="tcHint">先坐下，再做一件小事。</p>
+      <button class="btn primary btn-xl" id="tcMain" type="button">点火 · 25 分钟</button>
+      <div class="tc-links" id="tcLinks"></div>
+    </div>
+
+    <details class="card about-fold" id="aboutFold">
+      <summary>了解星火：公式、理论、怎么用</summary>
+
     <!-- 公式（上移） -->
     <div class="formula">
       <div class="eq">I = ∫₀^∞ V(τ) · W(τ) dτ</div>
@@ -471,21 +514,21 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
       <p class="guide-lead">第一次来，不用先制定完整计划。只要选一种启动方式，让今天的第一段专注真正开始。</p>
       <ol class="num">
         <li><b>先打开，不用注册。</b>手机浏览器可从菜单选择“添加到主屏幕”，以后像 App 一样打开；你的所有记录只存在当前浏览器里。</li>
-        <li><b>去“点火”，写下一件事，点「点火 · 25 分钟」。</b>状态不好就展开「更多启动方式」：5 分钟侦查、预约入座、换时长、开静场，都在里面。</li>
+        <li><b>去“点火”，写下一件事，点「点火 · 25 分钟」。</b>状态不好就展开「更多启动方式」：5 分钟热身、预约入座、换时长、开静场，都在里面。</li>
         <li><b>完成就铸星，中途被打断点「结束」由你裁判。</b>去「星链」看轨迹、去「复盘」写一句；换手机或清缓存前，记得在「日志」页导出备份。</li>
       </ol>
       <details class="guide-more">
         <summary>更多细节：静场、判例、星图、国策树、备份</summary>
         <ol class="num">
           <li><b>时长与防漂移。</b>15 / 25 / 45 / 60 分钟任选，第一次不知道就选 25 分钟；锁屏或切到后台后回来，会按真实经过时间继续计时。</li>
-          <li><b>5 分钟侦查。</b>只要求你先坐下做 5 分钟。5 分钟到了可以结束，也可以延长为一次正式专注；结束侦查不会断开主星链。</li>
+          <li><b>5 分钟热身。</b>只要求你先坐下做 5 分钟。5 分钟到了可以结束，也可以延长为一次正式专注；结束热身不会断开主星链。</li>
           <li><b>预约入座。</b>选 5 / 10 / 15 / 30 分钟，在倒计时内回来点火会记作准时；时间到了仍未点火，会请你判定这次启动是否中断，不会静默消失。</li>
           <li><b>提前收束与判例。</b>正式专注中途被打断时点“结束”：已专注超过 80% 会记为“提前收束”；更早结束时，可以选择继续、断链，或把合理原因“立为判例”。</li>
           <li><b>“立为判例”是一条永久规则。</b>例如把“接水”立为判例后，以后同样情况会默认允许，本次也会铸星。不要为了这一次舒服，把“刷手机”也立成判例；判例只有两类结果：断链，或长期允许。</li>
           <li><b>静场。</b>白噪、粉噪和棕噪都由浏览器本地生成，不联网、不录音；声音默认关闭，只有你主动开启后才会在专注时播放。</li>
           <li><b>断链不清零。</b>当前星链加 1，历史最长链永久保留；断链只是从新的 #1 再开始，不代表之前所有努力都消失。</li>
           <li><b>星链、星图与统计。</b>星图记录近 90 天，统计会区分完整完成、提前收束和判例；点击星图日期可以回看当天的“推进”。</li>
-          <li><b>国策树。</b>在“复盘 → 国策树”里添加长期规则，第一条可以直接选模板；之后每天最多新增一个节点，没做到时可以熄灭该分支，或用“水密隔舱”短暂冻结。</li>
+          <li><b>国策树。</b>在“复盘 → 国策树”里添加长期规则，第一条可以直接选模板；之后每天最多新增一个节点，没做到时可以熄灭该分支，或用“冻结”短暂冻结。</li>
           <li><b>备份。</b>在“日志”页导出 JSON。换手机、清浏览器缓存或重装前先备份；导入时会合并记录，同一记录不会重复。</li>
         </ol>
       </details>
@@ -497,6 +540,8 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
       <summary>星月诗笺 · 拾句</summary>
       <p class="muted">从古人的夜空里借几句话：点火之前读一句，完成之后再读一句。</p>
       <ul class="poem-list" id="poemBookList"></ul>
+    </details>
+
     </details>
 
     <div class="poem">星星之火，可以燎原。</div>
@@ -525,12 +570,12 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         </div>
         <div id="simpleMain">
           <button class="btn primary btn-xl" id="simpleIgniteBtn" type="button">点火 · 25 分钟</button>
-          <button class="btn linklike" id="simpleMoreBtn" type="button">更多启动方式（5 分钟侦查 · 预约 · 时长 · 静场）▾</button>
+          <button class="btn linklike" id="simpleMoreBtn" type="button">更多启动方式（5 分钟热身 · 预约 · 时长 · 静场）▾</button>
         </div>
         <div id="advancedWrap">
         <div class="seg protocol-tabs" id="protocolTabs">
           <button class="on" data-mode="direct">立即点火</button>
-          <button data-mode="recon">5 分钟侦查</button>
+          <button data-mode="recon">5 分钟热身</button>
           <button data-mode="reserve">预约入座</button>
         </div>
         <div id="durationBlock">
@@ -634,7 +679,11 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
       <button data-chain-view="stats">统计</button>
     </div>
     <div class="chain-panel on" id="chainPanel">
-      <div class="card"><div id="chainNet"></div></div>
+      <div class="card">
+        <div class="chain-scroll" id="chainScroll"><svg id="chainLong" height="250" role="img" aria-label="星链长卷：每颗星代表一次专注"></svg></div>
+        <p class="muted" style="margin:8px 2px 0">点任意一颗星，看看那天留下了什么；断链的星不会消失，历史最长永远在。</p>
+        <div class="day-detail" id="chainDetail"></div>
+      </div>
       <div class="card">
         <h3>铸星记录</h3>
         <div class="blocks" id="blocks"></div>
@@ -662,9 +711,9 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <p class="stats-note">这里记录的是已经发生的投入，不拿它催促你。</p>
       </div>
       <div class="card">
-        <h3>启动协议</h3>
+        <h3>启动统计</h3>
         <div class="stat-grid" id="startupStats"></div>
-        <p class="stats-note">侦查是尝试，不是失败；启动链记录的是你愿意坐下来的次数。</p>
+        <p class="stats-note">热身是尝试，不是失败；启动链记录的是你愿意坐下来的次数。</p>
       </div>
     </div>
     <div class="poem">
@@ -727,6 +776,30 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
   </section>
   <section id="view-log" class="view">
+    <div class="card guide-card">
+      <h3>怎么用（三张图看完）</h3>
+      <div class="guide-steps">
+        <div class="guide-step">
+          <svg viewBox="0 0 40 40" fill="none" stroke="#f6dc9b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 5c4 7 9 10 9 18a9 9 0 0 1-18 0c0-5 3-7 5-10 1 4 2 5 4 7-1-6-1-10 0-15z"/>
+          </svg>
+          <div><b>一次专注</b><p class="muted">点火 → 计时 → 铸星。完成后这颗星接进星链，中间荒废几天链也不会磨损。</p></div>
+        </div>
+        <div class="guide-step">
+          <svg viewBox="0 0 40 40" fill="none" stroke="#9fc6ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 4l13 5v10c0 9-6 14-13 17-7-3-13-8-13-17V9z"/><path d="M14 20l4 4 8-9"/>
+          </svg>
+          <div><b>中途被打断</b><p class="muted">点「结束」由你裁判：立为判例（以后同类中断默认放行，本次照铸星），或断链（从 #1 重来，历史最长永远保留）。</p></div>
+        </div>
+        <div class="guide-step">
+          <svg viewBox="0 0 40 40" fill="none" stroke="#ffe6ad" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 34V18"/><path d="M20 22l-8-6M20 20l8-7M20 27l-6-4M20 25l7-5"/><circle cx="20" cy="9" r="3"/>
+          </svg>
+          <div><b>长期怎么长</b><p class="muted">在「复盘 → 国策树」每天点亮一条低阻力规则；守住会积累内化进度，没做到可以冻结或熄灭这一枝。</p></div>
+        </div>
+      </div>
+      <p class="muted" style="margin-top:10px">三个词就够：<b>星链</b>＝专注次数，<b>判例</b>＝合理中断的永久规则，<b>国策</b>＝长期习惯。</p>
+    </div>
     <div class="card">
       <h3>数据备份</h3>
       <p class="muted">导出一份 JSON 留在自己的设备上；导入时会合并记录，不会直接覆盖当前数据。</p>
@@ -740,6 +813,15 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v0.9.0</div>
+      <div class="logdate">2026-10-22</div>
+      <ul class="loglist">
+        <li>导航 5 → 4：首页与点火合并成「今天」，日志升级为「我的」；打开就知道先看「今天」。</li>
+        <li>「今天」状态卡：未开始 / 专注中 / 暂停 / 预约 / 已铸星 / 断链六种状态，每种只给一个主按钮和一句解释，不再需要自己推断下一步。</li>
+        <li>星链页重做：长卷里每颗星都能点开回看当天任务、时长与推进；进入时链会生长，并默认停在最新一颗；星图把点亮的日子连成星路；第 7/30/100 颗触发一场流星雨。</li>
+        <li>「我的 → 怎么用」：三张图讲清一次专注、中途打断、长期国策；术语统一为判例 / 热身 / 冻结。</li>
+        <li>旧数据零迁移，旧链接 #focus / #log 仍然可用。</li>
+      </ul>
       <div class="logver">v0.8.0</div>
       <div class="logdate">2026-10-22</div>
       <ul class="loglist">
@@ -765,31 +847,31 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <li>品牌统一：所有可见名称更新为「星火专注 Pro」。</li>
         <li>新增「静场」背景声：白噪、粉噪、棕噪全部由浏览器本地生成，离线可用。</li>
         <li>背景声支持音量和类型记忆，随专注开始、暂停、结束淡入淡出。</li>
-        <li>复盘页新增「国策树」：模板、自定义规则、每日结算、递归熄灭和水密隔舱。</li>
-        <li>国策节点支持内化进度，并可从 5 分钟侦查、正式专注和每日复盘中自动判定。</li>
+        <li>复盘页新增「国策树」：模板、自定义规则、每日结算、递归熄灭和冻结。</li>
+        <li>国策节点支持内化进度，并可从 5 分钟热身、正式专注和每日复盘中自动判定。</li>
       </ul>
       <div class="logver">v0.4.0</div>
       <div class="logdate">2026-10-21</div>
       <ul class="loglist">
-        <li>点火页升级为三种启动协议：立即点火、5 分钟侦查、预约入座。</li>
-        <li>新增 5 分钟低阻力侦查：提前结束不影响主星链，延长后才进入正式专注。</li>
-        <li>白名单升级为判例簿，记录判例来源、使用次数和永久约束；预约错过需要主动判定。</li>
-        <li>新增启动协议统计：直接启动、侦查转化、预约守约和连续启动。</li>
+        <li>点火页升级为三种启动协议：立即点火、5 分钟热身、预约入座。</li>
+        <li>新增 5 分钟低阻力热身：提前结束不影响主星链，延长后才进入正式专注。</li>
+        <li>判例升级为判例簿，记录判例来源、使用次数和永久约束；预约错过需要主动判定。</li>
+        <li>新增启动协议统计：直接启动、热身转化、预约守约和连续启动。</li>
         <li>首页使用说明重写，补充三种启动方式、判例规则、数据备份和理论来源。</li>
       </ul>
       <div class="logver">v0.3.1</div>
       <div class="logdate">2026-10-19</div>
       <ul class="loglist">
         <li>字体本地化：思源宋体（Noto Serif SC）内嵌进页面，完全离线也能保持月夜星火的宋体质感，不再依赖外部字体加载。</li>
-        <li>星图高亮增强：完成铸星的日期金色、白名单铸星的日期蓝色更醒目，并带微光，回看更直观。</li>
+        <li>星图高亮增强：完成铸星的日期金色、判例铸星的日期蓝色更醒目，并带微光，回看更直观。</li>
         <li>模拟用户全流程回归（桌面 + 移动）：无控制台报错、移动端无横向溢出。</li>
       </ul>
       <div class="logver">v0.3.0</div>
       <div class="logdate">2026-10-19</div>
       <ul class="loglist">
         <li>新增星链 / 星图 / 统计三种视图：近 90 天专注可视化，点击日期可回看记录。</li>
-        <li>新增今日、7 天、30 天投入统计、常做任务、白名单中断原因与历史最长链。</li>
-        <li>完成状态细分：完整完成、提前收束、白名单铸星与断链如实记录。</li>
+        <li>新增今日、7 天、30 天投入统计、常做任务、判例中断原因与历史最长链。</li>
+        <li>完成状态细分：完整完成、提前收束、判例铸星与断链如实记录。</li>
         <li>新增 JSON 数据导出与合并导入；升级后仍是纯本地、无账号的个人专注档案。</li>
         <li>星链动画升级为星河链路：首页使用说明改为首次使用的逐步引导。</li>
         <li>移除外部字体依赖，离线安装后使用系统字体也能完整运行。</li>
@@ -810,7 +892,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <li>星火三部曲第二部，专注链（星链）首版，面向大学生专注力。</li>
         <li>点火仪式；预约 15 分钟内入座，记录准时入座。</li>
         <li>专注计时基于时间戳差值，防漂移、可暂停 / 结束，环形进度。</li>
-        <li>中途中断由用户当裁判：断链清零，或把合理中断立为永久白名单。</li>
+        <li>中途中断由用户当裁判：断链清零，或把合理中断立为永久判例。</li>
         <li>完成铸星 #N，当前链 +1，历史最长链 bestNo 永久保留。</li>
         <li>每日轻复盘：记录最大一件好事（小赢 / 中赢 / 大赢）。</li>
         <li>纯本地存储（localStorage），无需服务器、无需登录，PWA 可加到主屏幕。</li>
@@ -818,6 +900,8 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
   </section>
 </main>
+<canvas id="fxCanvas"></canvas>
+<div class="mile-banner" id="mileBanner"></div>
 
 <nav class="bottomnav" id="bottomnav"></nav>
 
@@ -1067,12 +1151,12 @@ function bindSound(){
 
 /* ===== 导航 ===== */
 const TABS=[
- {id:'home',label:'首页',icon:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>'},
- {id:'focus',label:'点火',icon:'<path d="M12 3c2 4 5 6 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3-1-3 1-6 1-9z"/>'},
+ {id:'today',label:'今天',icon:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>'},
  {id:'chain',label:'星链',icon:'<path d="M9 15l6-6"/><path d="M11 6l1-1a3.5 3.5 0 0 1 5 5l-1 1"/><path d="M13 18l-1 1a3.5 3.5 0 0 1-5-5l1-1"/>'},
  {id:'review',label:'复盘',icon:'<path d="M5 4h14v16l-4-3-3 3-3-3-4 3z"/>'},
- {id:'log',label:'日志',icon:'<path d="M6 3h9l4 4v14H6z"/><path d="M9 9h7M9 13h7M9 17h4"/>'}
+ {id:'me',label:'我的',icon:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>'}
 ];
+const VIEW_TAB={home:'today',focus:'today',chain:'chain',review:'review',log:'me'};
 function buildNav(){
   const tn=$('#topnav'),bn=$('#bottomnav');tn.innerHTML='';bn.innerHTML='';
   TABS.forEach(t=>{
@@ -1082,16 +1166,21 @@ function buildNav(){
   });
 }
 function go(id){
-  if(!TABS.find(t=>t.id===id))id='home';
+  if(id==='today')id='home';
+  if(id==='me')id='log';
+  if(!document.getElementById('view-'+id))id='home';
   history.replaceState(null,'','#'+id);
   $$('.view').forEach(v=>v.classList.remove('on'));
   $('#view-'+id).classList.add('on');
-  $$('#topnav button').forEach((b,i)=>b.classList.toggle('on',TABS[i].id===id));
-  $$('#bottomnav button').forEach((b,i)=>b.classList.toggle('on',TABS[i].id===id));
+  const tabId=VIEW_TAB[id]||'today';
+  $$('#topnav button').forEach((b,i)=>b.classList.toggle('on',TABS[i].id===tabId));
+  $$('#bottomnav button').forEach((b,i)=>b.classList.toggle('on',TABS[i].id===tabId));
   window.scrollTo(0,0);
-  if(id==='focus')renderBackupBanner();
+  if(id==='home')renderTodayCard();
+  if(id==='focus'){renderBackupBanner();applySimpleMode();}
   if(id==='chain')renderChain();
   if(id==='review'){renderReview();if(reviewView==='policy')renderPolicyTree();}
+  if(id==='log'){renderBackupBanner();renderAutoBackupNote();}
 }
 window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
 
@@ -1110,8 +1199,8 @@ function updateSessionChrome(){
   if(!cur)return;
   const isRecon=cur.mode==='recon';
   $('#pauseBtn').textContent=cur.pauseTs?'继续':'暂停';
-  $('#stopBtn').textContent=isRecon?'结束侦查':'结束';
-  $('#ringState').textContent=cur.pauseTs?'已暂停':isRecon?'正在侦查':'星链燃烧中';
+  $('#stopBtn').textContent=isRecon?'结束热身':'结束';
+  $('#ringState').textContent=cur.pauseTs?'已暂停':isRecon?'正在热身':'星链燃烧中';
 }
 
 function tick(){
@@ -1187,6 +1276,7 @@ function startSession(mode){
     updateSessionChrome();
     stopReserve();
     startTick();startAmbient();igniting=false;
+    renderTodayCard();
   });
 }
 function ignite(){startSession('direct');}
@@ -1355,6 +1445,7 @@ function playIgnite(done){
 }
 
 function togglePause(){
+  renderTodayCard();
   if(cur.pauseTs){
     cur.pausedMs+=Date.now()-cur.pauseTs;cur.pauseTs=null;
     updateSessionChrome();
@@ -1389,8 +1480,8 @@ function finishRecon(status,targetMin=null){
   S.recons.push({id:Date.now(),task:cur.task,startedAt:cur.startTs,endedAt:Date.now(),
     seconds:Math.round(e/1000),status,targetMin,converted:status==='converted'});
   cur=null;S.session=null;clearInterval(T);save();showIdle();
-  if(status==='abandoned')toast('侦查已结束，主星链不受影响');
-  else if(status==='completed'){toast('5 分钟侦查完成，主星链不受影响');autoSatisfyPolicies('recon');}
+  if(status==='abandoned')toast('热身已结束，主星链不受影响');
+  else if(status==='completed'){toast('5 分钟热身完成，主星链不受影响');autoSatisfyPolicies('recon');}
 }
 function extendReconTo(minutes){
   if(!cur||cur.mode!=='recon')return;
@@ -1409,12 +1500,12 @@ function openReconDecision(){
   if(!cur.pauseTs){cur.pauseTs=Date.now();clearInterval(T);}
   S.session=cur;save();updateSessionChrome();
   let target=25;
-  openDialog('5 分钟侦查完成','你已经坐下来了。现在可以收在这里，也可以把这次侦查延长成一段正式专注。',
+  openDialog('5 分钟热身完成','你已经坐下来了。现在可以收在这里，也可以把这次热身延长成一段正式专注。',
     '<div class="recon-duration" id="reconDuration">'+
       [15,25,45,60].map(m=>`<button type="button" data-min="${m}" class="${m===25?'on':''}">${m} 分</button>`).join('')+
     '</div><button class="btn primary" id="reconExtend">延长为正式专注</button>'+
     '<button class="btn ghost" id="reconFinish" style="margin-top:10px">到此结束，不影响主链</button>'+
-    '<p class="muted" style="margin-top:8px">侦查本身只记录尝试，不增加主星链；延长后才按正式专注规则完成或收束。</p>',
+    '<p class="muted" style="margin-top:8px">热身本身只记录尝试，不增加主星链；延长后才按正式专注规则完成或收束。</p>',
     ()=>{
       $$('#reconDuration button').forEach(b=>b.onclick=()=>{
         $$('#reconDuration button').forEach(x=>x.classList.remove('on'));
@@ -1486,6 +1577,10 @@ function commitBlock(block){
   if(block.state==='whitelisted')toast('已立为判例，铸星 +1');
   if(block.state==='broken'){toast('链已断，从 #1 重新开始');takeAutoSnapshot();}
   if(isSuccessBlock(block))showOutcomeCard(block);else hideOutcomeCard();
+  renderTodayCard();
+  if(isSuccessBlock(block)&&(S.chain.currentNo===7||S.chain.currentNo===30||S.chain.currentNo===100)){
+    meteorShower('第 '+S.chain.currentNo+' 颗星 · 连成一小片星座');
+  }
 }
 
 function openDialog(title,desc,html,onMount){
@@ -1529,9 +1624,225 @@ function openJudge(e){
 }
 function closeJudge(){$('#judgeMask').classList.remove('on');}
 
+/* ===== v0.9.0：今天状态卡（唯一答案：现在该做什么） ===== */
+function todayWinBlocks(){const k=dayKey();return S.blocks.filter(b=>isSuccessBlock(b)&&dayKey(new Date(b.endedAt))===k);}
+function renderTodayCard(){
+  const box=$('#todayCard');if(!box)return;
+  const state=$('#tcState'),hint=$('#tcHint'),main=$('#tcMain'),links=$('#tcLinks'),dot=$('#tcDot');
+  if(!state||!main)return;
+  const wins=todayWinBlocks();
+  const brokenToday=S.blocks.some(b=>b.state==='broken'&&dayKey(new Date(b.endedAt))===dayKey());
+  let key='idle';
+  if(S.session)key=S.session.pauseTs?'paused':'running';
+  else if(S.reservation)key='reserved';
+  else if(wins.length)key='done';
+  else if(brokenToday)key='broken';
+  dot.className='tc-dot'+(key==='running'||key==='reserved'?' warm':key==='paused'?' cool':'');
+  links.innerHTML='';
+  const addLink=(label,fn)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=fn;links.appendChild(b);};
+  main.onclick=()=>{go('focus');setTimeout(()=>{const t=$('#taskInput');if(t&&!S.session){try{t.focus({preventScroll:true});}catch(e){}}},260);};
+  if(key==='running'){
+    state.textContent='正在专注 · 还剩 '+fmt(Math.max(0,planMs()-elapsedMs())/1000);
+    hint.textContent='你已经在场上了，不需要再做决定。';
+    main.textContent='回到计时';
+  }else if(key==='paused'){
+    state.textContent='计时已暂停';
+    hint.textContent='接着来，或者直接结束；断链也不清零。';
+    main.textContent='继续专注';
+  }else if(key==='reserved'){
+    state.textContent='已预约入座';
+    hint.textContent='到点之前不用想它；时间到了回来点火就算准时。';
+    main.textContent='去入座';
+    addLink('取消预约',()=>{S.reservation=null;save();applySimpleMode();renderTodayCard();});
+  }else if(key==='done'){
+    const b=wins[wins.length-1];
+    state.textContent='今天已铸星 #'+S.chain.currentNo;
+    hint.textContent='这颗星已经接进星链了。'+(b&&b.outcome?('推进：'+b.outcome):'再补一句推进，会更像自己的档案。');
+    main.textContent='再来一颗';
+    if(b&&!b.outcome)addLink('补一句推进',()=>{go('focus');setTimeout(()=>{try{showOutcomeCard(b);}catch(e){}},280);});
+    addLink('去星链看看',()=>go('chain'));
+    addLink('写今日复盘',()=>go('review'));
+  }else if(key==='broken'){
+    state.textContent='今天断了一次';
+    hint.textContent='历史最长 #'+S.chain.bestNo+' 还在；断链只是从 #1 重新开始，不是从头否定。';
+    main.textContent='现在重新点火';
+  }else{
+    state.textContent='今天还没点火';
+    hint.textContent='先坐下，再做一件小事。25 分钟起；不想开始就选 5 分钟热身。';
+    main.textContent='点火 · 25 分钟';
+    addLink('5 分钟热身',()=>{go('focus');setTimeout(()=>{const b=document.querySelector('#protocolTabs button[data-mode="recon"]');if(b)b.click();},260);});
+  }
+}
+
+/* ===== v0.9.0：里程碑流星雨（只奖励，不施压） ===== */
+let mileFxRaf=null,mileFxParts=[];
+function meteorShower(text){
+  const cv=$('#fxCanvas');if(!cv)return;
+  const wantMove=!window.matchMedia||!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const banner=$('#mileBanner');
+  if(banner){banner.textContent=text;banner.classList.add('on');setTimeout(()=>banner.classList.remove('on'),2600);}
+  if(!wantMove)return;
+  const ctx=cv.getContext('2d');if(!ctx)return;
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';
+  cv.style.display='block';ctx.setTransform(dpr,0,0,dpr,0,0);
+  mileFxParts=[];
+  const n=70;
+  for(let i=0;i<n;i++){
+    const sp=3+Math.random()*5;
+    mileFxParts.push({x:Math.random()*innerWidth*1.2-innerWidth*.1,y:Math.random()*innerHeight*.3-40,
+      vx:sp*.8,vy:sp,life:1,gold:Math.random()>.3});
+  }
+  cancelAnimationFrame(mileFxRaf);
+  const draw=()=>{
+    let alive=false;
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    mileFxParts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.life-=.006;
+      if(p.life>0&&p.y<innerHeight+60){
+        alive=true;
+        ctx.globalAlpha=Math.max(0,p.life);
+        ctx.strokeStyle=p.gold?'rgba(255,230,173,.35)':'rgba(207,224,255,.3)';
+        ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-p.vx*6,p.y-p.vy*6);ctx.stroke();
+        ctx.fillStyle=p.gold?'#ffe6ad':'#cfe0ff';
+        ctx.beginPath();ctx.arc(p.x,p.y,1.7,0,7);ctx.fill();
+      }
+    });
+    ctx.globalAlpha=1;
+    if(alive){mileFxRaf=requestAnimationFrame(draw);}
+    else{cv.style.display='none';ctx.clearRect(0,0,innerWidth,innerHeight);}
+  };
+  draw();
+}
+
+/* ===== v0.9.0：星链长卷（最近 60 颗，可横滑、点星回看） ===== */
+function renderChainLong(){
+  const svg=$('#chainLong');if(!svg)return;
+  const NS='http://www.w3.org/2000/svg';
+  const items=S.blocks.slice(-60);
+  if(!items.length){
+    svg.innerHTML='';svg.setAttribute('width','100%');svg.setAttribute('height','180');
+    svg.setAttribute('viewBox','0 0 360 180');
+    const tx=document.createElementNS(NS,'text');
+    tx.setAttribute('x','180');tx.setAttribute('y','96');tx.setAttribute('text-anchor','middle');
+    tx.setAttribute('fill','rgba(200,212,236,.5)');tx.setAttribute('font-size','13');
+    tx.textContent='还没有星，去点第一簇火吧';svg.appendChild(tx);
+    const det=$('#chainDetail');if(det)det.innerHTML='';
+    return;
+  }
+  const GAP=72,H=204;
+  const sc0=$('#chainScroll'),viewW=sc0?sc0.clientWidth:0;
+  const span=(items.length-1)*GAP;
+  const PAD=Math.max(44,viewW>span?Math.round((viewW-span)/2)-30:44);
+  const W=Math.max(PAD*2+span+60,viewW||320);
+  svg.innerHTML='';svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  const baseY=112;
+  const pos=items.map((b,i)=>({b,x:PAD+i*GAP,y:baseY+((i%3)-1)*9}));
+  const color={done:'#ffe6ad',settled:'rgba(246,220,155,.7)',whitelisted:'#9fc6ff',broken:'#545f80'};
+  for(let i=1;i<pos.length;i++){
+    const a=pos[i-1],c=pos[i],broken=c.b.state==='broken';
+    const p=document.createElementNS(NS,'path');
+    p.setAttribute('d','M'+a.x+' '+a.y+'L'+c.x+' '+c.y);
+    p.setAttribute('fill','none');p.setAttribute('class','link');
+    p.setAttribute('stroke',broken?'rgba(140,152,184,.25)':'rgba(246,220,155,.5)');
+    p.setAttribute('stroke-width','1.3');
+    if(broken){p.setAttribute('stroke-dasharray','3 6');}
+    else{
+      const len=Math.hypot(c.x-a.x,c.y-a.y);
+      p.setAttribute('stroke-dasharray',String(len));
+      p.setAttribute('stroke-dashoffset',String(window.__chainNoGrow?0:len));
+      p.dataset.len=String(len);
+    }
+    svg.appendChild(p);
+  }
+  pos.forEach((s,i)=>{
+    const b=s.b,broken=b.state==='broken';
+    const r=broken?3.2:3.4+Math.min(3.2,((Number(b.planMin)||25)-25)/12);
+    if(!broken){
+      const halo=document.createElementNS(NS,'circle');
+      halo.setAttribute('cx',s.x);halo.setAttribute('cy',s.y);halo.setAttribute('r',r+7);
+      halo.setAttribute('fill',b.state==='whitelisted'?'rgba(159,198,255,.18)':'rgba(246,220,155,.15)');
+      svg.appendChild(halo);
+    }
+    const c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',s.x);c.setAttribute('cy',s.y);c.setAttribute('r',r);
+    c.setAttribute('class','star');c.dataset.i=String(i);
+    if(broken){c.setAttribute('fill','none');c.setAttribute('stroke',color.broken);c.setAttribute('stroke-width','1.4');}
+    else{c.setAttribute('fill',color[b.state]||color.done);c.style.filter='drop-shadow(0 0 9px rgba(255,230,173,.75))';}
+    c.style.opacity=window.__chainNoGrow?1:0;
+    c.style.cursor='pointer';
+    c.addEventListener('click',()=>showChainLongDetail(b));
+    svg.appendChild(c);
+    const dt=new Date(b.endedAt);
+    const tx=document.createElementNS(NS,'text');
+    tx.setAttribute('x',s.x);tx.setAttribute('y',s.y+26);tx.setAttribute('text-anchor','middle');
+    tx.setAttribute('fill','rgba(210,220,240,.5)');tx.setAttribute('font-size','10');
+    tx.setAttribute('class','lbl');
+    tx.textContent=broken?'断了':((dt.getMonth()+1)+'.'+dt.getDate());
+    svg.appendChild(tx);
+  });
+  if(!window.__chainNoGrow){
+    const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduce){svg.querySelectorAll('.star').forEach(c=>c.style.opacity=1);}
+    else{
+      svg.querySelectorAll('.star').forEach((c,i)=>{
+        c.style.transition='opacity .4s ease, transform .45s cubic-bezier(.23,1,.32,1)';
+        c.style.transform='scale(.92)';c.style.transformBox='fill-box';c.style.transformOrigin='center';
+        c.style.transitionDelay=(i*.04)+'s';
+        requestAnimationFrame(()=>{c.style.opacity=1;c.style.transform='scale(1)';});
+      });
+      svg.querySelectorAll('.link').forEach((p,i)=>{
+        const len=p.dataset.len;if(!len)return;
+        p.style.transition='stroke-dashoffset .7s cubic-bezier(.23,1,.32,1)';
+        p.style.transitionDelay=(i*.04)+'s';
+        requestAnimationFrame(()=>{p.style.strokeDashoffset='0';});
+      });
+    }
+  }
+  const sc=$('#chainScroll');if(sc)sc.scrollLeft=sc.scrollWidth;
+}
+function showChainLongDetail(b){
+  const box=$('#chainDetail');if(!box)return;
+  const d=new Date(b.endedAt);
+  const st=blockStateLabel(b);
+  box.innerHTML='';
+  const title=document.createElement('b');title.textContent=b.task||'一次专注';box.appendChild(title);
+  const meta=document.createElement('div');meta.className='muted';
+  meta.textContent=(d.getMonth()+1)+' 月 '+d.getDate()+' 日 · '+b.planMin+' 分钟计划 · 实际 '+Math.round((b.actualSec||0)/60)+' 分 · '+st;
+  box.appendChild(meta);
+  if(b.outcome){const oc=document.createElement('div');oc.className='outcome-line';oc.textContent='推进：'+b.outcome;box.appendChild(oc);}
+}
+
+/* ===== v0.9.0：星图连线（点亮的日子连成星路） ===== */
+function drawMapLines(){
+  const wrap=$('#starMap');if(!wrap)return;
+  const card=wrap.closest('.card');if(!card)return;
+  const old=card.querySelector('svg.map-lines');if(old)old.remove();
+  const cr=card.getBoundingClientRect();if(!cr.width)return;
+  const NS='http://www.w3.org/2000/svg';
+  const s=document.createElementNS(NS,'svg');
+  s.setAttribute('class','map-lines');s.setAttribute('aria-hidden','true');
+  s.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3';
+  const pts=[...wrap.querySelectorAll('.map-day.has-star')].map(c=>{
+    const r=c.getBoundingClientRect();
+    return {x:r.left-cr.left+r.width/2,y:r.top-cr.top+r.height/2};
+  });
+  if(pts.length>1){
+    const d=pts.map((q,i)=>(i?'L':'M')+q.x.toFixed(1)+' '+q.y.toFixed(1)).join(' ');
+    const path=document.createElementNS(NS,'path');
+    path.setAttribute('d',d);path.setAttribute('fill','none');
+    path.setAttribute('stroke','rgba(255,230,173,.7)');path.setAttribute('stroke-width','1.4');
+    path.setAttribute('stroke-dasharray','4 5');
+    s.appendChild(path);
+  }
+  s.style.position='absolute';
+  card.style.position='relative';
+  card.appendChild(s);
+}
+
 /* ===== 星链渲染 ===== */
 function renderChain(){
-  renderChainNet();
+  renderChainLong();
   renderStarMap();
   renderFocusStats();
   renderStartupStats();
@@ -1555,7 +1866,7 @@ function renderChain(){
     const main=document.createElement('div');main.className='p-main';
     const title=document.createElement('b');title.textContent=p.reason;main.appendChild(title);
     const meta=document.createElement('div');meta.className='p-meta';
-    const date=p.createdAt?new Date(p.createdAt).toLocaleDateString():'旧版白名单';
+    const date=p.createdAt?new Date(p.createdAt).toLocaleDateString():'旧版判例';
     meta.textContent=`${date} · 使用 ${Number(p.usedCount)||0} 次 · ${p.scope==='task'?'任务范围':'全局永久'}`;
     main.appendChild(meta);row.appendChild(main);
     const retire=document.createElement('button');retire.type='button';retire.textContent='撤回';
@@ -1578,6 +1889,7 @@ function showChainView(view){
   $('#chainPanel').classList.toggle('on',chainView==='chain');
   $('#mapPanel').classList.toggle('on',chainView==='map');
   $('#statsPanel').classList.toggle('on',chainView==='stats');
+  if(chainView==='map')requestAnimationFrame(drawMapLines);
 }
 function bindChainViews(){$$('#chainTabs button').forEach(b=>b.onclick=()=>showChainView(b.dataset.chainView));}
 function localDayStart(daysAgo){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-daysAgo);return d;}
@@ -1627,8 +1939,8 @@ function renderStartupStats(){
   const arriveRate=appointments.length?Math.round(arrived/appointments.length*100):0;
   const card=(n,l,extra='')=>`<div class="stat${extra}"><div class="n">${escHtml(n)}</div><div class="l">${escHtml(l)}</div></div>`;
   box.innerHTML=card(S.startup.currentNo+' 次','连续启动')+card(S.startup.bestNo+' 次','最长启动')+
-    card(direct+' 次','直接点火')+card(recon.length+' 次','侦查尝试')+
-    card(converted+' 次 · '+rate+'%','侦查转正式')+card(arrived+' 次 · '+arriveRate+'%','预约守时');
+    card(direct+' 次','直接点火')+card(recon.length+' 次','热身尝试')+
+    card(converted+' 次 · '+rate+'%','热身转正式')+card(arrived+' 次 · '+arriveRate+'%','预约守时');
 }
 
 /* ===== 星河链路：当前链燃烧，最长链留在远处 ===== */
@@ -1713,7 +2025,7 @@ const POLICY_TEMPLATES=[
   {title:'饭后收尾',category:'环境',mode:'semi-passive',autoSource:null,trigger:'在家吃完饭时',rule:'先洗碗，再开始下一件事。'},
   {title:'电子宵禁',category:'作息',mode:'passive',autoSource:null,trigger:'每天 23:00 后',rule:'手机屏幕切换为黑白模式，短视频应用退出。'},
   {title:'书桌边界',category:'专注',mode:'semi-passive',autoSource:null,trigger:'坐到书桌前学习时',rule:'手机离开桌面或放进抽屉。'},
-  {title:'低阻力启动',category:'专注',mode:'active',autoSource:'recon',trigger:'不想开始但任务已经明确时',rule:'先完成一次 5 分钟侦查。'},
+  {title:'低阻力启动',category:'专注',mode:'active',autoSource:'recon',trigger:'不想开始但任务已经明确时',rule:'先完成一次 5 分钟热身。'},
   {title:'完成一段专注',category:'专注',mode:'active',autoSource:'focus',trigger:'当天已经点火时',rule:'至少完成一段正式专注。'},
   {title:'每日留痕',category:'恢复',mode:'active',autoSource:'review',trigger:'当天打开复盘页时',rule:'写下至少一句好事、想法或感受。'}
 ];
@@ -1853,8 +2165,8 @@ function openPolicyFailureDialog(nodeId){
   openDialog('国策未守住 · 由你决定',
     `「${node.title}」及其后续 ${childCount} 个子节点需要处理。熄灭会保留内化进度；冻结只适合短期的不可抗力。`,
     `<button class="btn danger" id="policyExtinguish">熄灭这个分支及其子节点</button>
-     <button class="btn ghost" id="policyFreeze1" style="margin-top:9px">水密隔舱 · 冻结 1 天</button>
-     <button class="btn ghost" id="policyFreeze3" style="margin-top:9px">水密隔舱 · 冻结 3 天</button>
+     <button class="btn ghost" id="policyFreeze1" style="margin-top:9px">冻结 1 天（隔离保护）</button>
+     <button class="btn ghost" id="policyFreeze3" style="margin-top:9px">冻结 3 天（隔离保护）</button>
      <p class="muted" style="margin-top:8px">冻结到期后必须回到这里恢复或熄灭，不能无限延期。</p>`,
     ()=>{
       $('#policyExtinguish').onclick=()=>{closeJudge();extinguishPolicyBranch(nodeId,'failed');};
@@ -2111,7 +2423,7 @@ function importBackupFile(file){
       Object.keys(incoming.reviews).forEach(k=>{if(!S.reviews[k]){S.reviews[k]=incoming.reviews[k];addedReviews++;}});
       rebuildChain(Math.max(oldBest,Number(incomingBest)||0));save();takeAutoSnapshot();renderChain();renderReview();if(reviewView==='policy')renderPolicyTree();
       renderAutoBackupNote();
-      $('#backupStatus').textContent=`已合并：新增 ${addedBlocks} 段专注、${addedReviews} 条复盘、${addedRecons} 次侦查、${addedAppointments} 条预约、${addedPrecedents} 条判例、${addedPolicies} 个国策；重复记录已跳过。`;
+      $('#backupStatus').textContent=`已合并：新增 ${addedBlocks} 段专注、${addedReviews} 条复盘、${addedRecons} 次热身、${addedAppointments} 条预约、${addedPrecedents} 条判例、${addedPolicies} 个国策；重复记录已跳过。`;
     }catch(e){$('#backupStatus').textContent='这不是可识别的星火专注 Pro 备份文件，当前数据没有改动。';}
   };
   reader.readAsText(file,'utf-8');
@@ -2300,7 +2612,7 @@ function renderPoemBook(){
 
 /* ===== 初始化 ===== */
 buildNav();bindFocus();bindSimple();bindSound();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();restore();
-applySimpleMode();renderBackupBanner();renderPoemOfDay();renderPoemBook();
+applySimpleMode();renderBackupBanner();renderPoemOfDay();renderPoemBook();renderTodayCard();
 go(location.hash.slice(1)||'home');
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
