@@ -314,6 +314,47 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .bottomnav button svg{width:22px;height:22px}
 .bottomnav button.on{color:var(--gold-hi)}
 
+/* ===== 极简点火（默认，高级功能折叠）===== */
+#advancedWrap{display:none}
+#focusCard.advanced #advancedWrap{display:block}
+#focusCard.advanced #simpleMain{display:none}
+#simpleMain{margin-top:12px}
+.btn-xl{padding:17px 20px;font-size:17px;min-height:56px;letter-spacing:.06em;
+  box-shadow:0 8px 26px rgba(232,145,91,.25)}
+.btn.linklike{background:transparent;border:0;color:var(--ink3);font-size:12.5px;min-height:38px;
+  margin-top:6px;text-decoration:underline;text-underline-offset:3px}
+.btn.linklike:hover{background:transparent;color:var(--gold-hi)}
+#simpleCollapseBtn{margin-top:14px}
+
+/* 备份提醒横幅 */
+.backup-banner{margin:12px 0 4px;padding:12px 14px;border:1px dashed rgba(242,198,109,.42);
+  border-radius:12px;background:rgba(242,198,109,.08)}
+.backup-banner .bb-text{font-size:12.5px;line-height:1.7;color:var(--ink2);margin-bottom:10px}
+.backup-banner .bb-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.backup-banner .btn{min-height:40px;padding:8px 12px;font-size:13px}
+/* 收束产出：非模态补记卡片（不打断奖励时刻） */
+.outcome-card{display:none;margin:10px 0 2px;padding:12px 14px;border:1px dashed rgba(242,198,109,.42);
+  border-radius:12px;background:rgba(242,198,109,.07)}
+.outcome-card.on{display:block}
+.outcome-card .oc-head{font-size:12.5px;line-height:1.7;color:var(--ink2);margin-bottom:8px}
+.outcome-card #outcomeInput{width:100%}
+.outcome-card .oc-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.outcome-card .oc-btns .btn{min-height:40px;padding:8px 12px;font-size:13px}
+.outcome-line{font-size:12px;color:var(--gold-hi);margin-top:3px;line-height:1.7}
+
+/* 星月诗笺：今日星语 + 诗笺卡 */
+.poem-of-day{margin:0 0 10px;font-family:var(--serif);font-size:13px;line-height:1.9;color:var(--gold-hi);
+  opacity:.9;letter-spacing:.03em}
+.poem-of-day .poem-from{display:block;font-size:11px;color:var(--ink3);letter-spacing:.06em;margin-top:2px}
+.poem-book{margin-top:16px}
+.poem-book summary{cursor:pointer;font-family:var(--serif);font-size:16px;color:var(--gold-hi);letter-spacing:.06em;
+  min-height:44px;display:flex;align-items:center}
+.poem-book[open] summary{margin-bottom:6px}
+.poem-list{list-style:none;margin:6px 0 0}
+.poem-list li{padding:9px 0;border-bottom:1px solid var(--line2);font-family:var(--serif);font-size:14px;line-height:1.85}
+.poem-list li:last-child{border-bottom:0}
+.poem-list .poem-from{display:block;font-family:var(--sans);font-size:11px;color:var(--ink3);margin-top:2px}
+
 @media(min-width:860px){
   body{padding-bottom:24px}
   .topnav{display:flex}
@@ -408,19 +449,46 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
       <p class="protocol-source">启动协议与判例机制受到 edmond《如何提高自制力？》中 CTDP / RSIP 方法的启发。它是行为训练工具，不替代专业医疗建议。<a href="https://www.zhihu.com/question/19888447/answer/1930799480401293785" target="_blank" rel="noopener">查看理论来源</a></p>
     </div>
 
+    <details class="card poem-book" id="poemBook">
+      <summary>星月诗笺 · 拾句</summary>
+      <p class="muted">从古人的夜空里借几句话：点火之前读一句，完成之后再读一句。</p>
+      <ul class="poem-list" id="poemBookList"></ul>
+    </details>
+
     <div class="poem">星星之火，可以燎原。</div>
   </section>
   <section id="view-focus" class="view">
     <!-- 待点火 -->
     <div id="focusIdle">
-      <div class="card">
+      <div class="card" id="focusCard">
+        <p class="poem-of-day" id="poemOfDay"></p>
         <h3>这次怎么开始</h3>
+        <div id="backupBanner" class="backup-banner" style="display:none">
+          <div class="bb-text" id="backupBannerText"></div>
+          <div class="bb-btns">
+            <button class="btn primary" id="bbExport" type="button">立即备份</button>
+            <button class="btn ghost" id="bbSnooze" type="button">稍后</button>
+          </div>
+        </div>
+        <input class="input" id="taskInput" placeholder="这次只做一件事，例如：高数第三章习题" maxlength="30">
+        <div id="outcomeCard" class="outcome-card">
+          <div class="oc-head" id="outcomeHint"></div>
+          <input class="input" id="outcomeInput" maxlength="60" placeholder="例如：高数 P120 三道题 / 背完六级高频词 30 个">
+          <div class="oc-btns">
+            <button class="btn ghost" id="outcomeSkip" type="button">跳过</button>
+            <button class="btn primary" id="outcomeSave" type="button">记下</button>
+          </div>
+        </div>
+        <div id="simpleMain">
+          <button class="btn primary btn-xl" id="simpleIgniteBtn" type="button">点火 · 25 分钟</button>
+          <button class="btn linklike" id="simpleMoreBtn" type="button">更多启动方式（5 分钟侦查 · 预约 · 时长 · 静场）▾</button>
+        </div>
+        <div id="advancedWrap">
         <div class="seg protocol-tabs" id="protocolTabs">
           <button class="on" data-mode="direct">立即点火</button>
           <button data-mode="recon">5 分钟侦查</button>
           <button data-mode="reserve">预约入座</button>
         </div>
-        <input class="input" id="taskInput" placeholder="这次只做一件事，例如：高数第三章习题" maxlength="30">
         <div id="durationBlock">
           <h4>正式专注时长</h4>
           <div class="seg" id="durSeg">
@@ -469,6 +537,8 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
             </div>
             <p class="protocol-note" id="soundHint">白噪更清晰，粉噪更柔和，棕噪更低沉。声音只在本地生成。</p>
           </div>
+        </div>
+        <button class="btn linklike" id="simpleCollapseBtn" type="button">▴ 收起，回到极简</button>
         </div>
       </div>
       <p class="muted" style="text-align:center">先让身体坐下，再等状态出现。</p>
@@ -621,9 +691,19 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <input class="file-input" id="importFile" type="file" accept="application/json,.json">
       </div>
       <p class="muted" id="backupStatus" style="margin-top:8px">备份不包含正在进行的计时与预约入座。</p>
+      <p class="muted" id="autoBackupNote" style="margin-top:6px"></p>
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v0.7.0</div>
+      <div class="logdate">2026-10-22</div>
+      <ul class="loglist">
+        <li>极简点火：默认只留任务输入和一个「点火 · 25 分钟」按钮；三种启动协议、时长、静场收进「更多启动方式」，选择会被记住；预约进行中自动展开，结束后回到极简。</li>
+        <li>铸星后补一句「这次推进了什么」：用不打断的非模态卡片，可跳过；先落库再问，关页面也不会丢这颗星；成果可在星链点星、星图当天详情里回看。</li>
+        <li>数据自动备份：本机自动快照（最新 + 最近 6 次结束状态），主数据写坏可自愈；空间不足时自动降级并明确提示，主数据损坏会另存坏档；超过 7 天未导出时点火页温和提醒，日志页显示上次导出时间。</li>
+        <li>星月诗笺：点火页每天一句「今日星语」，首页新增可展开的十句星月诗笺。</li>
+        <li>备份包版本升到 5，旧备份仍可导入合并，并带上成果与上次导出时间。</li>
+      </ul>
       <div class="logver">v0.6.0</div>
       <div class="logdate">2026-10-21</div>
       <ul class="loglist">
@@ -721,16 +801,37 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 
 /* ===== 本地存储 ===== */
 const KEY='starspark_focuspro_v1';
+const AUTO_KEY='starspark_focuspro_v1__auto';   // 本机自动快照（防写坏，可自愈）
 const defaultState=()=>({
   chain:{currentNo:0,bestNo:0,genesis:null},
   blocks:[],whitelist:[],precedents:[],reservation:null,appointments:[],recons:[],
   startup:{currentNo:0,bestNo:0,lastAt:null},
-  settings:{sound:{enabled:false,type:'white',volume:22}},
+  settings:{sound:{enabled:false,type:'white',volume:22},simpleMode:true},
+  meta:{lastExportAt:null,backupSnoozeAt:null},
   policyTree:{version:1,nodes:[],freezes:[],checks:{},events:[],lastAddDay:null},
   reviews:{},session:null
 });
-let S=(function(){try{const r=JSON.parse(localStorage.getItem(KEY));return r?Object.assign(defaultState(),r):defaultState();}catch(e){return defaultState();}})();
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function loadInitialState(){
+  try{
+    const r=JSON.parse(localStorage.getItem(KEY));
+    if(r)return Object.assign(defaultState(),r);
+    return defaultState();
+  }catch(e){
+    // 主数据损坏：先把坏档另存一份，再尝试从本机自动快照自愈（随后 hydrateState 会规范化）
+    try{localStorage.setItem(KEY+'__corrupt',localStorage.getItem(KEY)||'');}catch(e0){}
+    try{
+      const auto=JSON.parse(localStorage.getItem(AUTO_KEY));
+      const data=auto&&auto.latest&&auto.latest.data;
+      if(data&&Array.isArray(data.blocks)){setTimeout(()=>toast('主数据异常，已从本机自动快照恢复；坏档已另存一份'),300);return data;}
+    }catch(e2){}
+    return defaultState();
+  }
+}
+let S=loadInitialState();
+let saveWarned=false;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));saveWarned=false;}catch(e){
+  if(!saveWarned){saveWarned=true;try{toast('浏览器存储空间不足，这次可能没保存，请尽快导出备份');}catch(e2){}}
+}}
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const SUCCESS_STATES=new Set(['done','settled','whitelisted']);
@@ -758,6 +859,8 @@ function hydrateState(){
   S.settings.sound=Object.assign({enabled:false,type:'white',volume:22},S.settings.sound||{});
   if(!['white','pink','brown'].includes(S.settings.sound.type))S.settings.sound.type='white';
   S.settings.sound.volume=Math.min(60,Math.max(0,Number(S.settings.sound.volume)||22));
+  S.settings.simpleMode=S.settings.simpleMode!==false;
+  S.meta=Object.assign({lastExportAt:null,backupSnoozeAt:null},S.meta||{});
   S.policyTree=Object.assign({version:1,nodes:[],freezes:[],checks:{},events:[],lastAddDay:null},S.policyTree||{});
   S.policyTree.nodes=Array.isArray(S.policyTree.nodes)?S.policyTree.nodes:[];
   S.policyTree.nodes=S.policyTree.nodes.filter(n=>n&&n.id).map(n=>({
@@ -940,6 +1043,7 @@ function go(id){
   $$('#topnav button').forEach((b,i)=>b.classList.toggle('on',TABS[i].id===id));
   $$('#bottomnav button').forEach((b,i)=>b.classList.toggle('on',TABS[i].id===id));
   window.scrollTo(0,0);
+  if(id==='focus')renderBackupBanner();
   if(id==='chain')renderChain();
   if(id==='review'){renderReview();if(reviewView==='policy')renderPolicyTree();}
 }
@@ -1015,6 +1119,7 @@ function finalizeAppointment(status){
 }
 function startSession(mode){
   if(igniting)return;
+  hideOutcomeCard();
   prepareAmbientGesture();
   const task=$('#taskInput').value.trim();
   cur={id:Date.now(),planMin:mode==='recon'?5:planMin,task,startTs:null,pausedMs:0,
@@ -1122,25 +1227,68 @@ function openReconDecision(){
       $('#reconFinish').onclick=()=>{closeJudge();finishRecon('completed');};
     });
 }
+const WIN_KINDS=new Set(['done','settled','whitelisted']);
 function finish(kind,reason,endedBy){
+  if(!cur)return;
+  clearInterval(T);
+  if(!cur.pauseTs)cur.pauseTs=Date.now();   // 固定计时，结算期间不再走动
+  stopAmbient();
   const e=elapsedMs();
   const block={id:Date.now(),task:cur.task,planMin:cur.planMin,actualSec:Math.round(e/1000),
     ignitedAt:cur.startTs,endedAt:Date.now(),onTime:cur.onTime,state:kind,reason:reason||null,
     endedBy:endedBy||'timer',completedRatio:Math.min(1,Math.round(e/planMs()*1000)/1000),
-    startedFrom:cur.extendedFrom==='recon'?'recon':cur.startedFrom||'direct'};
+    startedFrom:cur.extendedFrom==='recon'?'recon':cur.startedFrom||'direct',outcome:''};
+  commitBlock(block);
+}
+/* 铸星后补一句「这次推进了什么」：非模态卡片，先落库再问，关页面也不会丢这颗星 */
+let currentOutcomeBlock=null;
+function showOutcomeCard(block){
+  const card=$('#outcomeCard');if(!card||!block)return;
+  currentOutcomeBlock=block;
+  const input=$('#outcomeInput');if(input)input.value='';
+  const label=block.state==='done'?'完整完成':block.state==='settled'?'提前收束':'判例铸星';
+  const hint=$('#outcomeHint');
+  if(hint)hint.textContent=label+'，星链 +1。给刚才这颗星补一句推进（可跳过）。';
+  card.classList.add('on');
+  setTimeout(()=>{try{input.focus({preventScroll:true});}catch(e){}},120);
+}
+function hideOutcomeCard(){
+  const card=$('#outcomeCard');if(card)card.classList.remove('on');
+  currentOutcomeBlock=null;
+}
+function saveOutcome(){
+  if(!currentOutcomeBlock){hideOutcomeCard();return;}
+  const v=($('#outcomeInput').value||'').trim().slice(0,60);
+  if(!v){toast('没写也没关系，这颗星照样算');hideOutcomeCard();return;}
+  currentOutcomeBlock.outcome=v;save();
+  takeAutoSnapshot();   // 让快照也包含刚补的成果，主数据写坏时不会丢这句话
+  toast('已记下推进，星图里能看到');
+  hideOutcomeCard();
+}
+function bindOutcomeCard(){
+  const s=$('#outcomeSave'),k=$('#outcomeSkip'),i=$('#outcomeInput');
+  if(s)s.onclick=saveOutcome;
+  if(k)k.onclick=()=>{toast('已跳过，这颗星照样算');hideOutcomeCard();};
+  if(i)i.onkeydown=ev=>{if(ev.key==='Enter'){ev.preventDefault();saveOutcome();}};
+}
+/* 落库：铸星 / 断链 / 自动快照；成果可以稍后再补，绝不挡在落库前面 */
+function commitBlock(block){
+  if(!block)return;
+  block.outcome=String(block.outcome||'').trim().slice(0,60);
   S.blocks.push(block);
   if(isSuccessBlock(block)){
     S.chain.currentNo+=1;
-    if(!S.chain.genesis)S.chain.genesis=cur.startTs;
+    if(!S.chain.genesis)S.chain.genesis=block.ignitedAt;
     if(S.chain.currentNo>S.chain.bestNo)S.chain.bestNo=S.chain.currentNo;
   }
-  if(kind==='broken')S.chain.currentNo=0;
-  stopAmbient();cur=null;S.session=null;clearInterval(T);save();showIdle();
-  if(isSuccessBlock(block))autoSatisfyPolicies('focus');
-  if(kind==='done')toast('完整完成，铸星成功，星链 +1');
-  if(kind==='settled')toast('提前收束已记录，铸星 +1');
-  if(kind==='whitelisted')toast('已立为判例，铸星 +1');
-  if(kind==='broken')toast('链已断，从 #1 重新开始');
+  if(block.state==='broken')S.chain.currentNo=0;
+  cur=null;S.session=null;save();showIdle();applySimpleMode();
+  if(isSuccessBlock(block)){autoSatisfyPolicies('focus');takeAutoSnapshot();}
+  if(block.state==='done')toast('完整完成，铸星成功，星链 +1');
+  if(block.state==='settled')toast('提前收束已记录，铸星 +1');
+  if(block.state==='whitelisted')toast('已立为判例，铸星 +1');
+  if(block.state==='broken'){toast('链已断，从 #1 重新开始');takeAutoSnapshot();}
+  if(isSuccessBlock(block))showOutcomeCard(block);else hideOutcomeCard();
 }
 
 function openDialog(title,desc,html,onMount){
@@ -1257,7 +1405,9 @@ function renderDayDetail(key){
   box.innerHTML='';const h=document.createElement('h4');h.textContent=key;box.appendChild(h);
   if(!items.length){const p=document.createElement('p');p.className='muted';p.textContent='这一天没有留下专注记录。';box.appendChild(p);return;}
   items.forEach(b=>{const row=document.createElement('div');row.className='day-row';const title=document.createElement('b');title.textContent=b.task||'未填写任务';row.appendChild(title);
-    const meta=document.createElement('div');meta.className='muted';meta.textContent=`${b.planMin} 分钟计划 · 实际 ${Math.round(b.actualSec/60)} 分 · ${blockStateLabel(b)}`;row.appendChild(meta);box.appendChild(row);});
+    const meta=document.createElement('div');meta.className='muted';meta.textContent=`${b.planMin} 分钟计划 · 实际 ${Math.round(b.actualSec/60)} 分 · ${blockStateLabel(b)}`;row.appendChild(meta);
+    if(b.outcome){const oc=document.createElement('div');oc.className='outcome-line';oc.textContent='推进：'+b.outcome;row.appendChild(oc);}
+    box.appendChild(row);});
 }
 function minutesFor(blocks){return Math.round(blocks.reduce((n,b)=>n+(Number(b.actualSec)||0),0)/60);}
 function renderFocusStats(){
@@ -1307,13 +1457,15 @@ function starTitle(block,index,total){
   const time=new Date(block.endedAt).toLocaleString();
   const task=block.task||'未填写任务';
   const kind=blockStateLabel(block);
-  return `第 ${index+1} 颗星 · ${task} · ${block.actualSec/60|0} 分 · ${kind} · ${time}`;
+  const out=block.outcome?` · 推进：${block.outcome}`:'';
+  return `第 ${index+1} 颗星 · ${task} · ${block.actualSec/60|0} 分 · ${kind}${out} · ${time}`;
 }
 function showStarDetail(index,total){
   const block=currentChainBlocks()[index];
   if(!block){toast(`第 ${index+1} 颗星 · 当前星链第 ${index+1}/${total}`);return;}
   const kind=blockStateLabel(block);
-  toast(`第 ${index+1} 颗星 · ${block.task||'专注'} · ${block.actualSec/60|0} 分 · ${kind}`);
+  const out=block.outcome?` · 推进：${block.outcome}`:'';
+  toast(`第 ${index+1} 颗星 · ${block.task||'专注'} · ${block.actualSec/60|0} 分 · ${kind}${out}`);
 }
 function renderChainNet(){
   const box=$('#chainNet');
@@ -1624,9 +1776,64 @@ function bindReview(){
 }
 
 /* ===== 本地备份：只合并已完成的数据，不带正在计时状态 ===== */
-const BACKUP_SCHEMA='starspark_focuspro_backup',BACKUP_VERSION=4;
+const BACKUP_SCHEMA='starspark_focuspro_backup',BACKUP_VERSION=5;
 function persistentSnapshot(){
   const data=JSON.parse(JSON.stringify(S));data.session=null;data.reservation=null;return data;
+}
+/* 本机自动快照：每次铸星/断链后留存“最新 + 最近 6 个历史状态”，
+   可在主数据写坏时自愈。注意：清除浏览器数据会连同本快照一起删除，
+   真正防清缓存仍需定期导出 JSON（见点火页横幅）。 */
+function takeAutoSnapshot(){
+  try{
+    let snap={latest:null,history:[]};
+    try{const raw=JSON.parse(localStorage.getItem(AUTO_KEY));if(raw&&typeof raw==='object')snap=Object.assign(snap,raw);}catch(e){}
+    snap.history=Array.isArray(snap.history)?snap.history:[];
+    const payload={at:Date.now(),data:persistentSnapshot()};
+    if(snap.latest)snap.history.push(snap.latest);
+    snap.history=snap.history.slice(-6);
+    snap.latest=payload;
+    try{
+      localStorage.setItem(AUTO_KEY,JSON.stringify(snap));
+    }catch(err){
+      // 空间不足：先缩到 3 份再试一次；仍失败则明确停用，不让用户误以为有保险
+      snap.history=snap.history.slice(-2);
+      try{localStorage.setItem(AUTO_KEY,JSON.stringify(snap));}
+      catch(err2){
+        if(S.meta&&!S.meta.autoBackupDisabledAt){
+          S.meta.autoBackupDisabledAt=Date.now();
+          try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e3){}
+          try{toast('本机自动快照已停用：浏览器存储空间不足，请导出备份');}catch(e4){}
+        }
+      }
+    }
+  }catch(e){}
+}
+/* 导出保命提醒：只在有铸星记录、且从未导出或超过 7 天、且未在 7 天内“稍后”时出现 */
+function daysSince(ts){if(!ts)return null;return Math.floor((Date.now()-Number(ts))/86400000);}
+function backupNeeded(){
+  if(!S.blocks.some(isSuccessBlock))return 0;
+  if(S.meta.backupSnoozeAt&&Date.now()-Number(S.meta.backupSnoozeAt)<7*86400000)return 0;
+  const d=daysSince(S.meta.lastExportAt);
+  if(d===null)return -1;
+  return d>=7?d:0;
+}
+function renderBackupBanner(){
+  const banner=$('#backupBanner');if(!banner)return;
+  const v=backupNeeded();
+  if(!v){banner.style.display='none';return;}
+  $('#backupBannerText').textContent=v===-1
+    ?'星链只存在这个浏览器里，清缓存会丢。花 3 秒导出一份 JSON 到设备，先留个底。'
+    :`上次导出备份是 ${v} 天前，清缓存可能丢失星链与国策，建议再导出一份。`;
+  banner.style.display='block';
+}
+function renderAutoBackupNote(){
+  const note=$('#autoBackupNote');if(!note)return;
+  const d=daysSince(S.meta.lastExportAt);
+  const exportTxt=d===null?'还从未导出过':d===0?'今天刚导出过':`上次导出在 ${d} 天前`;
+  const stateTxt=S.meta.autoBackupDisabledAt
+    ?'本机自动快照已停用（存储空间不足），请以导出 JSON 为准'
+    :'已开启本机自动快照（最近 6 次结束状态），写坏可自愈';
+  note.textContent=`${stateTxt}；但清除浏览器数据会一起删除，务必定期导出。当前：${exportTxt}。`;
 }
 function rebuildChain(previousBest){
   let current=0,best=Math.max(0,Number(previousBest)||0),genesis=null;
@@ -1637,9 +1844,13 @@ function rebuildChain(previousBest){
   S.chain={currentNo:current,bestNo:best,genesis:genesis};
 }
 function exportBackup(){
+  // 先记住“这次导出”，再生成 payload：备份文件自己也带上导出时间，换机导入后不会误报从未导出
+  S.meta.lastExportAt=Date.now();S.meta.backupSnoozeAt=null;save();
   const payload={schema:BACKUP_SCHEMA,version:BACKUP_VERSION,createdAt:new Date().toISOString(),data:persistentSnapshot()};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='starspark-focus-backup-'+dayKey()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),0);
+  takeAutoSnapshot();
+  renderBackupBanner();renderAutoBackupNote();
   $('#backupStatus').textContent='备份已下载：请把这个 JSON 留在自己的设备或可信存储中。';
 }
 function importBackupFile(file){
@@ -1677,6 +1888,10 @@ function importBackupFile(file){
         S.startup.bestNo=Math.max(Number(S.startup.bestNo)||0,Number(incoming.startup.bestNo)||0);
         if(!S.startup.lastAt)S.startup.lastAt=incoming.startup.lastAt||null;
       }
+      // 导入的备份本身可能就是从另一台设备导出的，别让本机误报“从未导出”
+      if(incoming.meta&&incoming.meta.lastExportAt){
+        S.meta.lastExportAt=Math.max(Number(S.meta.lastExportAt)||0,Number(incoming.meta.lastExportAt)||0);
+      }
       if(incoming.settings&&incoming.settings.sound){
         S.settings.sound=Object.assign({enabled:false,type:'white',volume:22},incoming.settings.sound);
         if(!['white','pink','brown'].includes(S.settings.sound.type))S.settings.sound.type='white';
@@ -1697,7 +1912,8 @@ function importBackupFile(file){
         S.policyTree.lastAddDay=S.policyTree.lastAddDay||incoming.policyTree.lastAddDay||null;
       }
       Object.keys(incoming.reviews).forEach(k=>{if(!S.reviews[k]){S.reviews[k]=incoming.reviews[k];addedReviews++;}});
-      rebuildChain(Math.max(oldBest,Number(incomingBest)||0));save();renderChain();renderReview();if(reviewView==='policy')renderPolicyTree();
+      rebuildChain(Math.max(oldBest,Number(incomingBest)||0));save();takeAutoSnapshot();renderChain();renderReview();if(reviewView==='policy')renderPolicyTree();
+      renderAutoBackupNote();
       $('#backupStatus').textContent=`已合并：新增 ${addedBlocks} 段专注、${addedReviews} 条复盘、${addedRecons} 次侦查、${addedAppointments} 条预约、${addedPrecedents} 条判例、${addedPolicies} 个国策；重复记录已跳过。`;
     }catch(e){$('#backupStatus').textContent='这不是可识别的星火专注 Pro 备份文件，当前数据没有改动。';}
   };
@@ -1706,6 +1922,9 @@ function importBackupFile(file){
 function bindBackup(){
   $('#exportBackup').onclick=exportBackup;
   $('#importFile').onchange=e=>{importBackupFile(e.target.files&&e.target.files[0]);e.target.value='';};
+  $('#bbExport').onclick=()=>exportBackup();
+  $('#bbSnooze').onclick=()=>{S.meta.backupSnoozeAt=Date.now();save();renderBackupBanner();};
+  renderAutoBackupNote();
 }
 
 /* ===== 点火区绑定 ===== */
@@ -1731,13 +1950,13 @@ function openAppointmentMissed(){
     ()=>{
       $('#apptMiss').onclick=()=>{
         finalizeAppointment('missed');
-        S.startup.currentNo=0;save();closeJudge();stopReserve();
+        S.startup.currentNo=0;save();closeJudge();stopReserve();applySimpleMode();renderBackupBanner();
         toast('已记录预约未入座，启动链重新开始');
       };
       $('#apptPrecedent').onclick=()=>{
         usePrecedent('预约超时');
         finalizeAppointment('missed');
-        save();closeJudge();stopReserve();
+        save();closeJudge();stopReserve();applySimpleMode();renderBackupBanner();
         toast('已立为判例，启动链保留');
       };
     });
@@ -1745,7 +1964,7 @@ function openAppointmentMissed(){
 function expireReservation(){
   if(!S.reservation||S.reservation.missedAt)return;
   if(hasPrecedent('预约超时')){
-    finalizeAppointment('missed');stopReserve();
+    finalizeAppointment('missed');stopReserve();applySimpleMode();renderBackupBanner();
     toast('预约超时已按判例处理，启动链保留');
     return;
   }
@@ -1773,6 +1992,23 @@ function bindFocus(){
   };
   $('#pauseBtn').onclick=togglePause;
   $('#stopBtn').onclick=stop;
+}
+
+/* ===== 极简模式：默认只留一个“点火”按钮，高级功能折叠，降低上手难度 ===== */
+function applySimpleMode(){
+  const card=$('#focusCard');if(!card)return;
+  const simple=S.settings.simpleMode!==false&&!S.reservation;
+  card.classList.toggle('advanced',!simple);
+  if(!simple)showStartMode(S.reservation?'reserve':startMode);
+}
+function bindSimple(){
+  $('#simpleIgniteBtn').onclick=()=>{
+    planMin=25;   // 极简入口固定 25 分钟，需要别的时长去“更多启动方式”
+    $$('#durSeg button').forEach(x=>x.classList.toggle('on',+x.dataset.min===25));
+    ignite();
+  };
+  $('#simpleMoreBtn').onclick=()=>{S.settings.simpleMode=false;save();applySimpleMode();};
+  $('#simpleCollapseBtn').onclick=()=>{S.settings.simpleMode=true;save();applySimpleMode();};
 }
 function updateReserve(){
   const hint=$('#reserveHint');
@@ -1816,8 +2052,36 @@ document.addEventListener('visibilitychange',()=>{
   updateSoundUI();
 });
 
+/* ===== 星月诗笺：每天一句「今日星语」+ 首页可展开的拾句 ===== */
+const STAR_POEMS=[
+  {t:'星汉灿烂，若出其里。',a:'曹操《观沧海》'},
+  {t:'醉后不知天在水，满船清梦压星河。',a:'唐温如《题龙阳县青草湖》'},
+  {t:'明月松间照，清泉石上流。',a:'王维《山居秋暝》'},
+  {t:'海上生明月，天涯共此时。',a:'张九龄《望月怀远》'},
+  {t:'天阶夜色凉如水，卧看牵牛织女星。',a:'杜牧《秋夕》'},
+  {t:'似此星辰非昨夜，为谁风露立中宵。',a:'黄景仁《绮怀》'},
+  {t:'昨夜星辰昨夜风。',a:'李商隐《无题》'},
+  {t:'春江潮水连海平，海上明月共潮生。',a:'张若虚《春江花月夜》'},
+  {t:'今夜月明人尽望，不知秋思落谁家。',a:'王建《十五夜望月》'},
+  {t:'月出皎兮，佼人僚兮。',a:'《诗经·陈风·月出》'}
+];
+function poemIndexOfDay(){
+  const d=new Date(),seed=d.getFullYear()*372+d.getMonth()*31+d.getDate();
+  return seed%STAR_POEMS.length;
+}
+function renderPoemOfDay(){
+  const box=$('#poemOfDay');if(!box)return;
+  const p=STAR_POEMS[poemIndexOfDay()];
+  box.innerHTML=`「${p.t}」<span class="poem-from">${p.a}</span>`;
+}
+function renderPoemBook(){
+  const list=$('#poemBookList');if(!list)return;
+  list.innerHTML=STAR_POEMS.map(p=>`<li>「${p.t}」<span class="poem-from">${p.a}</span></li>`).join('');
+}
+
 /* ===== 初始化 ===== */
-buildNav();bindFocus();bindSound();bindReview();bindPolicy();bindChainViews();bindBackup();restore();
+buildNav();bindFocus();bindSimple();bindSound();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();restore();
+applySimpleMode();renderBackupBanner();renderPoemOfDay();renderPoemBook();
 go(location.hash.slice(1)||'home');
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
