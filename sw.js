@@ -1,5 +1,5 @@
 /* 星火-专注pro Service Worker：离线缓存，可安装 */
-const CACHE = 'starspark-focus-v12';
+const CACHE = 'starspark-focus-v13';
 const CORE = [
   './',
   './index.html',

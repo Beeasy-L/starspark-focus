@@ -371,6 +371,14 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .snap-row button{background:transparent;border:1px solid var(--line);color:var(--ink2);border-radius:9px;
   padding:7px 12px;font-size:12px;cursor:pointer;min-height:38px}
 .snap-row button:hover{color:var(--gold-hi);border-color:rgba(246,220,155,.5)}
+/* 年度星图预览 */
+.poster-overlay{position:fixed;inset:0;z-index:66;display:none;align-items:center;justify-content:center;
+  background:rgba(4,6,15,.92);padding:16px;overflow:auto}
+.poster-overlay.on{display:flex}
+.poster-sheet{width:min(94vw,440px);display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.poster-sheet img{width:100%;border-radius:14px;border:1px solid rgba(246,220,155,.35);display:block}
+.poster-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.poster-sheet .muted{text-align:center;font-size:11.5px;margin:0}
 /* 新手引导 */
 .onboard-mask{position:fixed;inset:0;z-index:65;display:none;align-items:center;justify-content:center;
   background:rgba(4,6,15,.86);padding:20px}
@@ -835,6 +843,12 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
       <p class="muted" style="margin-top:10px">三个词就够：<b>星链</b>＝专注次数，<b>判例</b>＝合理中断的永久规则，<b>国策</b>＝长期习惯。</p>
       <button class="btn ghost" id="replayOnboard" type="button" style="margin-top:10px">重新看一遍新手引导</button>
     </div>
+    <div class="card" id="annualCard">
+      <h3>年度星图</h3>
+      <p class="muted">把这一年的星收成一张图：星数、最长链、最常投入、月度分布。图片在本机生成，不上传。</p>
+      <button class="btn primary" id="annualBtn" type="button">生成 <span id="annualYear"></span>年度星图</button>
+      <p class="muted" id="annualHint" style="margin-top:6px">生成后先预览；点「保存图片」，或长按图片存到相册。</p>
+    </div>
     <div class="card" id="backupCard">
       <h3>数据与备份</h3>
       <p class="muted">导出一份 JSON 留在自己的设备上；导入时会先告诉你要合并多少条，确认后才写入。</p>
@@ -859,6 +873,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <li>备份中心：本机自动快照现在能看到列表、一键恢复某次快照（恢复前会另存当前数据），并显示存储占用与上次导出时间。</li>
         <li>导入预检：选文件后先告诉你「将合并多少条」，确认后才写入；重复记录自动跳过。</li>
         <li>首启引导：第一次打开 30 秒看完三屏（点火 / 中断裁判 / 星链是证据），随时可在「我的 → 怎么用」重看。</li>
+        <li>年度星图上线：把这一年的专注收成一张 1080×1440 的图（星数、最长链、月度分布、最常投入），Canvas 本地绘制、导出 2 倍 PNG，不发往任何服务器。</li>
         <li>1.0 正式版开发中：年度星图海报、给同学看的发布页。</li>
       </ul>
       <div class="logver">v0.9.0</div>
@@ -951,6 +966,16 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 </main>
 <canvas id="fxCanvas"></canvas>
 <div class="mile-banner" id="mileBanner"></div>
+<div class="poster-overlay" id="posterOverlay">
+  <div class="poster-sheet">
+    <img id="posterImg" alt="年度星图">
+    <div class="poster-btns">
+      <button class="btn ghost" id="posterClose" type="button">关闭</button>
+      <button class="btn primary" id="posterSave" type="button">保存图片</button>
+    </div>
+    <p class="muted">手机可长按图片保存到相册。</p>
+  </div>
+</div>
 <div class="onboard-mask" id="onboardMask">
   <div class="onboard-card">
     <div class="ob-kicker" id="obKicker">第一次用 · 30 秒看懂</div>
@@ -2389,6 +2414,206 @@ function persistentSnapshot(){
 /* 本机自动快照：每次铸星/断链后留存“最新 + 最近 6 个历史状态”，
    可在主数据写坏时自愈。注意：清除浏览器数据会连同本快照一起删除，
    真正防清缓存仍需定期导出 JSON（见点火页横幅）。 */
+/* ===== v1.0.0：年度星图（Canvas 直绘，零依赖，导出 2x PNG） ===== */
+function annualStats(year){
+  const inYear=function(b){const d=new Date(b.endedAt||0);return d.getFullYear()===year;};
+  const blocks=S.blocks.filter(inYear).sort((a,b)=>(a.endedAt||0)-(b.endedAt||0));
+  const wins=blocks.filter(isSuccessBlock);
+  let cur=0,best=0,relights=0,broken=0,prevBroken=false;
+  blocks.forEach(b=>{
+    if(isSuccessBlock(b)){cur++;best=Math.max(best,cur);if(prevBroken)relights++;prevBroken=false;}
+    else if(b.state==='broken'){cur=0;broken++;prevBroken=true;}
+  });
+  const months=[0,0,0,0,0,0,0,0,0,0,0,0];
+  wins.forEach(b=>{const m=new Date(b.endedAt).getMonth();months[m]++;});
+  const tasks={};wins.forEach(b=>{const t=(b.task||'').trim();if(t)tasks[t]=(tasks[t]||0)+1;});
+  const taskKeys=Object.keys(tasks).sort((a,b)=>tasks[b]-tasks[a]);
+  const hoursMap={};wins.forEach(b=>{const h=new Date(b.endedAt).getHours();hoursMap[h]=(hoursMap[h]||0)+1;});
+  const hourKeys=Object.keys(hoursMap).sort((a,b)=>hoursMap[b]-hoursMap[a]);
+  const totalSec=blocks.reduce((n,b)=>n+(Number(b.actualSec)||0),0);
+  return {
+    stars:wins.length,
+    hours:(totalSec/3600).toFixed(1),
+    best:best,
+    precedents:wins.filter(b=>b.state==='whitelisted').length,
+    topTask:taskKeys[0]||'',
+    topHour:hourKeys.length?(String(hourKeys[0]).padStart(2,'0')+':00'):'—',
+    broken:broken,
+    relights:relights,
+    months:months,
+    current:S.chain.currentNo
+  };
+}
+function drawSpaced(c,text,x,y,spacing){
+  // 逐字绘制，模拟字距
+  const chars=String(text).split('');
+  let total=0;
+  const widths=chars.map(ch=>{const w=c.measureText(ch).width;total+=w;return w;});
+  total+=spacing*(chars.length-1);
+  let cx=x-total/2;
+  c.textAlign='left';
+  chars.forEach((ch,i)=>{c.fillText(ch,cx,y);cx+=widths[i]+spacing;});
+  c.textAlign='center';
+}
+function roundRect(c,x,y,w,h,r){
+  c.beginPath();
+  c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);
+  c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();
+}
+function drawAnnualPoster(st,year){
+  const W=1080,H=1440,SCALE=2;
+  const cv=document.createElement('canvas');
+  cv.width=W*SCALE;cv.height=H*SCALE;
+  const c=cv.getContext('2d');
+  c.scale(SCALE,SCALE);
+  // 夜空
+  const bg=c.createRadialGradient(540,260,60,540,300,980);
+  bg.addColorStop(0,'#16224a');bg.addColorStop(.48,'#080d1e');bg.addColorStop(1,'#04060f');
+  c.fillStyle=bg;c.fillRect(0,0,W,H);
+  // 确定性星野（同一年生成同一张）
+  let seed=year*9301+49297;
+  const rnd=function(){seed=(seed*9301+49297)%233280;return seed/233280;};
+  for(let i=0;i<190;i++){
+    const x=rnd()*W,y=rnd()*H,r=.5+rnd()*1.7;
+    c.globalAlpha=.12+rnd()*.6;c.fillStyle='#ffffff';
+    c.beginPath();c.arc(x,y,r,0,7);c.fill();
+  }
+  c.globalAlpha=1;
+  // 边框
+  c.strokeStyle='rgba(246,220,155,.22)';c.lineWidth=1;
+  roundRect(c,36,36,W-72,H-72,26);c.stroke();
+  // 星座连线（上半区）
+  const pts=[];
+  for(let i=0;i<26;i++)pts.push({x:140+rnd()*800,y:105+rnd()*310});
+  c.strokeStyle='rgba(246,220,155,.22)';c.lineWidth=1;c.setLineDash([3,6]);
+  c.beginPath();pts.forEach((p,i)=>{i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y);});c.stroke();c.setLineDash([]);
+  pts.forEach(p=>{
+    c.fillStyle='#ffe6ad';
+    c.beginPath();c.arc(p.x,p.y,1.8+rnd()*1.8,0,7);c.fill();
+  });
+  c.textAlign='center';
+  // 标题
+  c.fillStyle='#9aa7c4';c.font='400 19px "Noto Sans SC",sans-serif';
+  drawSpaced(c,'STARFIRE ANNUAL',540,108,12);
+  c.fillStyle='#ffe6ad';c.font='700 64px "Noto Serif SC",serif';
+  drawSpaced(c,'年度星图',540,188,14);
+  c.fillStyle='#9aa7c4';c.font='400 18px "Noto Sans SC",sans-serif';
+  drawSpaced(c,year+' · 星火专注 Pro',540,234,8);
+  // 大数字
+  const num=String(st.stars);
+  c.fillStyle='#ffe6ad';c.font='700 190px "Noto Serif SC",serif';
+  const numW=c.measureText(num).width;
+  const startX=540-(numW+86)/2;
+  c.textAlign='left';c.fillText(num,startX,486);
+  c.fillStyle='#ffe6ad';c.font='400 30px "Noto Serif SC",serif';
+  c.fillText('颗星',startX+numW+16,470);
+  c.textAlign='center';
+  // 副信息
+  c.fillStyle='#c9d3e8';c.font='400 23px "Noto Serif SC",serif';
+  c.fillText('累计专注 '+st.hours+' 小时 · 最长星链 #'+st.best+' · 判例中断 '+st.precedents+' 次',540,576);
+  // 叙事
+  const task=(st.topTask||'还没有命名的任务').slice(0,12);
+  c.fillStyle='#d7dff2';c.font='400 26px "Noto Serif SC",serif';
+  c.fillText('这一年，你把最多的时间给了 '+task+'；',540,680);
+  c.fillText('断了 '+st.broken+' 次，也重新点了 '+st.relights+' 次。',540,732);
+  // 标签
+  const tags=['最常时段 '+st.topHour,'判例 '+st.precedents+' 次','最长链 #'+st.best];
+  c.font='400 15px "Noto Sans SC",sans-serif';
+  let tw=0;const widths=tags.map(t=>{const w=c.measureText(t).width;tw+=w;return w;});
+  const tagGap=14,padX=20,totalW=widths.reduce((a,b)=>a+b,0)+tagGap*(tags.length-1)+padX*2*tags.length;
+  let tx=540-totalW/2;
+  tags.forEach((t,i)=>{
+    const w=widths[i]+padX*2,h=44,ty=786;
+    c.strokeStyle='rgba(246,220,155,.3)';c.lineWidth=1;
+    roundRect(c,tx,ty-h/2,w,h,h/2);c.stroke();
+    c.fillStyle='#f6dc9b';c.textAlign='center';c.fillText(t,tx+w/2,ty+5);
+    tx+=w+tagGap;
+  });
+  // 月度柱
+  const maxM=Math.max.apply(null,st.months.concat([1]));
+  const areaL=96,areaR=984,gap=10;
+  const barW=(areaR-areaL-gap*11)/12;
+  st.months.forEach((v,i)=>{
+    const h=24+(v/maxM)*150;
+    const x=areaL+i*(barW+gap),y=1128-h;
+    const g2=c.createLinearGradient(0,y,0,y+h);
+    g2.addColorStop(0,'rgba(255,230,173,.88)');
+    g2.addColorStop(1,'rgba(242,198,109,.22)');
+    c.fillStyle=g2;
+    roundRect(c,x,y,barW,h,6);c.fill();
+    c.fillStyle='#9aa7c4';c.font='400 14px "Noto Sans SC",sans-serif';
+    c.fillText((i+1)+'月',x+barW/2,1152);
+  });
+  // 三个亮点卡
+  const cardY=1174,cardH=86,cardGap=14;
+  const cardW=(areaR-areaL-cardGap*2)/3;
+  const cards=[
+    {t:(st.topTask||'还没有填写任务').slice(0,10),s:'最常投入的任务'},
+    {t:st.topHour,s:'最常点火的时段'},
+    {t:st.current+' 颗',s:'当前仍在燃烧的链'}
+  ];
+  cards.forEach((cd,i)=>{
+    const x=areaL+i*(cardW+cardGap);
+    c.fillStyle='rgba(255,255,255,.045)';
+    c.strokeStyle='rgba(246,220,155,.16)';c.lineWidth=1;
+    roundRect(c,x,cardY,cardW,cardH,14);c.fill();c.stroke();
+    c.textAlign='left';
+    c.fillStyle='#ffe6ad';c.font='700 24px "Noto Serif SC",serif';
+    c.fillText(cd.t,x+18,cardY+38);
+    c.fillStyle='#9aa7c4';c.font='400 14px "Noto Sans SC",sans-serif';
+    c.fillText(cd.s,x+18,cardY+66);
+    c.textAlign='center';
+  });
+  // 诗句与落款
+  c.fillStyle='#f6dc9b';c.font='400 22px "Noto Serif SC",serif';
+  c.fillText('「东风夜放花千树，更吹落，星如雨。」',540,1332);
+  c.fillStyle='#9aa7c4';c.font='400 14px "Noto Sans SC",sans-serif';
+  drawSpaced(c,'星火三部曲 · 第二部 · 数据只在这台设备',540,1384,5);
+  return cv.toDataURL('image/png');
+}
+let annualPosterUrl='';
+function openAnnualPoster(){
+  const year=new Date().getFullYear();
+  const st=annualStats(year);
+  if(!st.stars){toast('今年还没有星，先点亮一颗吧');return;}
+  const finish=function(url){
+    annualPosterUrl=url;
+    const img=$('#posterImg');if(img)img.src=url;
+    const ov=$('#posterOverlay');if(ov)ov.classList.add('on');
+  };
+  try{
+    if(document.fonts&&document.fonts.load){
+      Promise.all([
+        document.fonts.load('700 190px "Noto Serif SC"'),
+        document.fonts.load('400 26px "Noto Serif SC"'),
+        document.fonts.load('400 15px "Noto Sans SC"')
+      ]).then(function(){finish(drawAnnualPoster(st,year));}).catch(function(){finish(drawAnnualPoster(st,year));});
+    }else{
+      finish(drawAnnualPoster(st,year));
+    }
+  }catch(e){toast('生成年度星图失败，请稍后再试');}
+}
+function saveAnnualPoster(){
+  if(!annualPosterUrl){toast('先点「生成年度星图」');return;}
+  const year=new Date().getFullYear();
+  const a=document.createElement('a');
+  a.href=annualPosterUrl;
+  a.download='星火专注Pro-'+year+'-年度星图.png';
+  document.body.appendChild(a);a.click();a.remove();
+  toast('已开始保存图片');
+}
+function bindAnnualPoster(){
+  const btn=$('#annualBtn');
+  if(btn){
+    btn.onclick=openAnnualPoster;
+    const y=$('#annualYear');if(y)y.textContent=new Date().getFullYear()+' ';
+  }
+  const close=$('#posterClose');
+  if(close)close.onclick=()=>$('#posterOverlay').classList.remove('on');
+  const save=$('#posterSave');
+  if(save)save.onclick=saveAnnualPoster;
+}
+
 /* ===== v1.0.0：备份中心 ===== */
 function fmtSnapTime(ts){
   const d=new Date(Number(ts)||0);
@@ -2865,7 +3090,7 @@ function renderPoemBook(){
 /* ===== 初始化 ===== */
 buildNav();
 try{renderPoemOfDay();renderPoemBook();}catch(e){}
-try{bindFocus();bindSimple();bindSound();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();bindOnboarding();}catch(e){}
+try{bindFocus();bindSimple();bindSound();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();bindOnboarding();bindAnnualPoster();}catch(e){}
 try{restore();}catch(e){}
 try{applySimpleMode();renderBackupBanner();renderTodayCard();maybeShowOnboarding();}catch(e){}
 go(location.hash.slice(1)||'home');
