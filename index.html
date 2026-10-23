@@ -377,7 +377,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 
 /* 底部移动导航 */
 .bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(13,18,38,.92);
-  backdrop-filter:blur(10px);border-top:1.5px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  backdrop-filter:blur(10px);border-top:1.5px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
 .bottomnav button{background:transparent;border:none;color:var(--ink3);display:flex;flex-direction:column;
   align-items:center;gap:3px;font-size:10.5px;cursor:pointer;padding:4px;font-family:var(--sans)}
 .bottomnav button svg{width:22px;height:22px}
@@ -546,7 +546,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     <details class="card poem-book" id="poemBook">
       <summary>星月诗笺 · 五组拾句</summary>
       <p class="muted">从古人的夜空里借几句话：点火之前读一句，完成之后再读一句。</p>
-      <ul class="poem-list" id="poemBookList"></ul>
+      <ul class="poem-list" id="poemBookList"><li class="poem-group"><div class="pg-name">星河</div><div class="pg-items"><p>「星汉灿烂，若出其里。」<span class="poem-from">曹操《观沧海》</span></p><p>「天上星河转，人间帘幕垂。」<span class="poem-from">宋·李清照《南歌子·天上星河转》</span></p><p>「星点点，月团团，倒流河汉入杯盘。」<span class="poem-from">金·刘著《鹧鸪天·雪照山城玉指寒》</span></p><p>「金波银汉，潋滟无际。」<span class="poem-from">宋·柳永《佳人醉·暮景萧萧雨霁》</span></p><p>「天接云涛连晓雾，星河欲转千帆舞。」<span class="poem-from">宋·李清照《渔家傲·天接云涛连晓雾》</span></p><p>「天外一钩残月带三星。」<span class="poem-from">宋·秦观《南歌子·玉漏迢迢尽》</span></p></div></li><li class="poem-group"><div class="pg-name">月夜</div><div class="pg-items"><p>「明月松间照，清泉石上流。」<span class="poem-from">王维《山居秋暝》</span></p><p>「海上生明月，天涯共此时。」<span class="poem-from">张九龄《望月怀远》</span></p><p>「春江潮水连海平，海上明月共潮生。」<span class="poem-from">张若虚《春江花月夜》</span></p><p>「明月如霜，好风如水，清景无限。」<span class="poem-from">宋·苏轼《永遇乐·彭城夜宿燕子楼》</span></p><p>「月华如练，长是人千里。」<span class="poem-from">宋·范仲淹《御街行·秋日怀旧》</span></p><p>「今夜月明人尽望，不知秋思落谁家。」<span class="poem-from">王建《十五夜望月》</span></p></div></li><li class="poem-group"><div class="pg-name">疏星淡月</div><div class="pg-items"><p>「耿斜河，疏星淡月，断云微度。」<span class="poem-from">宋·张元干《贺新郎·送胡邦衡待制赴新州》</span></p><p>「时见疏星落画檐，几点流萤小。」<span class="poem-from">宋·叶梦得《卜算子·五月八日夜凤凰亭纳凉》</span></p><p>「一川明月疏星，浣纱人影娉婷。」<span class="poem-from">宋·辛弃疾《清平乐·博山道中即事》</span></p><p>「疏星淡月秋千院，愁云恨雨芙蓉面。」<span class="poem-from">元·张可久《塞鸿秋·春情》</span></p><p>「淡月疏星共寂寥。」<span class="poem-from">宋·周邦彦《南乡子·咏秋夜》</span></p><p>「淡云来往月疏疏。」<span class="poem-from">宋·李清照《浣溪沙·髻子伤春慵更梳》</span></p></div></li><li class="poem-group"><div class="pg-name">夜风与晓</div><div class="pg-items"><p>「缺月挂疏桐，漏断人初静。」<span class="poem-from">宋·苏轼《卜算子·黄州定慧院寓居作》</span></p><p>「晓月坠，宿云微，无语枕频欹。」<span class="poem-from">南唐·李煜《喜迁莺·晓月坠》</span></p><p>「新月娟娟，夜寒江静山衔斗。」<span class="poem-from">宋·汪藻《点绛唇·新月娟娟》</span></p><p>「昨夜星辰昨夜风。」<span class="poem-from">李商隐《无题》</span></p><p>「淡月朦胧，更有微微弄袖风。」<span class="poem-from">宋·苏轼《减字木兰花·花》</span></p><p>「似此星辰非昨夜，为谁风露立中宵。」<span class="poem-from">黄景仁《绮怀》</span></p></div></li><li class="poem-group"><div class="pg-name">人间星语</div><div class="pg-items"><p>「醉后不知天在水，满船清梦压星河。」<span class="poem-from">唐温如《题龙阳县青草湖》</span></p><p>「天阶夜色凉如水，卧看牵牛织女星。」<span class="poem-from">杜牧《秋夕》</span></p><p>「月出皎兮，佼人僚兮。」<span class="poem-from">《诗经·陈风·月出》</span></p><p>「万籁生山，一星在水，鹤梦疑重续。」<span class="poem-from">清·厉鹗《百字令·月夜过七里滩》</span></p><p>「夜月一帘幽梦，春风十里柔情。」<span class="poem-from">宋·秦观《八六子·倚危亭》</span></p><p>「一片流云无觅处，云里疏星，不共云流去。」<span class="poem-from">近代·王国维《蝶恋花》</span></p></div></li></ul>
     </details>
 
     <div class="poem">星星之火，可以燎原。</div>
@@ -1158,11 +1158,12 @@ function bindSound(){
 /* ===== 导航 ===== */
 const TABS=[
  {id:'today',label:'今天',icon:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>'},
+ {id:'focus',label:'点火',icon:'<path d="M12 3c2 4 5 6 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3-1-3 1-6 1-9z"/>'},
  {id:'chain',label:'星链',icon:'<path d="M9 15l6-6"/><path d="M11 6l1-1a3.5 3.5 0 0 1 5 5l-1 1"/><path d="M13 18l-1 1a3.5 3.5 0 0 1-5-5l1-1"/>'},
  {id:'review',label:'复盘',icon:'<path d="M5 4h14v16l-4-3-3 3-3-3-4 3z"/>'},
  {id:'me',label:'我的',icon:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>'}
 ];
-const VIEW_TAB={home:'today',focus:'today',chain:'chain',review:'review',log:'me'};
+const VIEW_TAB={home:'today',focus:'focus',chain:'chain',review:'review',log:'me'};
 function buildNav(){
   const tn=$('#topnav'),bn=$('#bottomnav');tn.innerHTML='';bn.innerHTML='';
   TABS.forEach(t=>{
@@ -2630,8 +2631,11 @@ function renderPoemBook(){
 }
 
 /* ===== 初始化 ===== */
-buildNav();bindFocus();bindSimple();bindSound();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();restore();
-applySimpleMode();renderBackupBanner();renderPoemOfDay();renderPoemBook();renderTodayCard();
+buildNav();
+try{renderPoemOfDay();renderPoemBook();}catch(e){}
+try{bindFocus();bindSimple();bindSound();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();}catch(e){}
+try{restore();}catch(e){}
+try{applySimpleMode();renderBackupBanner();renderTodayCard();}catch(e){}
 go(location.hash.slice(1)||'home');
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
