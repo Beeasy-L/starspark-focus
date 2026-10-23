@@ -575,7 +575,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
           <li><b>提前收束与判例。</b>正式专注中途被打断时点“结束”：已专注超过 80% 会记为“提前收束”；更早结束时，可以选择继续、断链，或把合理原因“立为判例”。</li>
           <li><b>“立为判例”是一条永久规则。</b>例如把“接水”立为判例后，以后同样情况会默认允许，本次也会铸星。不要为了这一次舒服，把“刷手机”也立成判例；判例只有两类结果：断链，或长期允许。</li>
           <li><b>静场。</b>白噪、粉噪、棕噪由浏览器本地合成，雨声是真实的雨声录音，海浪、篝火为本地生成的自然声，都不联网、不录音；声音默认关闭，只有你主动开启后才会在专注时播放。</li>
-          <li><b>背景音乐。</b>默认关闭，可在「更多启动方式」里开启；只有一朵钢琴曲《月亮代表我的心》，专注时淡入、结束淡出，与我加的雨声一起，让坐下更舒服。</li>
+          <li><b>背景音乐。</b>默认开启，一首钢琴曲《月亮代表我的心》，作为整站的背景乐——一打开网页就缓缓播放，点火开始专注时自动停、专注结束后接着放；有独立开关与音量，可在「更多启动方式」里调整或关掉。</li>
           <li><b>断链不清零。</b>当前星链加 1，历史最长链永久保留；断链只是从新的 #1 再开始，不代表之前所有努力都消失。</li>
           <li><b>星链、星图与统计。</b>星图记录近 90 天，统计会区分完整完成、提前收束和判例；点击星图日期可以回看当天的“推进”。</li>
           <li><b>国策树。</b>在“复盘 → 国策树”里添加长期规则，第一条可以直接选模板；之后每天最多新增一个节点，没做到时可以熄灭该分支，或用“冻结”短暂冻结。</li>
@@ -692,7 +692,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
               <input id="musicVolume" type="range" min="0" max="60" step="1" value="20" aria-label="背景音乐音量">
               <span id="musicVolumeValue">20</span>
             </div>
-            <p class="protocol-note" id="musicHint">陪伴的钢琴曲。与静场互不干扰，可单独开、也可一起听；专注时淡入，结束淡出。</p>
+            <p class="protocol-note" id="musicHint">陪伴的钢琴曲，默认开启。一打开网页就播，点火进入专注时自动停，结束后接着放；与静场互不干扰。</p>
           </div>
         </div>
         <button class="btn linklike" id="simpleCollapseBtn" type="button">▴ 收起，回到极简</button>
@@ -895,10 +895,15 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v1.1.1</div>
+      <div class="logdate">2026-10-23</div>
+      <ul class="loglist">
+        <li>背景音乐改为<b>整站背景乐</b>：默认开启，一打开网页就播放；点火进入专注时自动停，期间不再插入；暂停、结束后回到待机接着放。点一下页面即可起声（浏览器要求首次有交互才能出声）。</li>
+      </ul>
       <div class="logver">v1.1.0</div>
       <div class="logdate">2026-10-23</div>
       <ul class="loglist">
-        <li>背景音乐：《月亮代表我的心》钢琴版作为专注背景乐，可整首循环；有独立开关与音量，开始专注时淡入、结束时淡出，暂停时随之停、继续时接着放。<b>音频为真实录音，随网页预缓存，离线也能播放。</b></li>
+        <li>背景音乐：《月亮代表我的心》钢琴版作为整站的背景乐，默认开启：一打开网页就播放，点火进入专注时自动停，专注结束后接着放；有独立开关与音量。<b>音频为真实录音，随网页预缓存，离线也能播放。</b></li>
         <li>自然声升级：雨声、篝火改用手边的真实录音（海边篝火白噪音），海浪为现场合成；白粉棕噪仍由浏览器合成，全部不联网。</li>
         <li>有纪律暂停：暂停时给你一个选项——停 15 / 30 / 60 分钟，到点自动回到专注，避免一停就不回；也可以自由暂停。</li>
         <li>国策内化进度：每守住一天，规则向内生长——连续 7 天进 <b>E1·生根</b>、21 天成 <b>E2·成树</b>；约束力 =（分支节点数+1）×稳态权重，分叉越深、守住越久，约束越强。</li>
@@ -1061,7 +1066,7 @@ const defaultState=()=>({
   blocks:[],whitelist:[],precedents:[],reservation:null,appointments:[],recons:[],
   startup:{currentNo:0,bestNo:0,lastAt:null},
   settings:{sound:{enabled:false,type:'white',volume:22},ceremonySound:true,simpleMode:true},
-  music:{enabled:false,volume:20},
+  music:{enabled:true,volume:20},
   meta:{lastExportAt:null,backupSnoozeAt:null,onboardedAt:null},
   policyTree:{version:1,nodes:[],freezes:[],checks:{},events:[],lastAddDay:null},
   reviews:{},session:null
@@ -1114,8 +1119,10 @@ function hydrateState(){
   S.settings.sound=Object.assign({enabled:false,type:'white',volume:22},S.settings.sound||{});
   S.settings.ceremonySound=S.settings.ceremonySound!==false;
   if(!['white','pink','brown','rain','waves','fire'].includes(S.settings.sound.type))S.settings.sound.type='white';
-  S.settings.music=Object.assign({enabled:false,volume:20},S.settings.music||{});
+  S.settings.music=Object.assign({enabled:true,volume:20,touched:false},S.settings.music||{});
   S.settings.music.volume=Math.min(60,Math.max(0,Number(S.settings.music.volume)||20));
+  // 音乐定位改为「网站背景乐·默认开启」：只有用户明确手动关过才保持关闭
+  if(S.settings.music.touched!==true)S.settings.music.enabled=true;
   S.settings.sound.volume=Math.min(60,Math.max(0,Number(S.settings.sound.volume)||22));
   S.settings.simpleMode=S.settings.simpleMode!==false;
   S.meta=Object.assign({lastExportAt:null,backupSnoozeAt:null,onboardedAt:null},S.meta||{});
@@ -1343,6 +1350,7 @@ function ensureMusicContext(){
 }
 function loadMusicBuffer(){
   if(musicReady)return Promise.resolve();
+  if(!/^https?:$/.test(location.protocol))return Promise.resolve();   // file: 直开预览不载音频，避免无谓请求
   return fetch(MUSIC_SRC).then(r=>r.arrayBuffer()).then(buf=>{
     const ctx=ensureMusicContext();
     if(!ctx)return;
@@ -1355,12 +1363,15 @@ let musicBuffer=null;
 function musicGainValue(){return Math.pow((Number(S.settings.music.volume)||0)/60,1.8)*.42;}
 function startMusic(){
   if(!S.settings.music.enabled)return;
-  if(!cur||cur.pauseTs||musicMuted)return;
+  if(musicMuted)return;
+  // 背景乐定位：在「没有进行中专注」时播放
+  if(cur&&!cur.pauseTs)return;
   const ctx=ensureMusicContext();
   if(!ctx)return;
   clearTimeout(musicFadeTimer);
   loadMusicBuffer().then(()=>{
-    if(!musicReady||!S.settings.music.enabled||!cur||musicMuted)return;
+    if(!musicReady||!S.settings.music.enabled||musicMuted)return;
+    if(cur&&!cur.pauseTs)return;
     if(musicCtx&&musicCtx.state==='suspended')musicCtx.resume().catch(()=>{});
     if(musicGain){musicGain.gain.cancelScheduledValues(musicCtx.currentTime);}
     if(!musicSrc){
@@ -1397,8 +1408,9 @@ function stopMusic(immediate=false){
 }
 function setMusicEnabled(value){
   S.settings.music.enabled=!!value;
+  S.settings.music.touched=true;
   if(!value)stopMusic();
-  else if(cur&&!cur.pauseTs&&!musicMuted)startMusic();
+  else if(!(cur&&!cur.pauseTs))startMusic();   // 非专注中：打开即作为背景乐
   save();updateMusicUI();
 }
 function setMusicVolume(value){
@@ -1574,7 +1586,7 @@ function startSession(mode){
     showSessionPoem();
     updateSessionChrome();
     stopReserve();
-    startTick();startAmbient();startMusic();igniting=false;
+    startTick();startAmbient();stopMusic();igniting=false;
     renderTodayCard();
   });
 }
@@ -1769,7 +1781,7 @@ function armPauseResume(){
       cur.pauseUntilTs=null;clearPauseTimer();
       // 自动恢复专注
       cur.pausedMs+=Date.now()-cur.pauseTs;cur.pauseTs=null;
-      updateSessionChrome();S.session=cur;save();startTick();startAmbient();startMusic();
+      updateSessionChrome();S.session=cur;save();startTick();startAmbient();stopMusic();
       toast('暂停时间到，已自动回到专注');
       renderTodayCard();
     }
@@ -1782,10 +1794,10 @@ function togglePause(){
     cur.pausedMs+=Date.now()-cur.pauseTs;cur.pauseTs=null;cur.pauseUntilTs=null;
     clearPauseTimer();
     updateSessionChrome();
-    S.session=cur;save();startTick();startAmbient();startMusic();
+    S.session=cur;save();startTick();startAmbient();stopMusic();
   }else{
     cur.pauseTs=Date.now();clearInterval(T);
-    stopAmbient();stopMusic();
+    stopAmbient();startMusic();   // 暂停期间回到背景乐
     updateSessionChrome();
     S.session=cur;save();tick();
     // 有纪律暂停：弹出定时选项，给暂停一个边界；若已有自动恢复计时则不重复弹
@@ -1817,6 +1829,7 @@ function finishRecon(status,targetMin=null){
   S.recons.push({id:Date.now(),task:cur.task,startedAt:cur.startTs,endedAt:Date.now(),
     seconds:Math.round(e/1000),status,targetMin,converted:status==='converted'});
   cur=null;S.session=null;clearInterval(T);save();showIdle();
+  startMusic();   // 待机态恢复背景乐
   if(status==='abandoned')toast('热身已结束，主星链不受影响');
   else if(status==='completed'){toast('5 分钟热身完成，主星链不受影响');autoSatisfyPolicies('recon');}
 }
@@ -1827,7 +1840,7 @@ function extendReconTo(minutes){
   cur.planMin=minutes;cur.mode='focus';cur.extendedFrom='recon';cur.reconPrompt=false;
   S.recons.push({id:Date.now(),task:cur.task,startedAt:cur.startTs,endedAt:Date.now(),
     seconds:Math.round(e/1000),status:'converted',targetMin:minutes,converted:true});
-  S.session=cur;save();closeJudge();showRunning();updateSessionChrome();startTick();startAmbient();startMusic();
+  S.session=cur;save();closeJudge();showRunning();updateSessionChrome();startTick();startAmbient();stopMusic();
   autoSatisfyPolicies('recon');
   toast(`已延长为 ${minutes} 分钟正式专注`);
 }
@@ -1837,6 +1850,7 @@ function openReconDecision(){
   stopMusic();
   if(!cur.pauseTs){cur.pauseTs=Date.now();clearInterval(T);}
   S.session=cur;save();updateSessionChrome();
+  startMusic();   // 热身已结束待决定，回到背景乐
   let target=25;
   openDialog('5 分钟热身完成','你已经坐下来了。现在可以收在这里，也可以把这次热身延长成一段正式专注。',
     '<div class="recon-duration" id="reconDuration">'+
@@ -1910,6 +1924,7 @@ function commitBlock(block){
   }
   if(block.state==='broken')S.chain.currentNo=0;
   cur=null;S.session=null;save();showIdle();applySimpleMode();
+  startMusic();   // 结束后回到待机态，背景乐恢复
   if(isSuccessBlock(block)){autoSatisfyPolicies('focus');takeAutoSnapshot();}
   if(block.state==='done')toast('完整完成，铸星成功，星链 +1');
   if(block.state==='settled')toast('提前收束已记录，铸星 +1');
@@ -3275,8 +3290,8 @@ function restore(){
   if(S.session){cur=S.session;showRunning();
     showSessionPoem();
     updateSessionChrome();
-    if(cur.pauseTs){$('#pauseBtn').textContent='继续';tick();if(cur.pauseUntilTs)armPauseResume();}
-    else{startTick();startAmbient();startMusic();}
+    if(cur.pauseTs){$('#pauseBtn').textContent='继续';tick();if(cur.pauseUntilTs)armPauseResume();startMusic();}
+    else{startTick();startAmbient();stopMusic();}
     if(cur.mode==='recon'&&elapsedMs()>=5*60000){
       if(!cur.reconPrompt)openReconDecision();
       return;
@@ -3367,6 +3382,16 @@ try{renderPoemOfDay();renderPoemBook();}catch(e){}
 try{bindFocus();bindSimple();bindSound();bindMusic();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();bindOnboarding();bindAnnualPoster();}catch(e){}
 try{restore();}catch(e){}
 try{applySimpleMode();renderBackupBanner();renderTodayCard();maybeShowOnboarding();}catch(e){}
+/* 背景乐：浏览器要求先有一次用户手势才能起声。用户首次点击/按键后，若在待机态且音乐开启，开始播放 */
+(function(){
+  const unlock=()=>{
+    if(S.settings.music.enabled&&!(cur&&!cur.pauseTs))startMusic();
+    window.removeEventListener('pointerdown',unlock);
+    window.removeEventListener('keydown',unlock);
+  };
+  window.addEventListener('pointerdown',unlock,{passive:true});
+  window.addEventListener('keydown',unlock);
+})();
 go(location.hash.slice(1)||'home');
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(reg){reg.addEventListener('updatefound',function(){var nw=reg.installing;if(!nw)return;nw.addEventListener('statechange',function(){if(nw.state==='installed'&&navigator.serviceWorker.controller&&!document.getElementById('swUpdateBar')){var b=document.createElement('div');b.id='swUpdateBar';b.style.cssText='position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:70;background:rgba(20,26,50,.97);border:1.5px solid rgba(246,220,155,.6);color:#ffe6ad;border-radius:12px;padding:10px 16px;font-size:13px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.35)';b.textContent='有新版本 · 点此刷新';b.onclick=function(){location.reload();};document.body.appendChild(b);}});});}).catch(function(){});}
 </script>
