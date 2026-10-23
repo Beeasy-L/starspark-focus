@@ -130,6 +130,10 @@ h1,h2,h3,h4{font-family:var(--serif);line-height:1.35}
 .recon-duration button{min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);
   color:var(--ink2);font-size:14px;cursor:pointer}
 .recon-duration button:hover{border-color:var(--gold);color:var(--gold-hi)}
+.pause-opts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.pause-opts button{min-height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);
+  color:var(--ink2);font-size:13px;cursor:pointer}
+.pause-opts button:hover{border-color:var(--gold);color:var(--gold-hi)}
 .protocol-source{font-size:12px;color:var(--ink3);line-height:1.8;margin-top:10px}
 .protocol-source a{color:var(--blue)}
 .ambient-box{border-top:1px solid var(--line2);margin-top:14px;padding-top:13px}
@@ -173,6 +177,10 @@ h1,h2,h3,h4{font-family:var(--serif);line-height:1.35}
 .policy-body{padding:0 13px 13px;border-top:1px solid var(--line2)}
 .policy-rule{color:var(--ink2);font-size:13px;line-height:1.85;margin:10px 0}
 .policy-meta{display:flex;gap:10px;flex-wrap:wrap;color:var(--ink3);font-size:11px;margin-bottom:9px}
+.steady{font-weight:700;padding:1px 8px;border-radius:99px;line-height:1.6}
+.steady-e0{color:var(--ink3);background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.steady-e1{color:var(--blue);background:rgba(130,166,255,.12);border:1px solid rgba(130,166,255,.35)}
+.steady-e2{color:var(--gold-hi);background:rgba(242,198,109,.12);border:1px solid rgba(242,198,109,.4)}
 .policy-meter{height:4px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin:7px 0 11px}
 .policy-meter i{display:block;height:100%;background:linear-gradient(90deg,var(--gold-deep),var(--gold-hi));border-radius:99px}
 .policy-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
@@ -189,6 +197,9 @@ h1,h2,h3,h4{font-family:var(--serif);line-height:1.35}
 .policy-history summary{color:var(--ink3);cursor:pointer;font-size:12.5px}
 .policy-history-list{display:grid;gap:6px;margin-top:9px}
 .history-policy{font-size:12px;color:var(--ink3);line-height:1.7}
+.history-policy .recycle-actions{float:right;display:inline-flex;gap:6px;margin-left:8px}
+.history-policy .recycle-actions button{font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--line);background:var(--paper);color:var(--ink2);cursor:pointer}
+.history-policy .recycle-actions button.danger{color:#d9897a;border-color:rgba(216,137,122,.35)}
 .policy-form-grid{display:grid;gap:10px}.policy-form-grid label{font-size:12px;color:var(--ink3)}
 .policy-form-grid select{width:100%;background:rgba(255,255,255,.05);border:1.5px solid var(--line);border-radius:10px;
   color:var(--ink);padding:10px 12px;font:14px var(--sans);margin-top:5px}
@@ -556,14 +567,15 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <li><b>完成就铸星，中途被打断点「结束」由你裁判。</b>去「星链」看轨迹、去「复盘」写一句；换手机或清缓存前，记得在「日志」页导出备份。</li>
       </ol>
       <details class="guide-more">
-        <summary>更多细节：静场、判例、星图、国策树、备份</summary>
+        <summary>更多细节：静场、背景音乐、判例、星图、国策树、备份</summary>
         <ol class="num">
           <li><b>时长与防漂移。</b>15 / 25 / 45 / 60 分钟任选，第一次不知道就选 25 分钟；锁屏或切到后台后回来，会按真实经过时间继续计时。</li>
           <li><b>5 分钟热身。</b>只要求你先坐下做 5 分钟。5 分钟到了可以结束，也可以延长为一次正式专注；结束热身不会断开主星链。</li>
           <li><b>预约入座。</b>选 5 / 10 / 15 / 30 分钟，在倒计时内回来点火会记作准时；时间到了仍未点火，会请你判定这次启动是否中断，不会静默消失。</li>
           <li><b>提前收束与判例。</b>正式专注中途被打断时点“结束”：已专注超过 80% 会记为“提前收束”；更早结束时，可以选择继续、断链，或把合理原因“立为判例”。</li>
           <li><b>“立为判例”是一条永久规则。</b>例如把“接水”立为判例后，以后同样情况会默认允许，本次也会铸星。不要为了这一次舒服，把“刷手机”也立成判例；判例只有两类结果：断链，或长期允许。</li>
-          <li><b>静场。</b>白噪、粉噪、棕噪、雨声、海浪、篝火都由浏览器本地生成，不联网、不录音；声音默认关闭，只有你主动开启后才会在专注时播放。</li>
+          <li><b>静场。</b>白噪、粉噪、棕噪由浏览器本地合成，雨声是真实的雨声录音，海浪、篝火为本地生成的自然声，都不联网、不录音；声音默认关闭，只有你主动开启后才会在专注时播放。</li>
+          <li><b>背景音乐。</b>默认关闭，可在「更多启动方式」里开启；只有一朵钢琴曲《月亮代表我的心》，专注时淡入、结束淡出，与我加的雨声一起，让坐下更舒服。</li>
           <li><b>断链不清零。</b>当前星链加 1，历史最长链永久保留；断链只是从新的 #1 再开始，不代表之前所有努力都消失。</li>
           <li><b>星链、星图与统计。</b>星图记录近 90 天，统计会区分完整完成、提前收束和判例；点击星图日期可以回看当天的“推进”。</li>
           <li><b>国策树。</b>在“复盘 → 国策树”里添加长期规则，第一条可以直接选模板；之后每天最多新增一个节点，没做到时可以熄灭该分支，或用“冻结”短暂冻结。</li>
@@ -666,7 +678,21 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
               <input id="soundVolume" type="range" min="0" max="60" step="1" value="22" aria-label="背景声音量">
               <span id="soundVolumeValue">22</span>
             </div>
-            <p class="protocol-note" id="soundHint">白噪更清晰，粉噪更柔和，棕噪更低沉；雨声、海浪、篝火是现场合成的自然声，全部只在本地生成。</p>
+            <p class="protocol-note" id="soundHint">白噪、粉噪、棕噪由浏览器现场合成；雨声、海边篝火是真实的声音录音；海浪为现场合成的自然声。全部只在本地生成、不需要网络。</p>
+          </div>
+        </div>
+        <div class="ambient-box music-box">
+          <div class="ambient-head">
+            <h4>背景音乐</h4>
+            <button class="ambient-toggle" id="musicToggle" type="button" aria-pressed="false">关闭</button>
+          </div>
+          <div class="ambient-controls off" id="musicControls">
+            <div class="ambient-volume">
+              <span class="ambient-volume__track">月亮代表我的心 · 钢琴版</span>
+              <input id="musicVolume" type="range" min="0" max="60" step="1" value="20" aria-label="背景音乐音量">
+              <span id="musicVolumeValue">20</span>
+            </div>
+            <p class="protocol-note" id="musicHint">陪伴的钢琴曲。与静场互不干扰，可单独开、也可一起听；专注时淡入，结束淡出。</p>
           </div>
         </div>
         <button class="btn linklike" id="simpleCollapseBtn" type="button">▴ 收起，回到极简</button>
@@ -706,6 +732,10 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <div class="ambient-running" id="soundRunning" style="display:none">
           <span id="soundRunningLabel">背景声已关闭</span>
           <button id="soundRunningBtn" type="button">恢复声音</button>
+        </div>
+        <div class="ambient-running music-running" id="musicRunning" style="display:none">
+          <span id="musicRunningLabel">背景音乐已关闭</span>
+          <button id="musicRunningBtn" type="button">恢复</button>
         </div>
       </div>
     </div>
@@ -796,7 +826,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <div class="policy-toolbar">
           <div>
             <h3>国策星树</h3>
-            <p class="muted">国策不是待办，而是一条长期触发规则。每天最多点亮一个新节点。</p>
+            <p class="muted">国策不是待办，而是一条长期触发规则。每天最多点亮一个新节点。每守住一天，规则向内生长——连续 7 天进 <b>E1·生根</b>、21 天成 <b>E2·成树</b>；约束力 =（分支节点数 + 1）× 稳态权重，分叉越深、守住越久，约束越强。</p>
           </div>
           <div class="policy-toolbar-actions">
             <button class="btn ghost" id="policySettleAll" type="button">今天全部守住</button>
@@ -812,7 +842,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <p class="muted">不要写“早睡早起”，试着写“回家进门后先洗澡”。规则挂在环境或动作上，比提醒自己更有用。</p>
       </div>
       <details class="policy-history" id="policyHistory">
-        <summary>熄灭记录</summary>
+        <summary>回收箱 · 熄灭记录（可恢复或永久删除）</summary>
         <div class="policy-history-list" id="policyHistoryList"></div>
       </details>
     </div>
@@ -865,6 +895,15 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v1.1.0</div>
+      <div class="logdate">2026-10-23</div>
+      <ul class="loglist">
+        <li>背景音乐：《月亮代表我的心》钢琴版作为专注背景乐，可整首循环；有独立开关与音量，开始专注时淡入、结束时淡出，暂停时随之停、继续时接着放。<b>音频为真实录音，随网页预缓存，离线也能播放。</b></li>
+        <li>自然声升级：雨声、篝火改用手边的真实录音（海边篝火白噪音），海浪为现场合成；白粉棕噪仍由浏览器合成，全部不联网。</li>
+        <li>有纪律暂停：暂停时给你一个选项——停 15 / 30 / 60 分钟，到点自动回到专注，避免一停就不回；也可以自由暂停。</li>
+        <li>国策内化进度：每守住一天，规则向内生长——连续 7 天进 <b>E1·生根</b>、21 天成 <b>E2·成树</b>；约束力 =（分支节点数+1）×稳态权重，分叉越深、守住越久，约束越强。</li>
+        <li>回收箱：熄灭的国策不再只是记录，可从此恢复，或永久删除（删除不可恢复）。</li>
+      </ul>
       <div class="logver">v1.0.0</div>
       <div class="logdate">2026-10-23</div>
       <ul class="loglist">
@@ -1022,6 +1061,7 @@ const defaultState=()=>({
   blocks:[],whitelist:[],precedents:[],reservation:null,appointments:[],recons:[],
   startup:{currentNo:0,bestNo:0,lastAt:null},
   settings:{sound:{enabled:false,type:'white',volume:22},ceremonySound:true,simpleMode:true},
+  music:{enabled:false,volume:20},
   meta:{lastExportAt:null,backupSnoozeAt:null,onboardedAt:null},
   policyTree:{version:1,nodes:[],freezes:[],checks:{},events:[],lastAddDay:null},
   reviews:{},session:null
@@ -1074,6 +1114,8 @@ function hydrateState(){
   S.settings.sound=Object.assign({enabled:false,type:'white',volume:22},S.settings.sound||{});
   S.settings.ceremonySound=S.settings.ceremonySound!==false;
   if(!['white','pink','brown','rain','waves','fire'].includes(S.settings.sound.type))S.settings.sound.type='white';
+  S.settings.music=Object.assign({enabled:false,volume:20},S.settings.music||{});
+  S.settings.music.volume=Math.min(60,Math.max(0,Number(S.settings.music.volume)||20));
   S.settings.sound.volume=Math.min(60,Math.max(0,Number(S.settings.sound.volume)||22));
   S.settings.simpleMode=S.settings.simpleMode!==false;
   S.meta=Object.assign({lastExportAt:null,backupSnoozeAt:null,onboardedAt:null},S.meta||{});
@@ -1200,24 +1242,41 @@ function stopAmbient(immediate=false){
   },900);
   updateSoundUI();
 }
+const AMBIENT_FILES={rain:'assets/rain-forest.mp3',waves:'assets/waves.mp3',fire:'assets/campsite.mp3'};
+let ambientBufferCache={};
+function loadAmbientFile(type){
+  const path=AMBIENT_FILES[type];
+  if(!path)return Promise.resolve(null);
+  if(ambientBufferCache[type])return Promise.resolve(ambientBufferCache[type]);
+  return fetch(path).then(r=>r.arrayBuffer()).then(buf=>new Promise((res,rej)=>{
+    const ctx=ensureAudioContext();if(!ctx)return res(null);
+    ctx.decodeAudioData(buf,(ab)=>{ambientBufferCache[type]=ab;res(ab);},err=>rej(err));
+  })).catch(()=>null);
+}
 function startAmbient(){
   if(!S.settings.sound.enabled||!cur||cur.pauseTs||cur.soundMuted)return;
   const ctx=ensureAudioContext();
   if(!ctx)return;
   clearTimeout(soundSuspendTimer);
   stopAmbient(true);
-  const src=ctx.createBufferSource(),gain=ctx.createGain();
-  src.buffer=generateNoiseBuffer(ctx,S.settings.sound.type);
-  src.loop=true;gain.gain.setValueAtTime(.0001,ctx.currentTime);
-  src.connect(gain);gain.connect(ctx.destination);
-  const target=Math.max(.0001,volumeGain());
-  gain.gain.exponentialRampToValueAtTime(target,ctx.currentTime+.7);
-  src.start();
-  soundSource=src;soundGain=gain;soundActive=true;
-  updateSoundUI();
+  const type=S.settings.sound.type;
+  loadAmbientFile(type).then((fileBuf)=>{
+    if(!S.settings.sound.enabled||!cur||cur.pauseTs||cur.soundMuted)return;
+    const ctx2=ensureAudioContext();if(!ctx2)return;
+    const src=ctx2.createBufferSource(),gain=ctx2.createGain();
+    src.buffer=fileBuf||generateNoiseBuffer(ctx2,type);
+    src.loop=true;gain.gain.setValueAtTime(.0001,ctx2.currentTime);
+    src.connect(gain);gain.connect(ctx2.destination);
+    const target=Math.max(.0001,volumeGain());
+    gain.gain.exponentialRampToValueAtTime(target,ctx2.currentTime+.7);
+    src.start();
+    soundSource=src;soundGain=gain;soundActive=true;
+    updateSoundUI();
+  });
 }
 function prepareAmbientGesture(){
   if(S.settings.sound.enabled)ensureAudioContext();
+  if(S.settings.music.enabled)ensureMusicContext();
 }
 function soundSessionLabel(){
   return `${SOUND_LABELS[S.settings.sound.type]||'白噪'} · ${S.settings.sound.volume}%`;
@@ -1270,6 +1329,122 @@ function bindSound(){
   updateSoundUI();
 }
 
+/* ===== 背景音乐：月亮代表我的心（钢琴版，真实音频 + PWA 预缓存） ===== */
+const MUSIC_SRC='assets/music-moon.mp3';
+let musicGain=null,musicCtx=null,musicSrc=null,musicMuted=false,musicReady=false,musicFadeTimer=null;
+function ensureMusicContext(){
+  if(!musicCtx){
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return null;
+    musicCtx=new AC();
+  }
+  if(musicCtx.state==='suspended')musicCtx.resume().catch(()=>{});
+  return musicCtx;
+}
+function loadMusicBuffer(){
+  if(musicReady)return Promise.resolve();
+  return fetch(MUSIC_SRC).then(r=>r.arrayBuffer()).then(buf=>{
+    const ctx=ensureMusicContext();
+    if(!ctx)return;
+    return new Promise((res,rej)=>{
+      ctx.decodeAudioData(buf,(ab)=>{musicBuffer=ab;musicReady=true;res();},rej);
+    });
+  }).catch(()=>{/* 若加载失败静默，音乐不播，不影响其余功能 */});
+}
+let musicBuffer=null;
+function musicGainValue(){return Math.pow((Number(S.settings.music.volume)||0)/60,1.8)*.42;}
+function startMusic(){
+  if(!S.settings.music.enabled)return;
+  if(!cur||cur.pauseTs||musicMuted)return;
+  const ctx=ensureMusicContext();
+  if(!ctx)return;
+  clearTimeout(musicFadeTimer);
+  loadMusicBuffer().then(()=>{
+    if(!musicReady||!S.settings.music.enabled||!cur||musicMuted)return;
+    if(musicCtx&&musicCtx.state==='suspended')musicCtx.resume().catch(()=>{});
+    if(musicGain){musicGain.gain.cancelScheduledValues(musicCtx.currentTime);}
+    if(!musicSrc){
+      const src=ctx.createBufferSource();src.buffer=musicBuffer;src.loop=true;
+      const g=ctx.createGain();
+      const target=Math.max(.0001,musicGainValue());
+      g.gain.setValueAtTime(.0001,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(target,ctx.currentTime+.8);
+      src.connect(g);g.connect(ctx.destination);src.start();
+      musicSrc=src;musicGain=g;
+    }else{
+      const target=Math.max(.0001,musicGainValue());
+      musicGain.gain.setTargetAtTime(target,musicCtx.currentTime,.15);
+    }
+    updateMusicUI();
+  });
+}
+function stopMusic(immediate=false){
+  const src=musicSrc,gain=musicGain,ctx=musicCtx;
+  musicSrc=null;musicGain=null;
+  if(gain&&ctx){
+    try{
+      const now=ctx.currentTime;
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setValueAtTime(Math.max(.0001,gain.gain.value),now);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+(immediate?.05:.6));
+    }catch(e){}
+  }
+  if(src&&ctx){
+    const delay=immediate?60:750;
+    musicFadeTimer=setTimeout(()=>{try{src.stop()}catch(e){}},delay);
+  }
+  updateMusicUI();
+}
+function setMusicEnabled(value){
+  S.settings.music.enabled=!!value;
+  if(!value)stopMusic();
+  else if(cur&&!cur.pauseTs&&!musicMuted)startMusic();
+  save();updateMusicUI();
+}
+function setMusicVolume(value){
+  S.settings.music.volume=Math.min(60,Math.max(0,Number(value)||0));
+  if(musicGain&&musicCtx){
+    const target=Math.max(.0001,musicGainValue());
+    musicGain.gain.cancelScheduledValues(musicCtx.currentTime);
+    musicGain.gain.setTargetAtTime(target,musicCtx.currentTime,.15);
+  }
+  save();updateMusicUI();
+}
+function updateMusicUI(){
+  const enabled=!!S.settings.music.enabled;
+  $('#musicToggle').textContent=enabled?'开启':'关闭';
+  $('#musicToggle').classList.toggle('on',enabled);
+  $('#musicToggle').setAttribute('aria-pressed',String(enabled));
+  $('#musicControls').classList.toggle('off',!enabled);
+  $('#musicVolume').value=S.settings.music.volume;
+  $('#musicVolumeValue').textContent=S.settings.music.volume;
+  const run=$('#musicRunning');if(!run)return;
+  run.style.display=enabled?'flex':'none';
+  if(enabled){
+    $('#musicRunningLabel').textContent=musicMuted?(cur&&cur.soundMuted?'已静音 · 月亮代表我的心':'背景音乐 · 已静音'):'背景音乐 · 月亮代表我的心';
+  }
+}
+function showMusicRunning(sess){
+  const mr=$('#musicRunning');if(!mr)return;
+  if(sess&&S.settings.music.enabled){mr.style.display='flex';$('#musicRunningLabel').textContent=musicMuted?'背景音乐 · 已静音':'背景音乐 · 月亮代表我的心';}
+  else{mr.style.display='none';}
+}
+function bindMusic(){
+  $('#musicToggle').onclick=()=>setMusicEnabled(!S.settings.music.enabled);
+  $('#musicVolume').oninput=e=>setMusicVolume(e.target.value);
+  const mrBtn=$('#musicRunningBtn');
+  if(mrBtn)mrBtn.onclick=()=>{
+    if(!S.settings.music.enabled){toast('先开启背景音乐');return;}
+    if(musicMuted||musicSrc){musicMuted=false;startMusic();}
+    else{musicMuted=true;stopMusic();}
+    if(cur){cur.soundMuted=musicMuted;S.session=cur;save();}
+    showMusicRunning(!!cur);
+    updateMusicUI();
+  };
+  updateMusicUI();
+}
+function prepareMusicGesture(){ if(S.settings.music.enabled)ensureMusicContext(); }
+
 /* ===== 导航 ===== */
 const TABS=[
  {id:'today',label:'今天',icon:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>'},
@@ -1314,9 +1489,11 @@ function elapsedMs(){if(!cur)return 0;
   const now=cur.pauseTs?cur.pauseTs:Date.now();return now-cur.startTs-cur.pausedMs;}
 function planMs(){return cur.planMin*60000;}
 
-function showRunning(){$('#focusIdle').style.display='none';$('#focusRunning').style.display='block';}
+function showRunning(){musicMuted=false;$('#focusIdle').style.display='none';$('#focusRunning').style.display='block';
+  showMusicRunning(!!cur);}
 function showIdle(){$('#focusIdle').style.display='block';$('#focusRunning').style.display='none';
-  const sp=$('#sessionPoem');if(sp)sp.classList.remove('on');}
+  const sp=$('#sessionPoem');if(sp)sp.classList.remove('on');
+  showMusicRunning(false);}
 function updateSessionChrome(){
   if(!cur)return;
   const isRecon=cur.mode==='recon';
@@ -1397,7 +1574,7 @@ function startSession(mode){
     showSessionPoem();
     updateSessionChrome();
     stopReserve();
-    startTick();startAmbient();igniting=false;
+    startTick();startAmbient();startMusic();igniting=false;
     renderTodayCard();
   });
 }
@@ -1566,23 +1743,60 @@ function playIgnite(done){
   at(2160,finish);
 }
 
+let pauseTimer=null;
+const PAUSE_OPTS=[{label:'停 15 分钟',min:15},{label:'停 30 分钟',min:30},{label:'停 60 分钟',min:60},{label:'自由暂停',min:0}];
+function openPauseDialog(){
+  if(!cur||!cur.pauseTs)return;
+  const opts=PAUSE_OPTS.map(o=>`<button class="pause-opt" data-min="${o.min}">${o.label}</button>`).join('');
+  openDialog('有纪律暂停',
+    '暂停可以，但最好给它一个边界，到点自动回来继续专注，避免一停就不回。',
+    `<div class="pause-opts">${opts}</div>
+     <p class="muted" style="margin-top:8px">自由暂停不会自动到点，但暂停期间计时仍是停在原处。</p>`,
+    ()=>{
+      $$('.pause-opt').forEach(b=>b.onclick=()=>{
+        const min=+b.dataset.min;
+        if(min>0){cur.pauseUntilTs=Date.now()+min*60000;armPauseResume();toast('已暂停，'+min+' 分钟后自动回到专注');}
+        else{cur.pauseUntilTs=null;clearPauseTimer();toast('已自由暂停，点「继续」回到专注');}
+        closeJudge();save();renderTodayCard();
+      });
+    });
+}
+function armPauseResume(){
+  clearPauseTimer();
+  pauseTimer=setInterval(()=>{
+    if(!cur||!cur.pauseUntilTs||!cur.pauseTs)return;
+    if(Date.now()>=cur.pauseUntilTs){
+      cur.pauseUntilTs=null;clearPauseTimer();
+      // 自动恢复专注
+      cur.pausedMs+=Date.now()-cur.pauseTs;cur.pauseTs=null;
+      updateSessionChrome();S.session=cur;save();startTick();startAmbient();startMusic();
+      toast('暂停时间到，已自动回到专注');
+      renderTodayCard();
+    }
+  },1000);
+}
+function clearPauseTimer(){if(pauseTimer){clearInterval(pauseTimer);pauseTimer=null;}}
 function togglePause(){
   renderTodayCard();
   if(cur.pauseTs){
-    cur.pausedMs+=Date.now()-cur.pauseTs;cur.pauseTs=null;
+    cur.pausedMs+=Date.now()-cur.pauseTs;cur.pauseTs=null;cur.pauseUntilTs=null;
+    clearPauseTimer();
     updateSessionChrome();
-    S.session=cur;save();startTick();startAmbient();
+    S.session=cur;save();startTick();startAmbient();startMusic();
   }else{
     cur.pauseTs=Date.now();clearInterval(T);
-    stopAmbient();
+    stopAmbient();stopMusic();
     updateSessionChrome();
     S.session=cur;save();tick();
+    // 有纪律暂停：弹出定时选项，给暂停一个边界；若已有自动恢复计时则不重复弹
+    if(!cur.pauseUntilTs)openPauseDialog();
   }
 }
 
 function stop(){
   if(!cur)return;
-  stopAmbient();
+  clearPauseTimer();
+  stopAmbient();stopMusic();
   if(!cur.pauseTs)cur.pauseTs=Date.now();
   clearInterval(T);
   const e=elapsedMs(),ratio=e/planMs();
@@ -1598,6 +1812,7 @@ function stop(){
 function finishRecon(status,targetMin=null){
   if(!cur)return;
   stopAmbient();
+  stopMusic();
   const e=elapsedMs();
   S.recons.push({id:Date.now(),task:cur.task,startedAt:cur.startTs,endedAt:Date.now(),
     seconds:Math.round(e/1000),status,targetMin,converted:status==='converted'});
@@ -1612,13 +1827,14 @@ function extendReconTo(minutes){
   cur.planMin=minutes;cur.mode='focus';cur.extendedFrom='recon';cur.reconPrompt=false;
   S.recons.push({id:Date.now(),task:cur.task,startedAt:cur.startTs,endedAt:Date.now(),
     seconds:Math.round(e/1000),status:'converted',targetMin:minutes,converted:true});
-  S.session=cur;save();closeJudge();showRunning();updateSessionChrome();startTick();startAmbient();
+  S.session=cur;save();closeJudge();showRunning();updateSessionChrome();startTick();startAmbient();startMusic();
   autoSatisfyPolicies('recon');
   toast(`已延长为 ${minutes} 分钟正式专注`);
 }
 function openReconDecision(){
   if(!cur||cur.mode!=='recon')return;
   stopAmbient();
+  stopMusic();
   if(!cur.pauseTs){cur.pauseTs=Date.now();clearInterval(T);}
   S.session=cur;save();updateSessionChrome();
   let target=25;
@@ -1643,6 +1859,7 @@ function finish(kind,reason,endedBy){
   clearInterval(T);
   if(!cur.pauseTs)cur.pauseTs=Date.now();   // 固定计时，结算期间不再走动
   stopAmbient();
+  stopMusic();
   const e=elapsedMs();
   const block={id:Date.now(),task:cur.task,planMin:cur.planMin,actualSec:Math.round(e/1000),
     ignitedAt:cur.startTs,endedAt:Date.now(),onTime:cur.onTime,state:kind,reason:reason||null,
@@ -2161,6 +2378,21 @@ function policyChildren(parentId,includeExtinguished=false){
   return S.policyTree.nodes.filter(n=>n.parentId===(parentId||null)&&(includeExtinguished||n.status!=='extinguished'))
     .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
 }
+/* 稳态 E0 点火 → E1 生根(连续7天) → E2 成树(连续21天)；权重 E0=1 / E1=2 / E2=3 */
+const STEADY_DEFS=[
+  {key:'e0',label:'E0 · 点火',weight:1,min:0,threshold:7,hint:'刚点亮，处于试探期。连续守住 7 天成长为 E1。'},
+  {key:'e1',label:'E1 · 生根',weight:2,min:7,threshold:21,hint:'已经连续守住 7 天，开始生根。连续守住 21 天成树。'},
+  {key:'e2',label:'E2 · 成树',weight:3,min:21,threshold:Infinity,hint:'连续守住 21 天，规则已经长成你的一部分。'}
+];
+function policySteadyState(node){
+  const cd=Number(node.consecutiveDays)||0;
+  return STEADY_DEFS.find(s=>cd<s.threshold)||STEADY_DEFS[STEADY_DEFS.length-1];
+}
+function policyConstraint(node){
+  const sub=policyBranchIds(node.id).length-1; // 自身之外的分支节点数
+  const w=policySteadyState(node).weight;
+  return (sub+1)*w;
+}
 function policyBranchIds(rootId){
   const ids=[],seen=new Set(),stack=[rootId];
   while(stack.length){
@@ -2324,12 +2556,15 @@ function renderPolicyNode(node,depth=0){
       <button data-policy-action="not-triggered" data-node-id="${escHtml(node.id)}">未触发</button>
       <button class="miss" data-policy-action="missed" data-node-id="${escHtml(node.id)}">没做到</button>
     </div>`:'';
+  const st=policySteadyState(node),constr=policyConstraint(node);
   const branch=children.map(c=>renderPolicyNode(c,depth+1)).join('');
   return `<div class="policy-branch"><details class="policy-node" data-status="${node.status}" ${node.status==='frozen'?'open':''}>
     <summary><span class="policy-title"><b>${escHtml(node.title)}</b><small>${escHtml(node.trigger)}</small></span>
       <span class="policy-status">${escHtml(statusText)}</span></summary>
     <div class="policy-body"><p class="policy-rule">${escHtml(node.rule)}</p>
-      <div class="policy-meta"><span>${policyModeLabel(node.mode)}</span><span>连续 ${node.consecutiveDays} 天</span>
+      <div class="policy-meta">
+        <span class="steady steady-${st.key}" title="${st.hint}">${st.label}</span>
+        <span>约束力 ${constr}</span><span>${policyModeLabel(node.mode)}</span><span>连续 ${node.consecutiveDays} 天</span>
         <span>最长 ${node.bestStreak} 天</span><span>内化 ${Math.round(node.internalization)}%</span></div>
       <div class="policy-meter"><i style="width:${Math.min(100,node.internalization)}%"></i></div>
       ${actions}</div></details>${branch}</div>`;
@@ -2354,12 +2589,51 @@ function renderPolicyTree(){
   $('#policyTree').innerHTML=roots.map(n=>renderPolicyNode(n)).join('');
   $('#policyEmpty').style.display=active.length?'none':'block';
   $('#policyHistory').style.display=extinct.length?'block':'none';
-  $('#policyHistoryList').innerHTML=extinct.map(n=>`<div class="history-policy"><b>${escHtml(n.title)}</b> · 内化 ${Math.round(n.internalization)}% · 已熄灭</div>`).join('');
+  // 回收箱只列熄灭枝的根节点（无已熄灭父节点的熄灭火），操作作用于整枝
+  const extinctRoots=extinct.filter(n=>{
+    const p=S.policyTree.nodes.find(x=>x.id===n.parentId);
+    return !p||p.status!=='extinguished';
+  });
+  $('#policyHistoryList').innerHTML=extinctRoots.map(n=>{const sub=extinct.filter(x=>isDescendantOf(x.id,n.id)).length;
+    return `<div class="history-policy"><b>${escHtml(n.title)}</b> · 内化 ${Math.round(n.internalization)}% · 已熄灭${sub?'（含 '+sub+' 个子分支）':''}
+    <span class="recycle-actions">
+      <button data-recycle-restore="${escHtml(n.id)}">恢复</button>
+      <button data-recycle-purge="${escHtml(n.id)}" class="danger">永久删除</button>
+    </span></div>`;}).join('');
   $$('#policyTree [data-policy-action]').forEach(b=>b.onclick=e=>{
     e.preventDefault();setPolicyResult(b.dataset.nodeId,b.dataset.policyAction);
   });
   $$('[data-freeze-restore]').forEach(b=>b.onclick=()=>resolveFreeze(b.dataset.freezeRestore,true));
   $$('[data-freeze-expire]').forEach(b=>b.onclick=()=>resolveFreeze(b.dataset.freezeExpire,false));
+  $$('[data-recycle-restore]').forEach(b=>b.onclick=()=>restorePolicyBranch(b.dataset.recycleRestore));
+  $$('[data-recycle-purge]').forEach(b=>b.onclick=()=>purgePolicyBranch(b.dataset.recyclePurge));
+}
+function restorePolicyBranch(rootId){
+  const root=S.policyTree.nodes.find(n=>n.id===rootId);
+  if(!root||root.status!=='extinguished'){toast('这条国策不在回收箱');return;}
+  S.policyTree.nodes.filter(n=>n.status==='extinguished'&&(n.id===rootId||isDescendantOf(n.id,rootId)))
+    .forEach(n=>{n.status='lit';n.extinguishedAt=null;n.extinguishReason=null;});
+  pushPolicyEvent('restored',rootId,{reason:'recycle'});
+  save();renderPolicyTree();toast('已从回收箱恢复这条国策');
+}
+function isDescendantOf(nodeId,rootId){
+  let n=S.policyTree.nodes.find(x=>x.id===nodeId);
+  while(n&&n.parentId){if(n.parentId===rootId)return true;n=S.policyTree.nodes.find(x=>x.id===n.parentId);}
+  return false;
+}
+function purgePolicyBranch(rootId){
+  const root=S.policyTree.nodes.find(n=>n.id===rootId);
+  if(!root||root.status!=='extinguished')return;
+  if(!confirm('永久删除这条国策及其全部子分支？删除后无法恢复。'))return;
+  const ids=new Set([rootId]);
+  S.policyTree.nodes.filter(n=>[rootId].includes(n.parentId)||isDescendantOf(n.id,rootId)).forEach(n=>ids.add(n.id));
+  S.policyTree.nodes=S.policyTree.nodes.filter(n=>!ids.has(n.id));
+  S.policyTree.checks=Object.keys(S.policyTree.checks).reduce((o,k)=>{
+    const c=S.policyTree.checks[k];const keep={};Object.keys(c).forEach(id=>{if(!ids.has(id))keep[id]=c[id];});
+    if(Object.keys(keep).length)o[k]=keep;return o;
+  },{});
+  S.policyTree.events=S.policyTree.events.filter(e=>!ids.has(e.nodeId));
+  save();renderPolicyTree();toast('已从回收箱永久删除');
 }
 function showReviewView(view){
   reviewView=view==='policy'?'policy':'diary';
@@ -3001,8 +3275,8 @@ function restore(){
   if(S.session){cur=S.session;showRunning();
     showSessionPoem();
     updateSessionChrome();
-    if(cur.pauseTs){$('#pauseBtn').textContent='继续';tick();}
-    else{startTick();}
+    if(cur.pauseTs){$('#pauseBtn').textContent='继续';tick();if(cur.pauseUntilTs)armPauseResume();}
+    else{startTick();startAmbient();startMusic();}
     if(cur.mode==='recon'&&elapsedMs()>=5*60000){
       if(!cur.reconPrompt)openReconDecision();
       return;
@@ -3090,7 +3364,7 @@ function renderPoemBook(){
 /* ===== 初始化 ===== */
 buildNav();
 try{renderPoemOfDay();renderPoemBook();}catch(e){}
-try{bindFocus();bindSimple();bindSound();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();bindOnboarding();bindAnnualPoster();}catch(e){}
+try{bindFocus();bindSimple();bindSound();bindMusic();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();bindOnboarding();bindAnnualPoster();}catch(e){}
 try{restore();}catch(e){}
 try{applySimpleMode();renderBackupBanner();renderTodayCard();maybeShowOnboarding();}catch(e){}
 go(location.hash.slice(1)||'home');
