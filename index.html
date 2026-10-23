@@ -360,6 +360,32 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .guide-step b{font-family:var(--serif);color:var(--gold-hi);font-size:14px}
 .guide-step p{margin:3px 0 0;font-size:12.5px;line-height:1.8}
 #fxCanvas{position:fixed;inset:0;z-index:58;pointer-events:none;display:none}
+/* 备份中心 */
+.snap-head{margin-top:14px;font-family:var(--serif);font-size:14px;color:var(--gold-hi)}
+.snap-head .muted{font-size:11.5px;margin-left:6px;font-family:var(--sans)}
+.snap-list{margin-top:8px;display:grid;gap:8px}
+.snap-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;
+  background:rgba(255,255,255,.04);border:1px solid var(--line2);border-radius:10px;padding:9px 12px}
+.snap-row .s-main{font-size:12.5px;color:var(--ink2);line-height:1.7}
+.snap-row .s-main b{color:var(--gold-hi);font-family:var(--sans);font-weight:600;margin-right:6px}
+.snap-row button{background:transparent;border:1px solid var(--line);color:var(--ink2);border-radius:9px;
+  padding:7px 12px;font-size:12px;cursor:pointer;min-height:38px}
+.snap-row button:hover{color:var(--gold-hi);border-color:rgba(246,220,155,.5)}
+/* 新手引导 */
+.onboard-mask{position:fixed;inset:0;z-index:65;display:none;align-items:center;justify-content:center;
+  background:rgba(4,6,15,.86);padding:20px}
+.onboard-mask.on{display:flex}
+.onboard-card{width:min(92vw,440px);background:rgba(18,24,44,.98);border:1px solid rgba(246,220,155,.4);
+  border-radius:20px;padding:24px 22px;box-shadow:0 20px 60px rgba(0,0,0,.5);
+  transform:translateY(8px);opacity:0;transition:transform .35s cubic-bezier(.23,1,.32,1),opacity .3s ease}
+.onboard-mask.on .onboard-card{transform:none;opacity:1}
+.ob-kicker{font-family:var(--sans);font-size:11px;letter-spacing:.16em;color:var(--gold)}
+.onboard-card h3{margin:8px 0 10px;font-family:var(--serif);font-size:20px;color:var(--gold-hi)}
+.ob-text{margin:0;font-size:13.5px;line-height:1.9;color:var(--ink2);min-height:96px}
+.ob-dots{display:flex;gap:6px;margin:14px 0 16px}
+.ob-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2)}
+.ob-dots i.on{background:var(--gold-hi);box-shadow:0 0 8px rgba(246,220,155,.7)}
+.ob-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .mile-banner{position:fixed;left:50%;top:16%;transform:translate(-50%,-8px);z-index:59;opacity:0;
   background:rgba(20,26,50,.96);border:1.5px solid rgba(246,220,155,.5);border-radius:14px;padding:12px 20px;
   color:var(--gold-hi);font-size:13.5px;transition:opacity .3s ease,transform .3s ease}
@@ -807,17 +833,21 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         </div>
       </div>
       <p class="muted" style="margin-top:10px">三个词就够：<b>星链</b>＝专注次数，<b>判例</b>＝合理中断的永久规则，<b>国策</b>＝长期习惯。</p>
+      <button class="btn ghost" id="replayOnboard" type="button" style="margin-top:10px">重新看一遍新手引导</button>
     </div>
-    <div class="card">
-      <h3>数据备份</h3>
-      <p class="muted">导出一份 JSON 留在自己的设备上；导入时会合并记录，不会直接覆盖当前数据。</p>
+    <div class="card" id="backupCard">
+      <h3>数据与备份</h3>
+      <p class="muted">导出一份 JSON 留在自己的设备上；导入时会先告诉你要合并多少条，确认后才写入。</p>
       <div class="btnrow">
         <button class="btn primary" id="exportBackup">导出备份</button>
         <label class="file-label" for="importFile">导入备份</label>
         <input class="file-input" id="importFile" type="file" accept="application/json,.json">
       </div>
       <p class="muted" id="backupStatus" style="margin-top:8px">备份不包含正在进行的计时与预约入座。</p>
+      <p class="muted" id="dataHealth" style="margin-top:6px"></p>
       <p class="muted" id="autoBackupNote" style="margin-top:6px"></p>
+      <div class="snap-head">本机自动快照<span class="muted">（写坏可自愈；清除浏览器数据会一起删除）</span></div>
+      <div class="snap-list" id="snapList"></div>
     </div>
     <div class="card">
       <h3>更新日志</h3>
@@ -826,7 +856,10 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
       <ul class="loglist">
         <li>静场新增雨声、海浪、篝火三种自然声：全部由浏览器现场合成，不联网、不加载任何音频文件，离线可用。</li>
         <li>新增「有新版本 · 点此刷新」提示：以后更新不需要自己找缓存入口。</li>
-        <li>1.0 正式版开发中：接下来是备份中心、首启引导、年度星图海报，以及给同学看的发布页。</li>
+        <li>备份中心：本机自动快照现在能看到列表、一键恢复某次快照（恢复前会另存当前数据），并显示存储占用与上次导出时间。</li>
+        <li>导入预检：选文件后先告诉你「将合并多少条」，确认后才写入；重复记录自动跳过。</li>
+        <li>首启引导：第一次打开 30 秒看完三屏（点火 / 中断裁判 / 星链是证据），随时可在「我的 → 怎么用」重看。</li>
+        <li>1.0 正式版开发中：年度星图海报、给同学看的发布页。</li>
       </ul>
       <div class="logver">v0.9.0</div>
       <div class="logdate">2026-10-22</div>
@@ -918,6 +951,18 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 </main>
 <canvas id="fxCanvas"></canvas>
 <div class="mile-banner" id="mileBanner"></div>
+<div class="onboard-mask" id="onboardMask">
+  <div class="onboard-card">
+    <div class="ob-kicker" id="obKicker">第一次用 · 30 秒看懂</div>
+    <h3 id="obTitle"></h3>
+    <p class="ob-text" id="obText"></p>
+    <div class="ob-dots" id="obDots"></div>
+    <div class="ob-btns">
+      <button class="btn ghost" id="obSkip" type="button">跳过</button>
+      <button class="btn primary" id="obNext" type="button">下一步</button>
+    </div>
+  </div>
+</div>
 
 <nav class="bottomnav" id="bottomnav"></nav>
 
@@ -952,7 +997,7 @@ const defaultState=()=>({
   blocks:[],whitelist:[],precedents:[],reservation:null,appointments:[],recons:[],
   startup:{currentNo:0,bestNo:0,lastAt:null},
   settings:{sound:{enabled:false,type:'white',volume:22},ceremonySound:true,simpleMode:true},
-  meta:{lastExportAt:null,backupSnoozeAt:null},
+  meta:{lastExportAt:null,backupSnoozeAt:null,onboardedAt:null},
   policyTree:{version:1,nodes:[],freezes:[],checks:{},events:[],lastAddDay:null},
   reviews:{},session:null
 });
@@ -1006,7 +1051,7 @@ function hydrateState(){
   if(!['white','pink','brown','rain','waves','fire'].includes(S.settings.sound.type))S.settings.sound.type='white';
   S.settings.sound.volume=Math.min(60,Math.max(0,Number(S.settings.sound.volume)||22));
   S.settings.simpleMode=S.settings.simpleMode!==false;
-  S.meta=Object.assign({lastExportAt:null,backupSnoozeAt:null},S.meta||{});
+  S.meta=Object.assign({lastExportAt:null,backupSnoozeAt:null,onboardedAt:null},S.meta||{});
   S.policyTree=Object.assign({version:1,nodes:[],freezes:[],checks:{},events:[],lastAddDay:null},S.policyTree||{});
   S.policyTree.nodes=Array.isArray(S.policyTree.nodes)?S.policyTree.nodes:[];
   S.policyTree.nodes=S.policyTree.nodes.filter(n=>n&&n.id).map(n=>({
@@ -1232,7 +1277,7 @@ function go(id){
   if(id==='focus'){renderBackupBanner();applySimpleMode();}
   if(id==='chain')renderChain();
   if(id==='review'){renderReview();if(reviewView==='policy')renderPolicyTree();}
-  if(id==='log'){renderBackupBanner();renderAutoBackupNote();}
+  if(id==='log'){renderBackupBanner();renderAutoBackupNote();renderBackupCenter();}
 }
 window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
 
@@ -2344,6 +2389,108 @@ function persistentSnapshot(){
 /* 本机自动快照：每次铸星/断链后留存“最新 + 最近 6 个历史状态”，
    可在主数据写坏时自愈。注意：清除浏览器数据会连同本快照一起删除，
    真正防清缓存仍需定期导出 JSON（见点火页横幅）。 */
+/* ===== v1.0.0：备份中心 ===== */
+function fmtSnapTime(ts){
+  const d=new Date(Number(ts)||0);
+  const p=n=>String(n).padStart(2,'0');
+  return (d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+}
+function readAutoSnapshots(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(AUTO_KEY));
+    if(!raw)return [];
+    const list=[];
+    if(raw.latest)list.push(raw.latest);
+    (Array.isArray(raw.history)?raw.history:[]).forEach(x=>{if(x)list.push(x);});
+    return list;
+  }catch(e){return [];}
+}
+function renderBackupCenter(){
+  const list=$('#snapList');if(!list)return;
+  const health=$('#dataHealth');
+  const size=(JSON.stringify(S).length/1024).toFixed(1);
+  if(health){
+    const d=daysSince(S.meta.lastExportAt);
+    const ex=d===null?'从未导出':(d===0?'今天导出过':(d+' 天前导出过'));
+    health.textContent=`当前 ${S.blocks.length} 条专注 · 约 ${size} KB · ${ex}`;
+  }
+  const snaps=readAutoSnapshots();
+  list.innerHTML='';
+  if(!snaps.length){
+    const p=document.createElement('p');p.className='muted';
+    p.textContent='完成第一次专注后，这里会出现自动快照。';
+    list.appendChild(p);return;
+  }
+  snaps.slice(0,7).forEach((s,i)=>{
+    const data=(s&&s.data)||{};
+    const row=document.createElement('div');row.className='snap-row';
+    const main=document.createElement('div');main.className='s-main';
+    const b=document.createElement('b');b.textContent=(i===0?'最新':'# '+(i+1));
+    main.appendChild(b);
+    main.appendChild(document.createTextNode(fmtSnapTime(s.at)+' · 链 #'+((data.chain||{}).currentNo||0)+' · '+((data.blocks||[]).length)+' 条'));
+    row.appendChild(main);
+    const btn=document.createElement('button');btn.type='button';btn.textContent='恢复';
+    btn.onclick=()=>confirmRestoreSnapshot(s);
+    row.appendChild(btn);
+    list.appendChild(row);
+  });
+}
+function confirmRestoreSnapshot(snap){
+  if(!snap||!snap.data)return;
+  openDialog('恢复这次快照','将用 '+fmtSnapTime(snap.at)+' 的快照替换当前数据。当前数据会先另存一份（__pre_restore），万一恢复错了还能找回。',
+    '<button class="btn primary" id="snapOk" type="button">确认恢复</button>'+
+    '<button class="btn ghost" id="snapCancel" type="button" style="margin-top:8px">取消</button>',
+    ()=>{
+      $('#snapOk').onclick=()=>{
+        try{
+          localStorage.setItem(KEY+'__pre_restore',JSON.stringify(S));
+          localStorage.setItem(KEY,JSON.stringify(Object.assign(defaultState(),snap.data)));
+          closeJudge();toast('已恢复，正在重新载入');setTimeout(()=>location.reload(),500);
+        }catch(e){closeJudge();toast('恢复失败：浏览器存储空间不足');}
+      };
+      $('#snapCancel').onclick=closeJudge;
+    });
+}
+
+/* ===== v1.0.0：首启引导 ===== */
+const ONBOARD_STEPS=[
+  {t:'点火，只做一件小事',x:'「今天」只有一个主按钮：点火 25 分钟。不想开始就选 5 分钟热身——它不要求你有状态，只要求先坐下。'},
+  {t:'中断不用自责，你来裁判',x:'中途点「结束」时，由你决定：立为判例（合理中断，以后同类默认放行，本次照算铸星），或断链（从 #1 重新开始，历史最长永远保留）。'},
+  {t:'星链是证据，不是监工',x:'每完成一次专注就是一颗星，点开星星能回看任务和推进。数据只在这个浏览器里，记得在「我的 → 数据与备份」定期导出。'}
+];
+let obIndex=0,obForce=false;
+function renderOnboard(){
+  const s=ONBOARD_STEPS[obIndex];if(!s)return;
+  $('#obTitle').textContent=s.t;$('#obText').textContent=s.x;
+  $('#obDots').innerHTML=ONBOARD_STEPS.map((_,i)=>'<i'+(i===obIndex?' class="on"':'')+'></i>').join('');
+  $('#obNext').textContent=obIndex===ONBOARD_STEPS.length-1?'开始使用':'下一步';
+  $('#obKicker').textContent=obIndex===0?'第一次用 · 30 秒看懂':'第 '+(obIndex+1)+' / '+ONBOARD_STEPS.length+' 步';
+}
+function startOnboarding(force){
+  obForce=!!force;obIndex=0;renderOnboard();
+  $('#onboardMask').classList.add('on');
+}
+function endOnboarding(skipped){
+  $('#onboardMask').classList.remove('on');
+  if(!skipped&&!obForce){S.meta.onboardedAt=Date.now();save();}
+  if(skipped&&!obForce){S.meta.onboardedAt=Date.now();save();}
+  if(obForce&&skipped){/* 手动重看时跳过不改状态 */}
+}
+function bindOnboarding(){
+  $('#obNext').onclick=()=>{
+    if(obIndex<ONBOARD_STEPS.length-1){obIndex++;renderOnboard();}
+    else{endOnboarding(false);}
+  };
+  $('#obSkip').onclick=()=>endOnboarding(true);
+  const replay=$('#replayOnboard');
+  if(replay)replay.onclick=()=>startOnboarding(true);
+}
+function maybeShowOnboarding(){
+  if(S.meta.onboardedAt)return;
+  if(S.blocks.length)return;
+  setTimeout(()=>{if(!$('#onboardMask').classList.contains('on'))startOnboarding(false);},700);
+}
+
 function takeAutoSnapshot(){
   try{
     let snap={latest:null,history:[]};
@@ -2368,6 +2515,7 @@ function takeAutoSnapshot(){
       }
     }
   }catch(e){}
+  try{renderBackupCenter();}catch(e){}
 }
 /* 导出保命提醒：只在有铸星记录、且从未导出或超过 7 天、且未在 7 天内“稍后”时出现 */
 function daysSince(ts){if(!ts)return null;return Math.floor((Date.now()-Number(ts))/86400000);}
@@ -2411,74 +2559,112 @@ function exportBackup(){
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='starspark-focus-backup-'+dayKey()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),0);
   takeAutoSnapshot();
-  renderBackupBanner();renderAutoBackupNote();
+  renderBackupBanner();renderAutoBackupNote();renderBackupCenter();
   $('#backupStatus').textContent='备份已下载：请把这个 JSON 留在自己的设备或可信存储中。';
+}
+function importPreview(incoming){
+  const seen=new Set(S.blocks.map(b=>String(b.id)));
+  const nb=(incoming.blocks||[]).filter(b=>b&&b.id!==undefined&&!seen.has(String(b.id))).length;
+  const nr=Object.keys(incoming.reviews||{}).filter(k=>!S.reviews[k]).length;
+  const recSeen=new Set((S.recons||[]).map(r=>String(r.id)));
+  const nrec=(incoming.recons||[]).filter(r=>r&&r.id!==undefined&&!recSeen.has(String(r.id))).length;
+  const apSeen=new Set((S.appointments||[]).map(a=>String(a.id)));
+  const nap=(incoming.appointments||[]).filter(a=>a&&a.id!==undefined&&!apSeen.has(String(a.id))).length;
+  const polSeen=new Set(S.policyTree.nodes.map(n=>String(n.id)));
+  const np=((incoming.policyTree&&incoming.policyTree.nodes)||[]).filter(n=>n&&n.id!==undefined&&!polSeen.has(String(n.id))).length;
+  const prec=(incoming.precedents||incoming.whitelist||[]).length;
+  return {nb:nb,nr:nr,nrec:nrec,nap:nap,np:np,prec:prec};
 }
 function importBackupFile(file){
   if(!file)return;
   const reader=new FileReader();
   reader.onerror=()=>{$('#backupStatus').textContent='读取备份失败，请重新选择 JSON 文件。';};
   reader.onload=()=>{
+    let payload,incoming;
     try{
-      const payload=JSON.parse(reader.result),incoming=payload&&payload.schema===BACKUP_SCHEMA?payload.data:null;
+      payload=JSON.parse(reader.result);
+      incoming=payload&&payload.schema===BACKUP_SCHEMA?payload.data:null;
       if(!incoming||!Array.isArray(incoming.blocks)||!Array.isArray(incoming.whitelist)||!incoming.reviews||typeof incoming.reviews!=='object')throw new Error('format');
-      const seen=new Set(S.blocks.map(b=>String(b.id))),oldBest=S.chain.bestNo,incomingBest=incoming.chain&&incoming.chain.bestNo;
-      let addedBlocks=0,addedReviews=0,addedRecons=0,addedAppointments=0,addedPrecedents=0,addedPolicies=0;
-      incoming.blocks.map(normalizeBlock).filter(Boolean).forEach(b=>{if(b.id===undefined||seen.has(String(b.id)))return;seen.add(String(b.id));S.blocks.push(b);addedBlocks++;});
-      S.blocks.sort((a,b)=>(a.endedAt||0)-(b.endedAt||0));
-      S.whitelist=[...new Set([...S.whitelist,...incoming.whitelist.map(x=>String(x).trim()).filter(Boolean)])];
-      const incomingPrecedents=Array.isArray(incoming.precedents)?incoming.precedents:
-        incoming.whitelist.map((reason,index)=>({id:'import-legacy-'+index+'-'+reason,reason,scope:'global',
-          createdAt:null,lastUsedAt:null,usedCount:0,active:true}));
-      incomingPrecedents.forEach(p=>{
-        if(!p||!p.reason)return;
-        const exists=S.precedents.find(x=>x.reason===p.reason);
-        if(exists){exists.usedCount=Math.max(Number(exists.usedCount)||0,Number(p.usedCount)||0);}
-        else{S.precedents.push(Object.assign({active:true,scope:'global',usedCount:0},p));addedPrecedents++;}
+    }catch(e){
+      $('#backupStatus').textContent='这不是可识别的星火专注 Pro 备份文件，当前数据没有改动。';return;
+    }
+    const pv=importPreview(incoming);
+    const when=payload.createdAt?new Date(payload.createdAt).toLocaleString():'未知时间';
+    const parts=[];
+    if(pv.nb)parts.push(pv.nb+' 段专注');
+    if(pv.nr)parts.push(pv.nr+' 条复盘');
+    if(pv.nrec)parts.push(pv.nrec+' 次热身');
+    if(pv.nap)parts.push(pv.nap+' 条预约');
+    if(pv.np)parts.push(pv.np+' 个国策');
+    if(pv.prec)parts.push(pv.prec+' 条判例');
+    const summary=parts.length?parts.join('、'):'没有新记录（全部重复）';
+    openDialog('导入备份 · 先确认','这份备份导出于 '+when+'。将合并：'+summary+'。重复记录会自动跳过，现有数据不会被覆盖。',
+      '<button class="btn primary" id="impOk" type="button">确认合并</button>'+
+      '<button class="btn ghost" id="impCancel" type="button" style="margin-top:8px">取消</button>',
+      ()=>{
+        $('#impOk').onclick=()=>{closeJudge();applyImportIncoming(incoming,payload);};
+        $('#impCancel').onclick=closeJudge;
       });
-      S.whitelist=[...new Set(S.precedents.filter(p=>p.active!==false).map(p=>p.reason))];
-      const reconSeen=new Set((S.recons||[]).map(r=>String(r.id)));
-      (Array.isArray(incoming.recons)?incoming.recons:[]).forEach(r=>{
-        if(r&&r.id!==undefined&&!reconSeen.has(String(r.id))){S.recons.push(r);reconSeen.add(String(r.id));addedRecons++;}
-      });
-      const apptSeen=new Set((S.appointments||[]).map(a=>String(a.id)));
-      (Array.isArray(incoming.appointments)?incoming.appointments:[]).forEach(a=>{
-        if(a&&a.id!==undefined&&!apptSeen.has(String(a.id))){S.appointments.push(a);apptSeen.add(String(a.id));addedAppointments++;}
-      });
-      if(incoming.startup){
-        S.startup.bestNo=Math.max(Number(S.startup.bestNo)||0,Number(incoming.startup.bestNo)||0);
-        if(!S.startup.lastAt)S.startup.lastAt=incoming.startup.lastAt||null;
-      }
-      // 导入的备份本身可能就是从另一台设备导出的，别让本机误报“从未导出”
-      if(incoming.meta&&incoming.meta.lastExportAt){
-        S.meta.lastExportAt=Math.max(Number(S.meta.lastExportAt)||0,Number(incoming.meta.lastExportAt)||0);
-      }
-      if(incoming.settings&&incoming.settings.sound){
-        S.settings.sound=Object.assign({enabled:false,type:'white',volume:22},incoming.settings.sound);
-        if(!['white','pink','brown','rain','waves','fire'].includes(S.settings.sound.type))S.settings.sound.type='white';
-        S.settings.sound.volume=Math.min(60,Math.max(0,Number(S.settings.sound.volume)||22));
-      }
-      if(incoming.policyTree){
-        const policySeen=new Set(S.policyTree.nodes.map(n=>String(n.id)));
-        (Array.isArray(incoming.policyTree.nodes)?incoming.policyTree.nodes:[]).forEach(n=>{
-          if(n&&n.id!==undefined&&!policySeen.has(String(n.id))){S.policyTree.nodes.push(n);policySeen.add(String(n.id));addedPolicies++;}
-        });
-        Object.keys(incoming.policyTree.checks||{}).forEach(day=>{
-          if(!S.policyTree.checks[day])S.policyTree.checks[day]={};
-          Object.assign(S.policyTree.checks[day],incoming.policyTree.checks[day]||{});
-        });
-        const freezeSeen=new Set(S.policyTree.freezes.map(f=>String(f.id)));
-        (incoming.policyTree.freezes||[]).forEach(f=>{if(f&&f.id!==undefined&&!freezeSeen.has(String(f.id)))S.policyTree.freezes.push(f);});
-        S.policyTree.events=[...S.policyTree.events,...(incoming.policyTree.events||[])].slice(-200);
-        S.policyTree.lastAddDay=S.policyTree.lastAddDay||incoming.policyTree.lastAddDay||null;
-      }
-      Object.keys(incoming.reviews).forEach(k=>{if(!S.reviews[k]){S.reviews[k]=incoming.reviews[k];addedReviews++;}});
-      rebuildChain(Math.max(oldBest,Number(incomingBest)||0));save();takeAutoSnapshot();renderChain();renderReview();if(reviewView==='policy')renderPolicyTree();
-      renderAutoBackupNote();
-      $('#backupStatus').textContent=`已合并：新增 ${addedBlocks} 段专注、${addedReviews} 条复盘、${addedRecons} 次热身、${addedAppointments} 条预约、${addedPrecedents} 条判例、${addedPolicies} 个国策；重复记录已跳过。`;
-    }catch(e){$('#backupStatus').textContent='这不是可识别的星火专注 Pro 备份文件，当前数据没有改动。';}
   };
   reader.readAsText(file,'utf-8');
+}
+function applyImportIncoming(incoming,payload){
+  try{
+    const seen=new Set(S.blocks.map(b=>String(b.id))),oldBest=S.chain.bestNo,incomingBest=incoming.chain&&incoming.chain.bestNo;
+    let addedBlocks=0,addedReviews=0,addedRecons=0,addedAppointments=0,addedPrecedents=0,addedPolicies=0;
+    incoming.blocks.map(normalizeBlock).filter(Boolean).forEach(b=>{if(b.id===undefined||seen.has(String(b.id)))return;seen.add(String(b.id));S.blocks.push(b);addedBlocks++;});
+    S.blocks.sort((a,b)=>(a.endedAt||0)-(b.endedAt||0));
+    S.whitelist=[...new Set([...S.whitelist,...incoming.whitelist.map(x=>String(x).trim()).filter(Boolean)])];
+    const incomingPrecedents=Array.isArray(incoming.precedents)?incoming.precedents:
+      incoming.whitelist.map((reason,index)=>({id:'import-legacy-'+index+'-'+reason,reason,scope:'global',
+        createdAt:null,lastUsedAt:null,usedCount:0,active:true}));
+    incomingPrecedents.forEach(p=>{
+      if(!p||!p.reason)return;
+      const exists=S.precedents.find(x=>x.reason===p.reason);
+      if(exists){exists.usedCount=Math.max(Number(exists.usedCount)||0,Number(p.usedCount)||0);}
+      else{S.precedents.push(Object.assign({active:true,scope:'global',usedCount:0},p));addedPrecedents++;}
+    });
+    S.whitelist=[...new Set(S.precedents.filter(p=>p.active!==false).map(p=>p.reason))];
+    const reconSeen=new Set((S.recons||[]).map(r=>String(r.id)));
+    (Array.isArray(incoming.recons)?incoming.recons:[]).forEach(r=>{
+      if(r&&r.id!==undefined&&!reconSeen.has(String(r.id))){S.recons.push(r);reconSeen.add(String(r.id));addedRecons++;}
+    });
+    const apptSeen=new Set((S.appointments||[]).map(a=>String(a.id)));
+    (Array.isArray(incoming.appointments)?incoming.appointments:[]).forEach(a=>{
+      if(a&&a.id!==undefined&&!apptSeen.has(String(a.id))){S.appointments.push(a);apptSeen.add(String(a.id));addedAppointments++;}
+    });
+    if(incoming.startup){
+      S.startup.bestNo=Math.max(Number(S.startup.bestNo)||0,Number(incoming.startup.bestNo)||0);
+      if(!S.startup.lastAt)S.startup.lastAt=incoming.startup.lastAt||null;
+    }
+    if(incoming.meta&&incoming.meta.lastExportAt){
+      S.meta.lastExportAt=Math.max(Number(S.meta.lastExportAt)||0,Number(incoming.meta.lastExportAt)||0);
+    }
+    if(incoming.settings&&incoming.settings.sound){
+      S.settings.sound=Object.assign({enabled:false,type:'white',volume:22},incoming.settings.sound);
+      if(!['white','pink','brown','rain','waves','fire'].includes(S.settings.sound.type))S.settings.sound.type='white';
+      S.settings.sound.volume=Math.min(60,Math.max(0,Number(S.settings.sound.volume)||22));
+    }
+    if(incoming.policyTree){
+      const policySeen=new Set(S.policyTree.nodes.map(n=>String(n.id)));
+      (Array.isArray(incoming.policyTree.nodes)?incoming.policyTree.nodes:[]).forEach(n=>{
+        if(n&&n.id!==undefined&&!policySeen.has(String(n.id))){S.policyTree.nodes.push(n);policySeen.add(String(n.id));addedPolicies++;}
+      });
+      Object.keys(incoming.policyTree.checks||{}).forEach(day=>{
+        if(!S.policyTree.checks[day])S.policyTree.checks[day]={};
+        Object.assign(S.policyTree.checks[day],incoming.policyTree.checks[day]||{});
+      });
+      const freezeSeen=new Set(S.policyTree.freezes.map(f=>String(f.id)));
+      (incoming.policyTree.freezes||[]).forEach(f=>{if(f&&f.id!==undefined&&!freezeSeen.has(String(f.id)))S.policyTree.freezes.push(f);});
+      S.policyTree.events=[...S.policyTree.events,...(incoming.policyTree.events||[])].slice(-200);
+      S.policyTree.lastAddDay=S.policyTree.lastAddDay||incoming.policyTree.lastAddDay||null;
+    }
+    Object.keys(incoming.reviews).forEach(k=>{if(!S.reviews[k]){S.reviews[k]=incoming.reviews[k];addedReviews++;}});
+    rebuildChain(Math.max(oldBest,Number(incomingBest)||0));save();takeAutoSnapshot();
+    renderChain();renderReview();if(reviewView==='policy')renderPolicyTree();
+    renderAutoBackupNote();renderBackupCenter();renderTodayCard();
+    $('#backupStatus').textContent=`已合并：新增 ${addedBlocks} 段专注、${addedReviews} 条复盘、${addedRecons} 次热身、${addedAppointments} 条预约、${addedPrecedents} 条判例、${addedPolicies} 个国策；重复记录已跳过。`;
+  }catch(e){$('#backupStatus').textContent='合并时出错，当前数据没有被覆盖。';}
 }
 function bindBackup(){
   $('#exportBackup').onclick=exportBackup;
@@ -2486,6 +2672,7 @@ function bindBackup(){
   $('#bbExport').onclick=()=>exportBackup();
   $('#bbSnooze').onclick=()=>{S.meta.backupSnoozeAt=Date.now();save();renderBackupBanner();};
   renderAutoBackupNote();
+  renderBackupCenter();
 }
 
 /* ===== 点火区绑定 ===== */
@@ -2678,9 +2865,9 @@ function renderPoemBook(){
 /* ===== 初始化 ===== */
 buildNav();
 try{renderPoemOfDay();renderPoemBook();}catch(e){}
-try{bindFocus();bindSimple();bindSound();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();}catch(e){}
+try{bindFocus();bindSimple();bindSound();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();bindOnboarding();}catch(e){}
 try{restore();}catch(e){}
-try{applySimpleMode();renderBackupBanner();renderTodayCard();}catch(e){}
+try{applySimpleMode();renderBackupBanner();renderTodayCard();maybeShowOnboarding();}catch(e){}
 go(location.hash.slice(1)||'home');
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(reg){reg.addEventListener('updatefound',function(){var nw=reg.installing;if(!nw)return;nw.addEventListener('statechange',function(){if(nw.state==='installed'&&navigator.serviceWorker.controller&&!document.getElementById('swUpdateBar')){var b=document.createElement('div');b.id='swUpdateBar';b.style.cssText='position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:70;background:rgba(20,26,50,.97);border:1.5px solid rgba(246,220,155,.6);color:#ffe6ad;border-radius:12px;padding:10px 16px;font-size:13px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.35)';b.textContent='有新版本 · 点此刷新';b.onclick=function(){location.reload();};document.body.appendChild(b);}});});}).catch(function(){});}
 </script>
