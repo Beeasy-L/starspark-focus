@@ -952,6 +952,11 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v1.2.2</div>
+      <div class="logdate">2026-10-24</div>
+      <ul class="loglist">
+        <li>去掉一条<b>死引用</b>：海浪本就是浏览器现场合成，不再登记一个不存在的音频文件——每次开始专注都少一次无谓的 404。声音没有任何变化。</li>
+      </ul>
       <div class="logver">v1.2.1</div>
       <div class="logdate">2026-10-24</div>
       <ul class="loglist">
@@ -1323,7 +1328,9 @@ function stopAmbient(immediate=false){
   },900);
   updateSoundUI();
 }
-const AMBIENT_FILES={rain:'assets/rain-forest.mp3',waves:'assets/waves.mp3',fire:'assets/campsite.mp3'};
+/* 只有「真实录音」才在这里登记文件；海浪本就是浏览器现场合成（见 generateNoiseBuffer 的 waves 分支），
+   登记了反而每次开始时白发一次 404。 */
+const AMBIENT_FILES={rain:'assets/rain-forest.mp3',fire:'assets/campsite.mp3'};
 let ambientBufferCache={};
 function loadAmbientFile(type){
   const path=AMBIENT_FILES[type];
