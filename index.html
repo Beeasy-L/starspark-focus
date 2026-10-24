@@ -150,7 +150,7 @@ h1,h2,h3,h4{font-family:var(--serif);line-height:1.35}
 .ambient-running{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;color:var(--ink3);font-size:12px}
 .ambient-running button{border:1px solid var(--line);background:transparent;color:var(--ink2);border-radius:999px;
   min-height:40px;padding:7px 14px;cursor:pointer}
-.review-tabs{grid-template-columns:1fr 1fr;margin-bottom:12px}
+.review-tabs{grid-template-columns:1fr 1fr 1fr;margin-bottom:12px}
 .review-panel{display:none}.review-panel.on{display:block;animation:fade .22s ease}
 .policy-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .policy-toolbar-actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -341,6 +341,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 @keyframes igPopBig{0%{opacity:0;transform:scale(.2)}100%{opacity:1;transform:scale(1.35)}}
 @keyframes igRing{0%{opacity:.95;transform:scale(.4)}100%{opacity:0;transform:scale(3.2)}}
 @keyframes igFade{to{opacity:0}}
+@keyframes tinyRise{0%{opacity:0;transform:translateY(0) scale(.3)}30%{opacity:1;transform:translateY(-160px) scale(1)}100%{opacity:0;transform:translateY(-360px) scale(.15)}}
 /* 专注中显示的一句星语 */
 .session-poem{margin:16px auto 2px;max-width:560px;text-align:center;font-family:var(--serif);font-size:13px;
   line-height:1.9;color:var(--gold-hi);opacity:0;transition:opacity .9s ease;letter-spacing:.02em}
@@ -458,7 +459,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 
 /* 星月诗笺：今日星语 + 诗笺卡 */
 .poem-of-day{margin:0 0 10px;font-family:var(--serif);font-size:13px;line-height:1.9;color:var(--gold-hi);
-  opacity:.9;letter-spacing:.03em}
+  opacity:.9;letter-spacing:.03em;text-align:center}
 .poem-of-day .poem-from{display:block;font-size:11px;color:var(--ink3);letter-spacing:.06em;margin-top:2px}
 .poem-book{margin-top:16px}
 .poem-book summary{cursor:pointer;font-family:var(--serif);font-size:16px;color:var(--gold-hi);letter-spacing:.06em;
@@ -472,6 +473,53 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .poem-list .poem-group:last-child{border-bottom:0}
 .poem-list .pg-name{font-family:var(--sans);font-size:11.5px;letter-spacing:.16em;color:var(--gold);margin-bottom:2px}
 .poem-list .pg-items p{margin:7px 0;font-family:var(--serif);font-size:14px;line-height:1.85;color:var(--ink)}
+
+/* 星火来信：信纸全屏阅读 */
+.letter-overlay{position:fixed;inset:0;background:rgba(8,14,28,.94);z-index:60;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .35s ease}
+.letter-overlay.on{opacity:1;pointer-events:auto}
+.letter-page{background:linear-gradient(180deg,rgba(18,24,48,.96) 0%,rgba(14,20,40,.96) 100%);
+  border:1.5px solid rgba(242,198,109,.28);border-radius:18px;max-width:520px;width:92%;
+  max-height:85vh;overflow-y:auto;padding:32px 28px 40px;text-align:center;position:relative}
+.letter-page .letter-close{position:absolute;top:12px;right:14px;
+  background:none;border:none;color:var(--ink3);font-size:22px;cursor:pointer;line-height:1}
+.letter-page .letter-date{font-family:var(--sans);font-size:11px;color:var(--ink3);letter-spacing:.12em;
+  margin-bottom:18px}
+.letter-page .letter-salute{font-family:var(--serif);font-size:18px;color:var(--gold-hi);margin-bottom:22px}
+.letter-page .letter-body{font-family:var(--serif);font-size:15px;line-height:2.1;color:var(--gold);
+  text-align:left;padding:0 4px}
+.letter-page .letter-body .letter-line{margin-bottom:12px}
+.letter-page .letter-poem{margin-top:28px;padding-top:18px;border-top:1px solid rgba(242,198,109,.18);
+  font-family:var(--serif);font-size:14px;line-height:2;color:var(--gold-hi);text-align:center}
+.letter-page .letter-poem .poem-from{display:block;font-family:var(--sans);font-size:11px;
+  color:var(--ink3);margin-top:4px;letter-spacing:.06em}
+.letter-page .letter-empty{font-family:var(--serif);font-size:15px;color:var(--ink3);
+  padding:40px 0;text-align:center;line-height:2}
+
+/* 信笺匣：按日期折叠列表 */
+.letter-box{margin-top:14px}
+.letter-box .letter-entry{padding:12px 0;border-bottom:1px solid var(--line2);cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;transition:background .12s ease}
+.letter-box .letter-entry:hover{background:rgba(255,255,255,.03)}
+.letter-box .letter-entry .le-date{font-family:var(--sans);font-size:12px;color:var(--ink3);letter-spacing:.06em}
+.letter-box .letter-entry .le-level{font-family:var(--serif);font-size:13px;color:var(--gold);text-align:right}
+.letter-box .letter-entry .le-excerpt{font-family:var(--serif);font-size:12.5px;color:var(--ink2);margin-top:2px}
+
+/* 小星星：铸星时的微型庆祝 */
+.tiny-star{position:fixed;z-index:70;pointer-events:none}
+.tiny-star .ts-core{width:6px;height:6px;background:var(--gold-hi);border-radius:50%;
+  box-shadow:0 0 14px 3px rgba(255,220,120,.7)}
+.tiny-star .ts-ray{position:absolute;top:50%;left:50%;width:24px;height:1.5px;
+  background:linear-gradient(90deg,var(--gold-hi),transparent);
+  border-radius:2px;transform-origin:left center}
+.tiny-star .ts-ray:nth-child(2){transform:rotate(45deg)}
+.tiny-star .ts-ray:nth-child(3){transform:rotate(90deg)}
+.tiny-star .ts-ray:nth-child(4){transform:rotate(135deg)}
+.tiny-star .ts-ray:nth-child(5){transform:rotate(180deg)}
+.tiny-star .ts-ray:nth-child(6){transform:rotate(225deg)}
+.tiny-star .ts-ray:nth-child(7){transform:rotate(270deg)}
+.tiny-star .ts-ray:nth-child(8){transform:rotate(315deg)}
 
 @media(min-width:860px){
   body{padding-bottom:24px}
@@ -797,6 +845,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     <div class="seg review-tabs" id="reviewTabs">
       <button class="on" data-review-view="diary">每日复盘</button>
       <button data-review-view="policy">国策树</button>
+      <button data-review-view="letter">星火来信</button>
     </div>
     <div class="review-panel on" id="reviewDiaryPanel">
       <div class="card">
@@ -845,6 +894,14 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <summary>回收箱 · 熄灭记录（可恢复或永久删除）</summary>
         <div class="policy-history-list" id="policyHistoryList"></div>
       </details>
+    </div>
+    <div class="review-panel" id="reviewLetterPanel">
+      <div class="card">
+        <h3>今日的信</h3>
+        <p class="muted">每天复盘保存后，写给自己读的一封信。</p>
+        <div id="letterPreview"></div>
+        <div class="letter-box" id="letterBox"><p class="muted" id="letterBoxEmpty">还没有过去的信。</p></div>
+      </div>
     </div>
   </section>
   <section id="view-log" class="view">
@@ -895,6 +952,13 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v1.2.0</div>
+      <div class="logdate">2026-10-24</div>
+      <ul class="loglist">
+        <li><b>星火来信</b>：复盘页第三个标签「星火来信」——每天复盘写完就封存为一封信。打开任意一天的信，全屏信纸阅读、当日星语附在信尾、读信时「月亮代表我的心」在背景安静地放。信笺匣按日期排，点哪封读哪封。</li>
+        <li><b>小星星 · 铸星庆祝</b>：每铸一颗星，屏幕下方升起一颗微型金星星，配月亮 BGM 一闪——不是又一场仪式，就是一个小回响。</li>
+        <li>CSS 修复：诗笺第二行居中。</li>
+      </ul>
       <div class="logver">v1.1.1</div>
       <div class="logdate">2026-10-23</div>
       <ul class="loglist">
@@ -1042,6 +1106,11 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     <p id="judgeDesc"></p>
     <div id="judgeBody"></div>
   </div>
+</div>
+
+<!-- 星火来信：全屏信纸阅读 -->
+<div class="letter-overlay" id="letterOverlay">
+  <div class="letter-page" id="letterPage"></div>
 </div>
 
 <!-- 点火仪式（内容由 playIgnite 按当前链长动态生成） -->
@@ -1488,7 +1557,7 @@ function go(id){
   if(id==='home')renderTodayCard();
   if(id==='focus'){renderBackupBanner();applySimpleMode();}
   if(id==='chain')renderChain();
-  if(id==='review'){renderReview();if(reviewView==='policy')renderPolicyTree();}
+  if(id==='review'){renderReview();if(reviewView==='policy')renderPolicyTree();if(reviewView==='letter')renderLetterPanel();}
   if(id==='log'){renderBackupBanner();renderAutoBackupNote();renderBackupCenter();}
 }
 window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
@@ -1935,6 +2004,28 @@ function commitBlock(block){
   if(isSuccessBlock(block)&&(S.chain.currentNo===7||S.chain.currentNo===30||S.chain.currentNo===100)){
     meteorShower('第 '+S.chain.currentNo+' 颗星 · 连成一小片星座');
   }
+  if(isSuccessBlock(block))tinyStarSplash();
+}
+/* 小星星：铸星时一颗微型星星从底部升起并消失，配 1 秒月亮 BGM 闪动 */
+function tinyStarSplash(){
+  const star=document.createElement('div');
+  star.className='tiny-star';
+  // 随机放在屏幕左中右，避开正中间（会被 toast 挡住）
+  const x=20+Math.random()*60; // 左侧 20%-80%
+  star.style.cssText='left:'+x+'%;bottom:-20px;animation:tinyRise 1.8s ease-out forwards';
+  const rays='<div class="ts-ray"></div>'.repeat(8);
+  star.innerHTML='<div class="ts-core"></div>'+rays;
+  document.body.appendChild(star);
+  // 短暂闪动月亮 BGM：如果当前在待机态就播一下（已经是播着就不用停）
+  try{
+    if(musicMuted&&S.settings.music.enabled){ // 被静音了就短暂恢复一下
+      const ctx=ensureMusicContext();
+      if(ctx&&ctx.state==='suspended')ctx.resume().catch(()=>{});
+      musicMuted=false;startMusic();
+      setTimeout(()=>{if(!cur||cur.pauseTs){musicMuted=true;stopMusic(false);updateMusicUI();}},2200);
+    }
+  }catch(e){}
+  setTimeout(()=>star.remove(),2000);
 }
 
 function openDialog(title,desc,html,onMount){
@@ -2651,16 +2742,83 @@ function purgePolicyBranch(rootId){
   save();renderPolicyTree();toast('已从回收箱永久删除');
 }
 function showReviewView(view){
-  reviewView=view==='policy'?'policy':'diary';
+  reviewView=view==='policy'?'policy':view==='letter'?'letter':'diary';
   $$('#reviewTabs button').forEach(b=>b.classList.toggle('on',b.dataset.reviewView===reviewView));
   $('#reviewDiaryPanel').classList.toggle('on',reviewView==='diary');
   $('#reviewPolicyPanel').classList.toggle('on',reviewView==='policy');
+  $('#reviewLetterPanel').classList.toggle('on',reviewView==='letter');
   if(reviewView==='policy')renderPolicyTree();
+  if(reviewView==='letter')renderLetterPanel();
 }
 function bindPolicy(){
   $$('#reviewTabs button').forEach(b=>b.onclick=()=>showReviewView(b.dataset.reviewView));
   $('#policySettleAll').onclick=settleAllPolicies;
   $('#policyAddBtn').onclick=openPolicyAddDialog;
+}
+
+/* ===== 星火来信：信笺匣 + 全屏读信 ===== */
+const LETTER_LEVEL_MAP={'小赢':'小赢的一天','中赢':'不错的一天','大赢':'超棒的一天'};
+function openLetter(dayKeyValue){
+  const v=S.reviews[dayKeyValue];
+  if(!v)return;
+  // 读信时播放月亮
+  if(S.settings.music.enabled&&!musicMuted){
+    const ctx=ensureMusicContext();
+    if(ctx&&ctx.state==='suspended')ctx.resume().catch(()=>{});
+    startMusic();
+  }
+  const d=dayKeyValue.split('-');
+  const dateStr=`${d[0]}年${d[1]}月${d[2]}日`;
+  const levelLabel=LETTER_LEVEL_MAP[v.level]||v.level;
+  let body='';
+  if(v.best)body+=`<div class="letter-line">今天最大的一件好事：${escHtml(v.best)}</div>`;
+  if(v.idea)body+=`<div class="letter-line">冒出来的一个灵感：${escHtml(v.idea)}</div>`;
+  if(v.thinking)body+=`<div class="letter-line">那一刻在想的：${escHtml(v.thinking)}</div>`;
+  if(!body)body='<div class="letter-line">那一天，你坐了下来，什么也没写——但你已经到场了。</div>';
+  const poem=todayPoem();
+  const page=$('#letterPage');
+  page.innerHTML=
+    `<button class="letter-close" id="letterCloseBtn">&times;</button>`+
+    `<div class="letter-date">${dateStr}</div>`+
+    `<div class="letter-salute">写给自己的信 · ${levelLabel}</div>`+
+    `<div class="letter-body">${body}</div>`+
+    `<div class="letter-poem">「${poem.t}」<span class="poem-from">${poem.a}</span></div>`;
+  $('#letterOverlay').classList.add('on');
+  $('#letterCloseBtn').onclick=()=>$('#letterOverlay').classList.remove('on');
+  page.scrollTop=0;
+}
+$('#letterOverlay').onclick=function(e){if(e.target===this)this.classList.remove('on');};
+function renderLetterPanel(){
+  const k=dayKey(),r=S.reviews[k];
+  const preview=$('#letterPreview'),box=$('#letterBox');
+  // 今日预读
+  if(r&&(r.best||r.idea||r.thinking)){
+    const firstLine=(r.best||r.idea||r.thinking||'').slice(0,40);
+    preview.innerHTML='<p class="muted" style="margin-bottom:6px">今天的信已经写好了——</p>'+
+      '<button class="btn primary" id="readTodayLetter" style="margin-bottom:4px">读今天的信</button>'+
+      '<div class="letter-entry" style="cursor:default;border:none;margin-top:4px"><span class="le-excerpt">"'+escHtml(firstLine)+(firstLine.length>=40?'…':'')+'"</span></div>';
+    $('#readTodayLetter').onclick=()=>openLetter(k);
+  }else{
+    preview.innerHTML='<p class="muted">今天先复盘，写完保存后就能给自己写信了。</p>';
+  }
+  // 历史信笺匣
+  const keys=Object.keys(S.reviews).sort().reverse().slice(0,30);
+  box.innerHTML='';
+  if(!keys.length){
+    box.innerHTML='<p class="muted" id="letterBoxEmpty">还没有过去的信。</p>';
+    return;
+  }
+  keys.forEach(dk=>{
+    const v=S.reviews[dk];
+    const line=(v.best||v.idea||v.thinking||'').slice(0,30);
+    const d=dk.split('-');
+    const el=document.createElement('div');
+    el.className='letter-entry';
+    el.innerHTML='<div><div class="le-date">'+d[1]+'月'+d[2]+'日</div><div class="le-excerpt">'+escHtml(line)+(line.length>=30?'…':'')+'</div></div>'+
+      '<div class="le-level">'+(v.level||'小赢')+'</div>';
+    el.onclick=()=>openLetter(dk);
+    box.appendChild(el);
+  });
 }
 
 /* ===== 复盘 ===== */
@@ -2692,6 +2850,7 @@ function bindReview(){
     if(!best&&!idea&&!thinking){toast('先写下一点内容');return;}
     S.reviews[dayKey()]={best:best||'',level:chosenLvl||'小赢',idea:idea||'',thinking:thinking||''};save();
     autoSatisfyPolicies('review');toast('已保存今日复盘');renderReview();
+    if(reviewView==='letter')renderLetterPanel();
   };
 }
 
