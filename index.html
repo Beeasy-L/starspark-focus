@@ -447,6 +447,15 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .backup-banner .bb-text{font-size:12.5px;line-height:1.7;color:var(--ink2);margin-bottom:10px}
 .backup-banner .bb-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .backup-banner .btn{min-height:40px;padding:8px 12px;font-size:13px}
+/* v1.2.3 数据未能保存：跨页常驻警告（保存成功后自动消失，不再是「只提示一次」） */
+.save-warn{display:none;align-items:center;gap:10px;flex-wrap:wrap;
+  margin:0 0 12px;padding:10px 14px;border-radius:12px;
+  border:1.5px solid rgba(232,145,91,.55);background:rgba(232,145,91,.10);
+  color:var(--ink);font-size:13px;line-height:1.6}
+.save-warn.on{display:flex}
+.save-warn b{color:#F0A86B;flex:none}
+.save-warn span{flex:1 1 200px;min-width:0;color:var(--ink2)}
+.save-warn .btn{flex:none;min-height:40px;padding:8px 14px;font-size:13px}
 /* 收束产出：非模态补记卡片（不打断奖励时刻） */
 .outcome-card{display:none;margin:10px 0 2px;padding:12px 14px;border:1px dashed rgba(242,198,109,.42);
   border-radius:12px;background:rgba(242,198,109,.07)}
@@ -544,6 +553,13 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 <nav class="topnav" id="topnav"></nav>
 
 <main class="wrap">
+  <!-- v1.2.3：数据没能保存时的常驻警告。放在所有 view 之外，因此每一页都看得到；
+       保存一旦成功即自动隐藏。 -->
+  <div class="save-warn" id="saveWarn" role="alert">
+    <b>数据没能保存</b>
+    <span id="saveWarnText">浏览器存储空间不足，刚铸的星可能丢了。请立刻导出备份。</span>
+    <button class="btn ghost" id="saveWarnExport" type="button">立刻导出</button>
+  </div>
   <section id="view-home" class="view on">
     <div class="poem">
       东风夜放花千树，更吹落，星如雨。
@@ -791,7 +807,7 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
   <section id="view-chain" class="view">
     <div class="stats">
       <div class="stat"><div class="n" id="chainCurrent">0</div><div class="l">当前星链</div></div>
-      <div class="stat blue"><div class="n" id="chainBest">0</div><div class="l">历史最长 bestNo</div></div>
+      <div class="stat blue"><div class="n" id="chainBest">0</div><div class="l">历史最长</div></div>
     </div>
     <div class="seg chain-tabs" id="chainTabs">
       <button class="on" data-chain-view="chain">星链</button>
@@ -952,6 +968,15 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v1.2.3</div>
+      <div class="logdate">2026-10-25</div>
+      <ul class="loglist">
+        <li><b>数据不再悄悄丢。</b>以前存储写满时只提示一次，之后每颗星都「铸星成功」但刷新就没了；现在写不进去会在每一页顶部常驻一条警告，直到真的存进去为止，并给一个「立刻导出」的按钮。启动时也会先探一次。</li>
+        <li><b>本机自动快照从 7 份收缩为 2 份。</b>原本每次留存「最新 + 最近 6 份」，而每份都是完整数据的副本——等于把占用放大 8 倍。留 1 份回退已足够在主数据写坏时自愈，占用降到原来的四分之一；升级后旧的多余快照会自动裁掉。</li>
+        <li><b>存储占用改按真实大小显示。</b>以前只算主数据、还按字符数算（少算一半），显示「约 300 KB」时实际可能已 2 MB 多。现在按字节算、含快照，并显示占上限的百分比；到 70% 时提示导出一次。</li>
+        <li><b>国策的每日记录只留最近 180 天。</b>国策内化只用到连续天数，更早的勾选不再无限累积。</li>
+        <li><b>修：</b>「5 分钟热身」入口点了没反应（它去点的是收起状态里的按钮）——现在会展开并直接开始 5 分钟；复盘赢级以前三个都不亮却静默记成「小赢」，现在默认高亮「小赢」，所见即所存；背景乐加载失败时界面不再宣称「正在播放」；只静音背景乐不再连带把静场也静掉；「历史最长」后面不再跟着一个内部变量名。</li>
+      </ul>
       <div class="logver">v1.2.2</div>
       <div class="logdate">2026-10-24</div>
       <ul class="loglist">
@@ -1167,10 +1192,30 @@ function loadInitialState(){
   }
 }
 let S=loadInitialState();
-let saveWarned=false;
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S));saveWarned=false;}catch(e){
-  if(!saveWarned){saveWarned=true;try{toast('浏览器存储空间不足，这次可能没保存，请尽快导出备份');}catch(e2){}}
-}}
+/* v1.2.3：保存失败必须「持续可见」，不能只提示一次。
+   旧写法 saveWarned 只在成功时复位 —— 配额一旦持续满，用户只看到一次提示，
+   此后每次铸星界面照常「铸星成功」，刷新后星就没了。 */
+let saveFailed=false, saveFailToastAt=0;
+function renderSaveWarning(){
+  const bar=document.getElementById('saveWarn');
+  if(bar)bar.classList.toggle('on',saveFailed);
+}
+function save(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify(S));
+    if(saveFailed){saveFailed=false;renderSaveWarning();}
+  }catch(e){
+    const first=!saveFailed;
+    saveFailed=true;
+    try{renderSaveWarning();}catch(e2){}
+    // 首次立刻提示；此后每 5 分钟最多再提示一次（不再「永不再提」）
+    const now=Date.now();
+    if(first||now-saveFailToastAt>300000){
+      saveFailToastAt=now;
+      try{toast('存储空间不足，这次没保存成功——请立刻导出备份');}catch(e3){}
+    }
+  }
+}
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const SUCCESS_STATES=new Set(['done','settled','whitelisted']);
@@ -1420,6 +1465,8 @@ function bindSound(){
 /* ===== 背景音乐：月亮代表我的心（钢琴版，真实音频 + PWA 预缓存） ===== */
 const MUSIC_SRC='assets/music-moon.mp3';
 let musicGain=null,musicCtx=null,musicSrc=null,musicMuted=false,musicReady=false,musicFadeTimer=null;
+/* v1.2.3：音频加载/解码失败的标记。用于让界面说实话，而不是一直宣称「正在播放」。 */
+let musicBroken=false;
 function ensureMusicContext(){
   if(!musicCtx){
     const AC=window.AudioContext||window.webkitAudioContext;
@@ -1432,13 +1479,23 @@ function ensureMusicContext(){
 function loadMusicBuffer(){
   if(musicReady)return Promise.resolve();
   if(!/^https?:$/.test(location.protocol))return Promise.resolve();   // file: 直开预览不载音频，避免无谓请求
-  return fetch(MUSIC_SRC).then(r=>r.arrayBuffer()).then(buf=>{
+  return fetch(MUSIC_SRC).then(r=>{
+    // v1.2.3：404 等 HTTP 错误要走到 catch（原先 r.arrayBuffer() 会把错误页当音频喂给解码器）
+    if(!r.ok)throw new Error('http '+r.status);
+    return r.arrayBuffer();
+  }).then(buf=>{
     const ctx=ensureMusicContext();
-    if(!ctx)return;
+    if(!ctx)throw new Error('no ctx');
     return new Promise((res,rej)=>{
       ctx.decodeAudioData(buf,(ab)=>{musicBuffer=ab;musicReady=true;res();},rej);
     });
-  }).catch(()=>{/* 若加载失败静默，音乐不播，不影响其余功能 */});
+  }).catch(()=>{
+    /* 加载/解码失败：安静地降级，不影响其余功能。
+       v1.2.3：但要把状态记下来 —— 原先失败后界面仍显示「背景音乐 · 月亮代表我的心」，
+       用户看着在播、其实没声，也无处可查。 */
+    musicBroken=true;
+    try{updateMusicUI();}catch(e){}
+  });
 }
 let musicBuffer=null;
 function musicGainValue(){return Math.pow((Number(S.settings.music.volume)||0)/60,1.8)*.42;}
@@ -1512,14 +1569,22 @@ function updateMusicUI(){
   $('#musicVolume').value=S.settings.music.volume;
   $('#musicVolumeValue').textContent=S.settings.music.volume;
   const run=$('#musicRunning');if(!run)return;
+  // v1.2.3：音频坏了就不再宣称「正在播放」—— 用户至少知道为什么没声
   run.style.display=enabled?'flex':'none';
   if(enabled){
-    $('#musicRunningLabel').textContent=musicMuted?(cur&&cur.soundMuted?'已静音 · 月亮代表我的心':'背景音乐 · 已静音'):'背景音乐 · 月亮代表我的心';
+    $('#musicRunningLabel').textContent=musicBroken
+      ?'背景音乐加载失败（不影响其它功能）'
+      :(musicMuted?(cur&&cur.musicMuted?'已静音 · 月亮代表我的心':'背景音乐 · 已静音'):'背景音乐 · 月亮代表我的心');
   }
 }
 function showMusicRunning(sess){
   const mr=$('#musicRunning');if(!mr)return;
-  if(sess&&S.settings.music.enabled){mr.style.display='flex';$('#musicRunningLabel').textContent=musicMuted?'背景音乐 · 已静音':'背景音乐 · 月亮代表我的心';}
+  if(sess&&S.settings.music.enabled){
+    mr.style.display='flex';
+    $('#musicRunningLabel').textContent=musicBroken
+      ?'背景音乐加载失败（不影响其它功能）'
+      :(musicMuted?'背景音乐 · 已静音':'背景音乐 · 月亮代表我的心');
+  }
   else{mr.style.display='none';}
 }
 function bindMusic(){
@@ -1530,13 +1595,17 @@ function bindMusic(){
     if(!S.settings.music.enabled){toast('先开启背景音乐');return;}
     if(musicMuted||musicSrc){musicMuted=false;startMusic();}
     else{musicMuted=true;stopMusic();}
-    if(cur){cur.soundMuted=musicMuted;S.session=cur;save();}
+    // v1.2.3：静音状态写到独立字段 musicMuted。
+    // 原先复用 cur.soundMuted，与「静场静音」撞在一起 ——
+    // 专注中只静音背景乐，刷新后静场也会被误判为静音。
+    if(cur){cur.musicMuted=musicMuted;S.session=cur;save();}
     showMusicRunning(!!cur);
     updateMusicUI();
   };
   updateMusicUI();
 }
-function prepareMusicGesture(){ if(S.settings.music.enabled)ensureMusicContext(); }
+/* v1.2.3：删掉死函数 prepareMusicGesture —— 全站 0 处调用；
+   手势解锁实际由 prepareAmbientGesture 与文件末尾的 pointerdown 完成。 */
 
 /* ===== 导航 ===== */
 const TABS=[
@@ -1651,7 +1720,7 @@ function startSession(mode){
   prepareAmbientGesture();
   const task=$('#taskInput').value.trim();
   cur={id:Date.now(),planMin:mode==='recon'?5:planMin,task,startTs:null,pausedMs:0,
-    pauseTs:null,onTime:false,mode,soundMuted:false,
+    pauseTs:null,onTime:false,mode,soundMuted:false,musicMuted:false,
     startedFrom:mode==='recon'?'recon':mode==='reserve'?'appointment':'direct'};
   igniting=true;
   playIgnite(()=>{
@@ -1948,7 +2017,6 @@ function openReconDecision(){
       $('#reconFinish').onclick=()=>{closeJudge();finishRecon('completed');};
     });
 }
-const WIN_KINDS=new Set(['done','settled','whitelisted']);
 function finish(kind,reason,endedBy){
   if(!cur)return;
   clearInterval(T);
@@ -2127,7 +2195,20 @@ function renderTodayCard(){
     state.textContent='今天还没点火';
     hint.textContent='先坐下，再做一件小事。25 分钟起；不想开始就选 5 分钟热身。';
     main.textContent='点火 · 25 分钟';
-    addLink('5 分钟热身',()=>{go('focus');setTimeout(()=>{const b=document.querySelector('#protocolTabs button[data-mode="recon"]');if(b)b.click();},260);});
+    addLink('5 分钟热身',()=>{
+      // v1.2.3 修复：原先只是去点折叠区（display:none）里的按钮，
+      // 用户看不到任何变化，最后仍起 25 分钟正式专注 ——
+      // 与「不想开始时给一个低阻力入口」的承诺直接矛盾。
+      // 现在：展开启动方式 → 选中热身 → 直接开始 5 分钟。
+      S.settings.simpleMode=false;save();
+      go('focus');
+      setTimeout(()=>{
+        applySimpleMode();
+        showStartMode('recon');
+        const b=document.getElementById('reconBtn');
+        if(b)b.click();
+      },260);
+    });
   }
 }
 
@@ -2520,15 +2601,49 @@ function policyBranchIds(rootId){
   return ids;
 }
 function activePolicyNodes(){return S.policyTree.nodes.filter(n=>n.status==='lit');}
+/* v1.2.3：国策每日勾选记录只保留最近 180 天。
+   国策「内化」只用到连续天数 / 累计天数，180 天足够；
+   而它原本只增不减、且会被复制进每一份快照，是长期容量里增长最快的一项。 */
+const POLICY_CHECKS_TTL_DAYS=180;
+function prunePolicyChecks(){
+  try{
+    const keys=Object.keys(S.policyTree.checks);
+    if(keys.length<=POLICY_CHECKS_TTL_DAYS)return 0;
+    const keep=new Set(),base=new Date();
+    for(let i=0;i<POLICY_CHECKS_TTL_DAYS;i++){
+      const d=new Date(base.getFullYear(),base.getMonth(),base.getDate()-i);
+      keep.add(dayKey(d));
+    }
+    let removed=0;
+    keys.forEach(k=>{if(!keep.has(k)){delete S.policyTree.checks[k];removed++;}});
+    return removed;
+  }catch(e){return 0;}
+}
 function todayPolicyChecks(){
   const day=dayKey();
-  if(!S.policyTree.checks[day])S.policyTree.checks[day]={};
+  if(!S.policyTree.checks[day]){
+    S.policyTree.checks[day]={};
+    // 只在「跨天新建」时顺手裁剪，所以最多一天跑一次
+    if(Object.keys(S.policyTree.checks).length>POLICY_CHECKS_TTL_DAYS)prunePolicyChecks();
+  }
   return S.policyTree.checks[day];
 }
+/* v1.2.3：国策变更事件历史上限 200 → 30。
+   它全站 0 处渲染（从不展示），却会被复制进每一份快照。
+   这里选择「收缩」而不是「删除」：收缩即可达到容量目标，
+   而删除用户数据不可逆；将来真要做「国策史」时，最近 30 条还在。 */
+const POLICY_EVENTS_MAX=30;
 function pushPolicyEvent(type,nodeId,extra={}){
   S.policyTree.events.push(Object.assign({id:'ev-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),
     type,nodeId,at:Date.now(),day:dayKey()},extra));
-  S.policyTree.events=S.policyTree.events.slice(-200);
+  S.policyTree.events=S.policyTree.events.slice(-POLICY_EVENTS_MAX);
+}
+function prunePolicyEvents(){
+  try{
+    const n=S.policyTree.events.length;
+    if(n>POLICY_EVENTS_MAX){S.policyTree.events=S.policyTree.events.slice(-POLICY_EVENTS_MAX);return n-POLICY_EVENTS_MAX;}
+  }catch(e){}
+  return 0;
 }
 function applyPolicyDone(node){
   node.successDays=(Number(node.successDays)||0)+1;
@@ -2839,7 +2954,10 @@ function renderReview(){
   $('#reviewInput').value=r?r.best:'';
   $('#ideaInput').value=r&&r.idea?r.idea:'';
   $('#thinkingInput').value=r&&r.thinking?r.thinking:'';
-  chosenLvl=r?r.level:null;
+  // v1.2.3：默认高亮「小赢」，让「看到的」等于「会存下的」。
+  // 原先新的一天三个按钮都不亮，保存时却静默记为「小赢」——
+  // 用户以为没选就等于不评，结果信里写着「小赢的一天」。
+  chosenLvl=r?r.level:'小赢';
   $$('#winSeg button').forEach(b=>b.classList.toggle('on',b.dataset.lvl===chosenLvl));
   const hist=$('#reviewHistory');hist.innerHTML='';
   const keys=Object.keys(S.reviews).sort().reverse().slice(0,14);
@@ -2871,9 +2989,11 @@ const BACKUP_SCHEMA='starspark_focuspro_backup',BACKUP_VERSION=5;
 function persistentSnapshot(){
   const data=JSON.parse(JSON.stringify(S));data.session=null;data.reservation=null;return data;
 }
-/* 本机自动快照：每次铸星/断链后留存“最新 + 最近 6 个历史状态”，
+/* 本机自动快照：每次铸星/断链后留存“最新 + 上 1 份”，
    可在主数据写坏时自愈。注意：清除浏览器数据会连同本快照一起删除，
-   真正防清缓存仍需定期导出 JSON（见点火页横幅）。 */
+   真正防清缓存仍需定期导出 JSON（见点火页横幅）。
+   v1.2.3 起由「最新 + 最近 6 份」收缩为 2 份：每份都是整份 S 的完整副本，
+   7 份等于把占用放大 8 倍，而留 1 份回退已足够自愈。 */
 /* ===== v1.0.0：年度星图（Canvas 直绘，零依赖，导出 2x PNG） ===== */
 function annualStats(year){
   const inYear=function(b){const d=new Date(b.endedAt||0);return d.getFullYear()===year;};
@@ -3090,14 +3210,53 @@ function readAutoSnapshots(){
     return list;
   }catch(e){return [];}
 }
+/* v1.2.3：容量改按「真实字节」算。
+   旧写法 JSON.stringify(S).length/1024 有两个错：
+     (1) 只统计主键、不算快照，而快照才是大头；
+     (2) 按字符数算，而 localStorage 是 UTF-16 —— 每字符 2 字节，实际翻倍。
+   另：这里**故意不用** navigator.storage.estimate() 算百分比 ——
+   它返回的是「整个 origin 的用量」，包含 Service Worker 缓存的约 9 MB 音频，
+   拿它当 localStorage 的分母会得出毫无意义的比例。
+   分母取浏览器通用的每源约 5 MB（各浏览器略有差异，文案里写明）。 */
+const LS_QUOTA_ASSUMED=5*1024*1024;
+let storageBytesReal=null;   // 若浏览器支持 usageDetails.localStorage，用真实值覆盖估算
+function storageBytesSync(){
+  let b=0;
+  [KEY,AUTO_KEY,KEY+'__corrupt',KEY+'__pre_restore'].forEach(k=>{
+    try{const v=localStorage.getItem(k);if(v)b+=v.length*2;}catch(e){}
+  });
+  return b;
+}
+function refreshStorageEstimate(){
+  try{
+    if(navigator.storage&&navigator.storage.estimate){
+      navigator.storage.estimate().then(est=>{
+        const det=est&&est.usageDetails;
+        if(det&&typeof det.localStorage==='number'){
+          storageBytesReal=det.localStorage;
+          try{renderBackupCenter();}catch(e){}
+        }
+      }).catch(()=>{});
+    }
+  }catch(e){}
+}
+function storagePercent(){
+  const bytes=storageBytesReal!==null?storageBytesReal:storageBytesSync();
+  return {bytes:bytes,pct:Math.max(0,Math.round(bytes/LS_QUOTA_ASSUMED*100))};
+}
 function renderBackupCenter(){
   const list=$('#snapList');if(!list)return;
   const health=$('#dataHealth');
-  const size=(JSON.stringify(S).length/1024).toFixed(1);
+  const {bytes,pct}=storagePercent();
+  const kb=(bytes/1024).toFixed(1);
   if(health){
     const d=daysSince(S.meta.lastExportAt);
     const ex=d===null?'从未导出':(d===0?'今天导出过':(d+' 天前导出过'));
-    health.textContent=`当前 ${S.blocks.length} 条专注 · 约 ${size} KB · ${ex}`;
+    // 存储已写满时，这是比任何估算都准的「地面真相」
+    const warn=saveFailed
+      ?' · ⚠ 存储已写满，正在丢数据 —— 请立刻导出'
+      :(pct>=70?' · 建议导出一次备份':'');
+    health.textContent=`当前 ${S.blocks.length} 条专注 · 已占约 ${kb} KB（${pct}% · 浏览器上限约 5 MB）· ${ex}${warn}`;
   }
   const snaps=readAutoSnapshots();
   list.innerHTML='';
@@ -3183,13 +3342,16 @@ function takeAutoSnapshot(){
     snap.history=Array.isArray(snap.history)?snap.history:[];
     const payload={at:Date.now(),data:persistentSnapshot()};
     if(snap.latest)snap.history.push(snap.latest);
-    snap.history=snap.history.slice(-6);
+    // v1.2.3：从「最新 + 最近 6 份」收缩为「最新 + 上 1 份」。
+    // 每份都是整份 S 的完整副本，7 份等于把占用放大 8 倍；
+    // 留 1 份回退已足够自愈（主数据写坏时能退到上一状态），占用降到原来的 1/4。
+    snap.history=snap.history.slice(-1);
     snap.latest=payload;
     try{
       localStorage.setItem(AUTO_KEY,JSON.stringify(snap));
     }catch(err){
-      // 空间不足：先缩到 3 份再试一次；仍失败则明确停用，不让用户误以为有保险
-      snap.history=snap.history.slice(-2);
+      // 空间不足：连回退那份也丢掉，只留最新；仍失败则明确停用，不让用户误以为有保险
+      snap.history=[];
       try{localStorage.setItem(AUTO_KEY,JSON.stringify(snap));}
       catch(err2){
         if(S.meta&&!S.meta.autoBackupDisabledAt){
@@ -3201,6 +3363,21 @@ function takeAutoSnapshot(){
     }
   }catch(e){}
   try{renderBackupCenter();}catch(e){}
+}
+/* v1.2.3：一次性收缩历史遗留的臃肿快照。
+   老版本存了最多 7 份完整副本，用户升级后不会自动变小 ——
+   这里在启动时乘机裁到「最新 + 1 份回退」，立刻把空间还回去。 */
+function shrinkAutoSnapshotOnce(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(AUTO_KEY));
+    if(!raw||typeof raw!=='object')return false;
+    const h=Array.isArray(raw.history)?raw.history:[];
+    if(h.length<=1)return false;
+    const before=h.length;
+    raw.history=h.slice(-1);
+    localStorage.setItem(AUTO_KEY,JSON.stringify(raw));
+    return before;
+  }catch(e){return false;}
 }
 /* 导出保命提醒：只在有铸星记录、且从未导出或超过 7 天、且未在 7 天内“稍后”时出现 */
 function daysSince(ts){if(!ts)return null;return Math.floor((Date.now()-Number(ts))/86400000);}
@@ -3226,7 +3403,7 @@ function renderAutoBackupNote(){
   const exportTxt=d===null?'还从未导出过':d===0?'今天刚导出过':`上次导出在 ${d} 天前`;
   const stateTxt=S.meta.autoBackupDisabledAt
     ?'本机自动快照已停用（存储空间不足），请以导出 JSON 为准'
-    :'已开启本机自动快照（最近 6 次结束状态），写坏可自愈';
+    :'已开启本机自动快照（最新 + 上 1 份），写坏可自愈';
   note.textContent=`${stateTxt}；但清除浏览器数据会一起删除，务必定期导出。当前：${exportTxt}。`;
 }
 function rebuildChain(previousBest){
@@ -3341,7 +3518,7 @@ function applyImportIncoming(incoming,payload){
       });
       const freezeSeen=new Set(S.policyTree.freezes.map(f=>String(f.id)));
       (incoming.policyTree.freezes||[]).forEach(f=>{if(f&&f.id!==undefined&&!freezeSeen.has(String(f.id)))S.policyTree.freezes.push(f);});
-      S.policyTree.events=[...S.policyTree.events,...(incoming.policyTree.events||[])].slice(-200);
+      S.policyTree.events=[...S.policyTree.events,...(incoming.policyTree.events||[])].slice(-POLICY_EVENTS_MAX);
       S.policyTree.lastAddDay=S.policyTree.lastAddDay||incoming.policyTree.lastAddDay||null;
     }
     Object.keys(incoming.reviews).forEach(k=>{if(!S.reviews[k]){S.reviews[k]=incoming.reviews[k];addedReviews++;}});
@@ -3353,6 +3530,8 @@ function applyImportIncoming(incoming,payload){
 }
 function bindBackup(){
   $('#exportBackup').onclick=exportBackup;
+  // v1.2.3：常驻保存警告上的「立刻导出」，与备份中心共用一个导出函数
+  const swx=$('#saveWarnExport');if(swx)swx.onclick=exportBackup;
   $('#importFile').onchange=e=>{importBackupFile(e.target.files&&e.target.files[0]);e.target.value='';};
   $('#bbExport').onclick=()=>exportBackup();
   $('#bbSnooze').onclick=()=>{S.meta.backupSnoozeAt=Date.now();save();renderBackupBanner();};
@@ -3460,6 +3639,10 @@ function stopReserve(){
 function restore(){
   if(S.session){cur=S.session;showRunning();
     showSessionPoem();
+    // v1.2.3：会话里记的是独立的 musicMuted，恢复时要同步到模块变量 ——
+    // 原先两者共用 soundMuted，静音状态会在刷新后串到静场上。
+    if(typeof cur.musicMuted==='boolean')musicMuted=cur.musicMuted;
+    if(typeof cur.soundMuted!=='boolean')cur.soundMuted=false;
     updateSessionChrome();
     if(cur.pauseTs){$('#pauseBtn').textContent='继续';tick();if(cur.pauseUntilTs)armPauseResume();startMusic();}
     else{startTick();startAmbient();stopMusic();}
@@ -3553,6 +3736,29 @@ try{renderPoemOfDay();renderPoemBook();}catch(e){}
 try{bindFocus();bindSimple();bindSound();bindMusic();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();bindOnboarding();bindAnnualPoster();}catch(e){}
 try{restore();}catch(e){}
 try{applySimpleMode();renderBackupBanner();renderTodayCard();maybeShowOnboarding();}catch(e){}
+/* v1.2.3：启动时探一次存储。若此刻就已经写不进去（配额满 / 隐私模式），
+   立刻把常驻警告亮出来 —— 不等用户先铸一颗星才发现丢了。 */
+try{
+  const probe=KEY+'__probe';
+  localStorage.setItem(probe,'1');
+  localStorage.removeItem(probe);
+  renderSaveWarning();
+}catch(e){
+  saveFailed=true;
+  renderSaveWarning();
+}
+/* v1.2.3：顺手把历史遗留的臃肿快照（最多 7 份）裁到 2 份，立刻把空间还回去 */
+try{
+  const shrunk=shrinkAutoSnapshotOnce();
+  if(shrunk>1)setTimeout(()=>{try{toast('已把本机快照从 '+shrunk+' 份收缩为 2 份，腾出存储空间');}catch(e){}},600);
+}catch(e){}
+/* v1.2.3：取一次真实存储占用（支持 usageDetails 的浏览器会给准数） */
+try{refreshStorageEstimate();}catch(e){}
+/* v1.2.3：把历史遗留的超期数据裁一次 —— 国策勾选只留 180 天、变更事件只留 30 条 */
+try{
+  const rc=prunePolicyChecks(), re=prunePolicyEvents();
+  if(rc||re){save();}
+}catch(e){}
 /* 背景乐：浏览器要求先有一次用户手势才能起声。用户首次点击/按键后，若在待机态且音乐开启，开始播放 */
 (function(){
   const unlock=()=>{
