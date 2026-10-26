@@ -374,12 +374,15 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .snap-head{margin-top:14px;font-family:var(--serif);font-size:14px;color:var(--gold-hi)}
 .snap-head .muted{font-size:11.5px;margin-left:6px;font-family:var(--sans)}
 .snap-list{margin-top:8px;display:grid;gap:8px}
+/* v1.3.0 自查修正：回收箱的「恢复」是不可逆操作入口，热区给足 40px。
+   （快照那个「恢复」在 .snap-row button 里，已单独改过。） */
+.policy-history-list button{min-height:40px;padding-left:14px;padding-right:14px}
 .snap-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;
   background:rgba(255,255,255,.04);border:1px solid var(--line2);border-radius:10px;padding:9px 12px}
 .snap-row .s-main{font-size:12.5px;color:var(--ink2);line-height:1.7}
 .snap-row .s-main b{color:var(--gold-hi);font-family:var(--sans);font-weight:600;margin-right:6px}
 .snap-row button{background:transparent;border:1px solid var(--line);color:var(--ink2);border-radius:9px;
-  padding:7px 12px;font-size:12px;cursor:pointer;min-height:38px}
+  padding:7px 12px;font-size:12px;cursor:pointer;min-height:40px}
 .snap-row button:hover{color:var(--gold-hi);border-color:rgba(246,220,155,.5)}
 /* 年度星图预览 */
 .poster-overlay{position:fixed;inset:0;z-index:66;display:none;align-items:center;justify-content:center;
@@ -493,8 +496,13 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .letter-page{background:linear-gradient(180deg,rgba(18,24,48,.96) 0%,rgba(14,20,40,.96) 100%);
   border:1.5px solid rgba(242,198,109,.28);border-radius:18px;max-width:520px;width:92%;
   max-height:85vh;overflow-y:auto;padding:32px 28px 40px;text-align:center;position:relative}
-.letter-page .letter-close{position:absolute;top:12px;right:14px;
+/* v1.3.0 自查修正：关闭按钮原来只有 22px，手机上点不准。改成 44×44 的触控目标
+   （视觉上仍是一个小 ×，但热区撑到标准尺寸）。 */
+.letter-page .letter-close{position:absolute;top:6px;right:6px;
+  display:flex;align-items:center;justify-content:center;
+  width:44px;height:44px;padding:0;border-radius:12px;
   background:none;border:none;color:var(--ink3);font-size:22px;cursor:pointer;line-height:1}
+.letter-page .letter-close:hover{color:var(--gold-hi);background:rgba(255,255,255,.05)}
 .letter-page .letter-date{font-family:var(--sans);font-size:11px;color:var(--ink3);letter-spacing:.12em;
   margin-bottom:18px}
 .letter-page .letter-salute{font-family:var(--serif);font-size:18px;color:var(--gold-hi);margin-bottom:22px}
@@ -992,6 +1000,11 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v1.3.1</div>
+      <div class="logdate">2026-10-26</div>
+      <ul class="loglist">
+        <li><b>自己当用户跑了一遍，改了三处。</b>① 信里原来写「这一天你没有点火」——说太满了：你可能点了火、也坐了半小时，只是中途断了。现在改成「没有留下星」，或者在你确实点过火时写「点了火，但没能铸成星」。② 信的关闭按钮只有 22px，手机上点不准，改成 44px 热区。③ 回收箱和快照的「恢复」按钮从 38px 提到 40px——那是对不可逆操作下手的地方，热区更该给足。</li>
+      </ul>
       <div class="logver">v1.3.0</div>
       <div class="logdate">2026-10-26</div>
       <ul class="loglist">
@@ -2981,7 +2994,13 @@ function openLetter(dayKeyValue){
       +(fs.task?'，最久的一段是《'+escHtml(fs.task)+'》（'+fs.taskMin+' 分钟）':'')
       +'。<br>累计第 '+fs.from+(fs.to>fs.from?'–'+fs.to:'')+' 颗。</div>';
   }else{
-    focusLine='<div class="letter-focus muted">这一天你没有点火——但它也是你的一天。</div>';
+    /* v1.3.0 自查修正：文案不能替用户下结论。
+       「没点火」说得太满 —— 用户可能点了火、也坐了半小时，只是中途断了，或者那一屏根本没记录。
+       所以改成描述「记录里有什么」，而不是断言「他做了什么」。 */
+    const anyThatDay=(blocksByDay()[dayKeyValue]||[]);
+    focusLine=anyThatDay.length
+      ?'<div class="letter-focus muted">这一天点了火，但没能铸成星——它也是你的一天。</div>'
+      :'<div class="letter-focus muted">这一天没有留下星——但它也是你的一天。</div>';
   }
   const poem=todayPoem();
   const page=$('#letterPage');
