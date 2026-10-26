@@ -230,28 +230,10 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
   background:rgba(242,198,109,.12);border:1px solid rgba(242,198,109,.35);font-size:11px;color:var(--gold-hi);font-family:var(--mono)}
 .star.broken{background:rgba(232,145,91,.1);border-color:rgba(232,145,91,.35);color:var(--ember)}
 
-/* 星河链路：当前链燃烧，最长链留在远处发光 */
-.chain-net-svg{width:100%;height:auto;display:block;overflow:visible}
-.chain-history{fill:none;stroke:rgba(130,166,255,.24);stroke-width:1.2;stroke-dasharray:2 7}
-.chain-track{fill:none;stroke:rgba(242,198,109,.2);stroke-width:1.4}
-.chain-flow{fill:none;stroke:var(--gold-hi);stroke-width:1.7;stroke-linecap:round;stroke-dasharray:3 16;
-  animation:laserMove 1.6s linear infinite;filter:drop-shadow(0 0 3px rgba(242,198,109,.85))}
-@keyframes laserMove{to{stroke-dashoffset:-19}}
-.chain-node{cursor:pointer;outline:none}
-.chain-node:focus .chain-star{stroke:#fff4c8;stroke-width:1.5}
-.chain-star{fill:var(--gold-hi);filter:url(#starGlow);transform-box:fill-box;transform-origin:center}
-.chain-node.active .chain-star{animation:starBreath 2.6s ease-in-out infinite;animation-delay:var(--delay)}
-.chain-node.history .chain-star{fill:var(--blue-soft);opacity:.52;filter:none}
-.chain-node.latest .chain-star{fill:#fff4c8;animation:latestStar 1.9s ease-in-out infinite}
-.chain-halo{fill:none;stroke:rgba(242,198,109,.45);stroke-width:1;animation:satPulse 2.3s ease-in-out infinite}
-@keyframes satPulse{0%,100%{opacity:.16;transform:scale(.88)}50%{opacity:.72;transform:scale(1.16)}}
-@keyframes starBreath{0%,100%{opacity:.72;transform:scale(.88)}50%{opacity:1;transform:scale(1.08)}}
-@keyframes latestStar{0%,100%{filter:url(#starGlow);transform:scale(1)}50%{filter:url(#starGlowStrong);transform:scale(1.3)}}
-.chain-core{fill:rgba(242,198,109,.12);stroke:rgba(242,198,109,.42);stroke-width:1}
-.chain-core-number{fill:var(--gold-hi);font:700 21px var(--serif);text-anchor:middle}
-.chain-core-label{fill:var(--ink3);font:11px var(--sans);letter-spacing:2px;text-anchor:middle}
-.chain-overflow{fill:var(--blue);font:12px var(--mono);text-anchor:middle}
-.chain-net-card-note{text-align:center;margin-top:6px}
+/* v1.3.0：删除「星链网络」的 22 行死样式（.chain-net-svg/.chain-node/.chain-star/
+   .chain-track/.chain-flow/.chain-halo/.chain-core/.chain-history/.chain-overflow
+   及 laserMove / satPulse / starBreath / latestStar 四个关键帧）。
+   那张图在 v0.9.0 就被星链长卷取代，样式与 #starGlow 滤镜都成了孤儿。 */
 .guide-lead{color:var(--ink2);font-size:14px;margin-bottom:10px}
 .guide-more{margin-top:8px;border-top:1px solid var(--line2);padding-top:4px}
 .guide-more summary{cursor:pointer;list-style:none;min-height:44px;display:flex;align-items:center;
@@ -263,9 +245,25 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .guide-note{border-top:1px solid var(--line2);margin-top:13px;padding-top:11px;color:var(--ink3);font-size:12.5px;line-height:1.8}
 .chain-tabs{grid-template-columns:repeat(3,1fr);margin:14px 0 8px}
 .chain-panel{display:none}.chain-panel.on{display:block;animation:fade .25s ease}
-.star-map{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px;margin:14px 0 8px}
+/* v1.3.0：星图改为「月历模式」—— 从 90 天平铺改为可翻月的日历 */
+.cal{margin:14px 0 8px}
+.cal-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cal-nav{width:36px;height:36px;flex:none;border-radius:10px;border:1px solid var(--line2);
+  background:rgba(255,255,255,.04);color:var(--ink2);font-size:19px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s}
+.cal-nav:hover:not(:disabled){border-color:var(--line);color:var(--gold-hi)}
+.cal-nav:disabled{opacity:.28;cursor:default}
+.cal-title{flex:1;text-align:center;min-width:0}
+.cal-title b{display:block;font-family:var(--serif);font-size:15.5px;color:var(--gold-hi);letter-spacing:.05em;font-weight:700}
+.cal-title span{display:block;font-size:11px;color:var(--ink3);letter-spacing:.06em;margin-top:2px}
+.cal-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:5px}
+.cal-week span{text-align:center;font-size:10.5px;color:var(--ink3);letter-spacing:.08em}
+.star-map{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:0}
 .map-day{aspect-ratio:1;background:rgba(255,255,255,.04);border:1px solid var(--line2);border-radius:7px;color:var(--ink3);font:11px var(--mono);cursor:pointer;min-width:0}
 .map-day:hover,.map-day:focus{border-color:var(--line);outline:none}
+.map-day.blank{visibility:hidden;pointer-events:none}
+.map-day.today{outline:1.5px solid var(--gold);outline-offset:1px}
+.map-day.broken-day{background:rgba(232,145,91,.18);border-color:rgba(232,145,91,.5);color:#E8915B}
 .map-day.has-star{background:rgba(242,198,109,.30);border-color:rgba(255,217,138,.75);color:var(--gold-hi);box-shadow:0 0 8px rgba(242,198,109,.20)}
 .map-day.cluster{background:rgba(242,198,109,.48);border-color:rgba(255,217,138,.9);box-shadow:0 0 14px rgba(242,198,109,.45)}
 .map-day.white-star{background:rgba(130,166,255,.30);border-color:rgba(150,180,255,.75);color:#BBD0FF;box-shadow:0 0 8px rgba(130,166,255,.22)}
@@ -465,6 +463,10 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .outcome-card .oc-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .outcome-card .oc-btns .btn{min-height:40px;padding:8px 12px;font-size:13px}
 .outcome-line{font-size:12px;color:var(--gold-hi);margin-top:3px;line-height:1.7}
+/* v1.3.0：单颗星详情卡上的中性标签（准时入座 / 完成度） */
+.detail-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.detail-tags span{font-size:11px;letter-spacing:.06em;color:var(--ink2);
+  border:1px solid var(--line2);border-radius:999px;padding:3px 9px}
 
 /* 星月诗笺：今日星语 + 诗笺卡 */
 .poem-of-day{margin:0 0 10px;font-family:var(--serif);font-size:13px;line-height:1.9;color:var(--gold-hi);
@@ -514,6 +516,20 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .letter-box .letter-entry .le-date{font-family:var(--sans);font-size:12px;color:var(--ink3);letter-spacing:.06em}
 .letter-box .letter-entry .le-level{font-family:var(--serif);font-size:13px;color:var(--gold);text-align:right}
 .letter-box .letter-entry .le-excerpt{font-family:var(--serif);font-size:12.5px;color:var(--ink2);margin-top:2px}
+/* v1.3.0：信笺匣改为「全部 + 按年折叠」；信尾带上当天的专注成绩 */
+.letter-stat{font-size:11.5px;color:var(--ink3);letter-spacing:.06em;padding:6px 0 10px;
+  border-bottom:1px solid var(--line2);margin-bottom:4px}
+.letter-year{margin-top:6px}
+.letter-year>summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 2px;font-family:var(--serif);font-size:14px;color:var(--gold-hi);letter-spacing:.04em;
+  min-height:44px;border-bottom:1px solid var(--line2);list-style:none}
+.letter-year>summary::-webkit-details-marker{display:none}
+.letter-year>summary em{font-style:normal;font-family:var(--sans);font-size:11.5px;color:var(--ink3);letter-spacing:.06em}
+.letter-year[open]>summary{margin-bottom:2px}
+.letter-focus{margin-top:16px;padding-top:14px;border-top:1px solid rgba(242,198,109,.18);
+  font-family:var(--serif);font-size:13.5px;line-height:1.9;color:var(--gold);text-align:center}
+.letter-focus b{color:var(--gold-hi);font-weight:700}
+.letter-focus.muted{color:var(--ink3)}
 
 /* 小星星：铸星时的微型庆祝 */
 .tiny-star{position:fixed;z-index:70;pointer-events:none}
@@ -833,9 +849,17 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="chain-panel" id="mapPanel">
       <div class="card">
-        <h3>近 90 天星图</h3>
-        <p class="muted">一格是一天。星越亮，表示当天完成的专注时段越多。</p>
-        <div class="star-map" id="starMap"></div>
+        <h3>月历星图</h3>
+        <p class="muted">一天一格，可翻月看全部历史。星越亮，表示当天完成的专注时段越多。</p>
+        <div class="cal" id="starCal">
+          <div class="cal-head">
+            <button class="cal-nav" id="calPrev" type="button" aria-label="上一个月">‹</button>
+            <div class="cal-title"><b id="calTitle">—</b><span id="calSum"></span></div>
+            <button class="cal-nav" id="calNext" type="button" aria-label="下一个月">›</button>
+          </div>
+          <div class="cal-week" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+          <div class="star-map" id="starMap"></div>
+        </div>
         <div class="map-key"><span><i></i>没有铸星</span><span><i class="k-gold"></i>完成铸星</span><span><i class="k-blue"></i>判例铸星</span></div>
         <div class="day-detail" id="dayDetail"><p class="muted">点一个日期，查看那天留下的专注记录。</p></div>
       </div>
@@ -968,6 +992,15 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v1.3.0</div>
+      <div class="logdate">2026-10-26</div>
+      <ul class="loglist">
+        <li><b>星图改成「月历」。</b>原来是最近 90 天平铺，看不到更早。现在是一页月历，一天一格、星期对齐，可以一直往前翻到第一颗星，每页显示「点火 N 天 · 铸星 M 颗」。断过链的日子和今天都有单独标记。</li>
+        <li><b>信笺匣显示全部来信。</b>原先只显示最近 30 封，第 31 封起就永远看不到了——但信一直存在库里。现在按年折叠，默认展开当年，顶部显示「共 N 封 · 从 X 写起」。</li>
+        <li><b>信里带上那一天的星。</b>信尾多一段：「这一天你铸了 3 颗星，坐了 75 分钟，最久的一段是《线性代数》。累计第 12–14 颗。」没点火的日子写「这一天你没有点火——但它也是你的一天」。</li>
+        <li><b>点亮三项一直存在却没露面的记录：</b>单颗星详情里能看到「准时入座」和「完成度」；统计里多一行「自然走完 / 主动收束」；国策节点多「累计守住 N 天 / 失守 M 天」。都是陈述，不打分。</li>
+        <li><b>清理。</b>删掉星链网络那块 95 行死代码（那张图在 v0.9.0 就被星链长卷取代了，代码和样式漏删），以及一个永远不会成立的开关。首屏少解析约 5 KB。</li>
+      </ul>
       <div class="logver">v1.2.3</div>
       <div class="logdate">2026-10-25</div>
       <ul class="loglist">
@@ -2288,7 +2321,7 @@ function renderChainLong(){
     else{
       const len=Math.hypot(c.x-a.x,c.y-a.y);
       p.setAttribute('stroke-dasharray',String(len));
-      p.setAttribute('stroke-dashoffset',String(window.__chainNoGrow?0:len));
+      p.setAttribute('stroke-dashoffset',String(len));   // v1.3.0：去掉恒假的 window.__chainNoGrow 判断
       p.dataset.len=String(len);
     }
     svg.appendChild(p);
@@ -2307,7 +2340,7 @@ function renderChainLong(){
     c.setAttribute('class','star');c.dataset.i=String(i);
     if(broken){c.setAttribute('fill','none');c.setAttribute('stroke',color.broken);c.setAttribute('stroke-width','1.4');}
     else{c.setAttribute('fill',color[b.state]||color.done);c.style.filter='drop-shadow(0 0 9px rgba(255,230,173,.75))';}
-    c.style.opacity=window.__chainNoGrow?1:0;
+    c.style.opacity=0;   // v1.3.0：原先写的是 window.__chainNoGrow?1:0，该标志恒 undefined，等价于 0
     c.style.cursor='pointer';
     c.addEventListener('click',()=>showChainLongDetail(b));
     svg.appendChild(c);
@@ -2319,7 +2352,9 @@ function renderChainLong(){
     tx.textContent=broken?'断了':((dt.getMonth()+1)+'.'+dt.getDate());
     svg.appendChild(tx);
   });
-  if(!window.__chainNoGrow){
+  /* v1.3.0：原先这里包在 if(!window.__chainNoGrow) 里，但该标志全站只读、从无赋值，
+     恒为 undefined —— 条件永远成立。去掉死条件，用一个裸块保持缩进与结构不变。 */
+  {
     const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if(reduce){svg.querySelectorAll('.star').forEach(c=>c.style.opacity=1);}
     else{
@@ -2348,6 +2383,16 @@ function showChainLongDetail(b){
   const meta=document.createElement('div');meta.className='muted';
   meta.textContent=(d.getMonth()+1)+' 月 '+d.getDate()+' 日 · '+b.planMin+' 分钟计划 · 实际 '+Math.round((b.actualSec||0)/60)+' 分 · '+st;
   box.appendChild(meta);
+  // v1.3.0：接出原先「只写不读」的字段 —— 但只在中性、有用的场合显示
+  const tags=[];
+  if(b.onTime)tags.push('准时入座');
+  const ratio=Number(b.completedRatio);
+  if(isFinite(ratio)&&ratio>0&&ratio<0.995)tags.push('完成度 '+Math.round(ratio*100)+'%');
+  if(tags.length){
+    const tagRow=document.createElement('div');tagRow.className='detail-tags';
+    tags.forEach(t=>{const s=document.createElement('span');s.textContent=t;tagRow.appendChild(s);});
+    box.appendChild(tagRow);
+  }
   if(b.outcome){const oc=document.createElement('div');oc.className='outcome-line';oc.textContent='推进：'+b.outcome;box.appendChild(oc);}
 }
 
@@ -2429,23 +2474,92 @@ function showChainView(view){
   $('#statsPanel').classList.toggle('on',chainView==='stats');
   if(chainView==='map')requestAnimationFrame(drawMapLines);
 }
-function bindChainViews(){$$('#chainTabs button').forEach(b=>b.onclick=()=>showChainView(b.dataset.chainView));}
+function bindChainViews(){
+  $$('#chainTabs button').forEach(b=>b.onclick=()=>showChainView(b.dataset.chainView));
+  // v1.3.0：月历翻月
+  const pv=$('#calPrev'),nx=$('#calNext');
+  if(pv)pv.onclick=()=>calShift(-1);
+  if(nx)nx.onclick=()=>calShift(1);
+}
 function localDayStart(daysAgo){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-daysAgo);return d;}
 function blocksByDay(){
   const by={};
   S.blocks.forEach(b=>{const k=dayKey(new Date(b.endedAt));(by[k]||(by[k]=[])).push(b);});
   return by;
 }
+/* v1.3.0：星图 = 月历模式。可翻月，覆盖全部历史（原先只有 90 天窗口）。
+   周一为第一列；前后用空白格占位，保证日期落在正确的星期上。 */
+let calYM=null;   // 当前显示的月份 {y, m(0-11)}
+function calBounds(){
+  const ks=Object.keys(blocksByDay()).sort();
+  const now=new Date();
+  let y0=now.getFullYear(),m0=now.getMonth(),y1=y0,m1=m0;
+  if(ks.length){
+    const a=ks[0].split('-').map(Number);
+    y0=a[0];m0=a[1]-1;
+    const b=ks[ks.length-1].split('-').map(Number);
+    if(b[0]*12+(b[1]-1)>y1*12+m1){y1=b[0];m1=b[1]-1;}
+  }
+  return {min:y0*12+m0,max:y1*12+m1};
+}
+function calShift(delta){
+  if(!calYM)return;
+  const bd=calBounds();
+  let idx=calYM.y*12+calYM.m+delta;
+  if(idx<bd.min)idx=bd.min;
+  if(idx>bd.max)idx=bd.max;
+  calYM={y:Math.floor(idx/12),m:idx%12};
+  renderStarMap();
+}
 function renderStarMap(){
   const box=$('#starMap');if(!box)return;
-  const by=blocksByDay();box.innerHTML='';
-  for(let ago=89;ago>=0;ago--){
-    const d=localDayStart(ago),k=dayKey(d),items=by[k]||[],wins=items.filter(isSuccessBlock);
+  const by=blocksByDay();
+  const now=new Date(),todayK=dayKey(now);
+  const bd=calBounds();
+  if(!calYM)calYM={y:now.getFullYear(),m:now.getMonth()};
+  let idx=calYM.y*12+calYM.m;
+  if(idx<bd.min)idx=bd.min;
+  if(idx>bd.max)idx=bd.max;
+  calYM={y:Math.floor(idx/12),m:idx%12};
+  const y=calYM.y,m=calYM.m;
+
+  const first=new Date(y,m,1);
+  const lead=(first.getDay()+6)%7;          // 周一为第一列
+  const days=new Date(y,m+1,0).getDate();   // 当月天数
+
+  box.innerHTML='';
+  const blank=()=>{const s=document.createElement('span');s.className='map-day blank';box.appendChild(s);};
+  for(let i=0;i<lead;i++)blank();
+
+  let litDays=0,stars=0;
+  for(let d=1;d<=days;d++){
+    const k=dayKey(new Date(y,m,d));
+    const items=by[k]||[],wins=items.filter(isSuccessBlock);
     const white=wins.length>0&&wins.every(b=>b.state==='whitelisted');
-    const b=document.createElement('button');b.type='button';b.className='map-day'+(wins.length?' has-star':'')+(wins.length>=3?' cluster':'')+(white?' white-star':'');
-    b.textContent=d.getDate();b.title=`${k} · ${wins.length?wins.length+' 次铸星':'没有铸星'}`;
-    b.setAttribute('aria-label',b.title);b.onclick=()=>renderDayDetail(k);box.appendChild(b);
+    const brokenOnly=!wins.length&&items.some(b=>b.state==='broken');
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='map-day'+(wins.length?' has-star':'')+(wins.length>=3?' cluster':'')+(white?' white-star':'')
+      +(brokenOnly?' broken-day':'')+(k===todayK?' today':'');
+    b.textContent=d;
+    b.title=`${k} · ${wins.length?wins.length+' 次铸星':'没有铸星'}${brokenOnly?' · 断链':''}`;
+    b.setAttribute('aria-label',b.title);
+    b.onclick=()=>renderDayDetail(k);
+    box.appendChild(b);
+    if(wins.length)litDays++;
+    stars+=wins.length;
   }
+  const total=lead+days;
+  for(let i=0;i<(7-total%7)%7;i++)blank();
+
+  const t=$('#calTitle'),s=$('#calSum');
+  if(t)t.textContent=`${y} 年 ${m+1} 月`;
+  if(s)s.textContent=`点火 ${litDays} 天 · 铸星 ${stars} 颗`;
+  const pv=$('#calPrev'),nx=$('#calNext');
+  if(pv)pv.disabled=idx<=bd.min;
+  if(nx)nx.disabled=idx>=bd.max;
+
+  requestAnimationFrame(drawMapLines);
 }
 function renderDayDetail(key){
   const box=$('#dayDetail'),items=(blocksByDay()[key]||[]).sort((a,b)=>(a.endedAt||0)-(b.endedAt||0));
@@ -2465,8 +2579,11 @@ function renderFocusStats(){
   const top=Object.keys(names).sort((a,b)=>names[b]-names[a])[0]||'还没有填写任务';
   const white=wins.filter(b=>b.state==='whitelisted'),reasons={};white.forEach(b=>{if(b.reason)reasons[b.reason]=(reasons[b.reason]||0)+1;});
   const reason=Object.keys(reasons).sort((a,b)=>reasons[b]-reasons[a])[0]||'暂无';
+  // v1.3.0：接出 endedBy —— 区分「自然走完」与「你主动收束」。中性陈述，不评判。
+  const byEnd={timer:0,manual:0,judge:0};
+  wins.forEach(b=>{const k=String(b.endedBy||'timer');byEnd[k]=(byEnd[k]||0)+1;});
   const card=(n,l,extra='')=>`<div class="stat${extra}"><div class="n">${escHtml(n)}</div><div class="l">${escHtml(l)}</div></div>`;
-  box.innerHTML=card(minutesFor(todayWins)+' 分','今日投入')+card(todayWins.length+' 颗','今日铸星')+card(minutesFor(week)+' 分','近 7 天')+card(minutesFor(month)+' 分','近 30 天')+card(wins.length+' 次','累计铸星')+card(S.chain.bestNo+' 颗','历史最长')+card(top,'最常投入任务',' wide')+card(white.length+' 次 · '+reason,'判例中断',' wide');
+  box.innerHTML=card(minutesFor(todayWins)+' 分','今日投入')+card(todayWins.length+' 颗','今日铸星')+card(minutesFor(week)+' 分','近 7 天')+card(minutesFor(month)+' 分','近 30 天')+card(wins.length+' 次','累计铸星')+card(S.chain.bestNo+' 颗','历史最长')+card(byEnd.timer+' / '+byEnd.manual,'自然走完 / 主动收束',' wide')+card(top,'最常投入任务',' wide')+card(white.length+' 次 · '+reason,'判例中断',' wide');
 }
 function renderStartupStats(){
   const box=$('#startupStats');if(!box)return;
@@ -2481,79 +2598,13 @@ function renderStartupStats(){
     card(converted+' 次 · '+rate+'%','热身转正式')+card(arrived+' 次 · '+arriveRate+'%','预约守时');
 }
 
-/* ===== 星河链路：当前链燃烧，最长链留在远处 ===== */
-function currentChainBlocks(){
-  const chain=[];
-  for(let i=S.blocks.length-1;i>=0;i--){
-    const b=S.blocks[i];
-    if(b.state==='broken')break;
-    if(isSuccessBlock(b))chain.unshift(b);
-  }
-  return chain;
-}
-function curvePoint(t,baseY){
-  const p0=[28,baseY],p1=[108,28],p2=[282,34],p3=[372,baseY-12];
-  const u=1-t;
-  return [u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0],
-    u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]];
-}
-function starPath(r){return `M0 ${-r} L${r*.28} ${-r*.28} L${r} 0 L${r*.28} ${r*.28} L0 ${r} L${-r*.28} ${r*.28} L${-r} 0 L${-r*.28} ${-r*.28} Z`;}
+/* HTML 转义：全站公用的工具函数。
+   （原先夹在已删除的「星链网络」死代码里，这次单独保留下来，别动它。） */
 function escHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function starTitle(block,index,total){
-  if(!block)return `第 ${index+1} 颗星 · 当前星链第 ${index+1}/${total}`;
-  const time=new Date(block.endedAt).toLocaleString();
-  const task=block.task||'未填写任务';
-  const kind=blockStateLabel(block);
-  const out=block.outcome?` · 推进：${block.outcome}`:'';
-  return `第 ${index+1} 颗星 · ${task} · ${block.actualSec/60|0} 分 · ${kind}${out} · ${time}`;
-}
-function showStarDetail(index,total){
-  const block=currentChainBlocks()[index];
-  if(!block){toast(`第 ${index+1} 颗星 · 当前星链第 ${index+1}/${total}`);return;}
-  const kind=blockStateLabel(block);
-  const out=block.outcome?` · 推进：${block.outcome}`:'';
-  toast(`第 ${index+1} 颗星 · ${block.task||'专注'} · ${block.actualSec/60|0} 分 · ${kind}${out}`);
-}
-function renderChainNet(){
-  const box=$('#chainNet');
-  const total=Math.max(0,S.chain.currentNo||0);
-  const best=Math.max(total,S.chain.bestNo||0);
-  const visible=Math.min(total,28),historyVisible=Math.min(best,28);
-  const blocks=currentChainBlocks();
-  const activePath='M28 166 C108 28 282 34 372 154';
-  const historyPath='M28 188 C120 92 270 96 372 178';
-  let history='',stars='';
-  for(let i=0;i<historyVisible;i++){
-    if(i<visible)continue;
-    const t=historyVisible===1?.5:i/(historyVisible-1),p=curvePoint(t,188),r=i%5===0?3.4:2.2;
-    history+=`<g class="chain-node history" transform="translate(${p[0].toFixed(1)},${p[1].toFixed(1)})"><path class="chain-star" d="${starPath(r)}"/></g>`;
-  }
-  for(let i=0;i<visible;i++){
-    const sourceIndex=total<=28?i:Math.round(i*(total-1)/(visible-1));
-    const t=visible===1?.5:i/(visible-1),p=curvePoint(t,166),r=i===visible-1?6:(i%5===0?4.5:3.2);
-    const latest=i===visible-1?' latest':'';
-    const title=escHtml(starTitle(blocks[sourceIndex],sourceIndex,total));
-    stars+=`<g class="chain-node active${latest}" role="button" tabindex="0" aria-label="${title}" transform="translate(${p[0].toFixed(1)},${p[1].toFixed(1)})" style="--delay:${(i*.11).toFixed(2)}s" onclick="showStarDetail(${sourceIndex},${total})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStarDetail(${sourceIndex},${total})}">
-      <title>${title}</title>${latest?'<circle class="chain-halo" r="11"/>':''}<path class="chain-star" d="${starPath(r)}"/>
-    </g>`;
-  }
-  const overflow=total>visible?`<text x="200" y="211" class="chain-overflow">+ ${total-visible} 颗星已汇入这条星河</text>`:'';
-  const note=total?`当前 ${total} 颗星正在连成一条路，点一颗星可回看那段专注。`:'第一段专注完成后，第一颗星会在这里亮起。';
-  box.innerHTML=
-    `<svg viewBox="0 0 400 222" class="chain-net-svg" aria-label="当前星链可视化">
-      <defs>
-        <filter id="starGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="1.8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <filter id="starGlowStrong" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-      </defs>
-      <path d="${historyPath}" class="chain-history"/>
-      <path d="${activePath}" class="chain-track"/>
-      ${total>1?`<path d="${activePath}" class="chain-flow"/>`:''}
-      ${history}${stars}
-      <g transform="translate(200,119)"><circle class="chain-core" r="31"/><text y="-2" class="chain-core-number">${total}</text><text y="15" class="chain-core-label">当前星链</text></g>
-      ${overflow}
-    </svg>
-    <p class="muted chain-net-card-note">${note}</p>`;
-}
+/* v1.3.0：删除「星链网络」死代码簇（原 starTitle / showStarDetail / renderChainNet）。
+   它们从不被调用：renderChainNet 要写的容器 #chainNet 在 HTML 里根本不存在，
+   该图早在 v0.9.0 就被「星链长卷」取代，但代码与配套 CSS/#starGlow 滤镜漏删。
+   保留的 escHtml 见上。 */
 
 /* ===== 国策星树 ===== */
 const POLICY_TEMPLATES=[
@@ -2798,7 +2849,8 @@ function renderPolicyNode(node,depth=0){
       <div class="policy-meta">
         <span class="steady steady-${st.key}" title="${st.hint}">${st.label}</span>
         <span>约束力 ${constr}</span><span>${policyModeLabel(node.mode)}</span><span>连续 ${node.consecutiveDays} 天</span>
-        <span>最长 ${node.bestStreak} 天</span><span>内化 ${Math.round(node.internalization)}%</span></div>
+        <span>最长 ${node.bestStreak} 天</span><span>内化 ${Math.round(node.internalization)}%</span>
+        <span>累计守住 ${Number(node.successDays)||0} 天</span><span>失守 ${Number(node.missedDays)||0} 天</span></div>
       <div class="policy-meter"><i style="width:${Math.min(100,node.internalization)}%"></i></div>
       ${actions}</div></details>${branch}</div>`;
 }
@@ -2885,6 +2937,25 @@ function bindPolicy(){
 
 /* ===== 星火来信：信笺匣 + 全屏读信 ===== */
 const LETTER_LEVEL_MAP={'小赢':'小赢的一天','中赢':'不错的一天','大赢':'超棒的一天'};
+/* v1.3.0：把「那一天」的专注成绩算出来，写进信里 —— 让信成为那一天的实物，而不只是心情。
+   注意：链序号没有按天存过，所以这里给的是**累计第几颗星**（诚实表述，不假装是当时的链号）。 */
+function dayFocusSummary(dk){
+  try{
+    const items=(blocksByDay()[dk]||[]).filter(isSuccessBlock);
+    if(!items.length)return null;
+    const mins=Math.round(items.reduce((n,b)=>n+(Number(b.actualSec)||0),0)/60);
+    const lastEnd=items.reduce((m,b)=>Math.max(m,b.endedAt||0),0);
+    let cum=0,atDayEnd=0;
+    S.blocks.forEach(b=>{if(isSuccessBlock(b)){cum++;if((b.endedAt||0)<=lastEnd)atDayEnd=cum;}});
+    const longest=items.slice().sort((a,b)=>(Number(b.actualSec)||0)-(Number(a.actualSec)||0))[0];
+    return {
+      stars:items.length, mins:mins,
+      from:Math.max(1,atDayEnd-items.length+1), to:atDayEnd,
+      task:String((longest&&longest.task)||'').trim(),
+      taskMin:Math.round((Number(longest&&longest.actualSec)||0)/60)
+    };
+  }catch(e){return null;}
+}
 function openLetter(dayKeyValue){
   const v=S.reviews[dayKeyValue];
   if(!v)return;
@@ -2902,6 +2973,16 @@ function openLetter(dayKeyValue){
   if(v.idea)body+=`<div class="letter-line">冒出来的一个灵感：${escHtml(v.idea)}</div>`;
   if(v.thinking)body+=`<div class="letter-line">那一刻在想的：${escHtml(v.thinking)}</div>`;
   if(!body)body='<div class="letter-line">那一天，你坐了下来，什么也没写——但你已经到场了。</div>';
+  // v1.3.0：带上那天铸的星
+  const fs=dayFocusSummary(dayKeyValue);
+  let focusLine;
+  if(fs){
+    focusLine='<div class="letter-focus">这一天你铸了 <b>'+fs.stars+'</b> 颗星，坐了 <b>'+fs.mins+'</b> 分钟'
+      +(fs.task?'，最久的一段是《'+escHtml(fs.task)+'》（'+fs.taskMin+' 分钟）':'')
+      +'。<br>累计第 '+fs.from+(fs.to>fs.from?'–'+fs.to:'')+' 颗。</div>';
+  }else{
+    focusLine='<div class="letter-focus muted">这一天你没有点火——但它也是你的一天。</div>';
+  }
   const poem=todayPoem();
   const page=$('#letterPage');
   page.innerHTML=
@@ -2909,6 +2990,7 @@ function openLetter(dayKeyValue){
     `<div class="letter-date">${dateStr}</div>`+
     `<div class="letter-salute">写给自己的信 · ${levelLabel}</div>`+
     `<div class="letter-body">${body}</div>`+
+    focusLine+
     `<div class="letter-poem">「${poem.t}」<span class="poem-from">${poem.a}</span></div>`;
   $('#letterOverlay').classList.add('on');
   $('#letterCloseBtn').onclick=()=>$('#letterOverlay').classList.remove('on');
@@ -2928,23 +3010,47 @@ function renderLetterPanel(){
   }else{
     preview.innerHTML='<p class="muted">今天先复盘，写完保存后就能给自己写信了。</p>';
   }
-  // 历史信笺匣
-  const keys=Object.keys(S.reviews).sort().reverse().slice(0,30);
+  // 历史信笺匣：v1.3.0 起显示**全部**（原先只显示最近 30 封，第 31 封起永远看不到），
+  // 按年折叠，默认展开当年，早年收起。
+  const allKeys=Object.keys(S.reviews).sort().reverse();
   box.innerHTML='';
-  if(!keys.length){
+  if(!allKeys.length){
     box.innerHTML='<p class="muted" id="letterBoxEmpty">还没有过去的信。</p>';
     return;
   }
-  keys.forEach(dk=>{
-    const v=S.reviews[dk];
-    const line=(v.best||v.idea||v.thinking||'').slice(0,30);
-    const d=dk.split('-');
-    const el=document.createElement('div');
-    el.className='letter-entry';
-    el.innerHTML='<div><div class="le-date">'+d[1]+'月'+d[2]+'日</div><div class="le-excerpt">'+escHtml(line)+(line.length>=30?'…':'')+'</div></div>'+
-      '<div class="le-level">'+(v.level||'小赢')+'</div>';
-    el.onclick=()=>openLetter(dk);
-    box.appendChild(el);
+  const stat=document.createElement('div');
+  stat.className='letter-stat';
+  const firstKey=allKeys[allKeys.length-1];
+  stat.textContent=`共 ${allKeys.length} 封 · 从 ${firstKey.replace(/-/g,'.')} 写起`;
+  box.appendChild(stat);
+
+  const nowYear=String(new Date().getFullYear());
+  const byYear={};
+  allKeys.forEach(dk=>{const y=dk.slice(0,4);(byYear[y]||(byYear[y]=[])).push(dk);});
+  Object.keys(byYear).sort().reverse().forEach(y=>{
+    const list=byYear[y];
+    const sec=document.createElement('details');
+    sec.className='letter-year';
+    sec.open=(y===nowYear);
+    const sum=document.createElement('summary');
+    const yn=document.createElement('span');yn.textContent=y+' 年';
+    const cnt=document.createElement('em');cnt.textContent=list.length+' 封';
+    sum.appendChild(yn);sum.appendChild(cnt);
+    sec.appendChild(sum);
+    const wrapEl=document.createElement('div');
+    list.forEach(dk=>{
+      const v=S.reviews[dk]||{};
+      const line=(v.best||v.idea||v.thinking||'').slice(0,30);
+      const d=dk.split('-');
+      const el=document.createElement('div');
+      el.className='letter-entry';
+      el.innerHTML='<div><div class="le-date">'+d[1]+'月'+d[2]+'日</div><div class="le-excerpt">'+escHtml(line)+(line.length>=30?'…':'')+'</div></div>'+
+        '<div class="le-level">'+(v.level||'小赢')+'</div>';
+      el.onclick=()=>openLetter(dk);
+      wrapEl.appendChild(el);
+    });
+    sec.appendChild(wrapEl);
+    box.appendChild(sec);
   });
 }
 
