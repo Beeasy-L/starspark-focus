@@ -509,6 +509,41 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
 .letter-page .letter-body{font-family:var(--serif);font-size:15px;line-height:2.1;color:var(--gold);
   text-align:left;padding:0 4px}
 .letter-page .letter-body .letter-line{margin-bottom:12px}
+/* ===== v1.3.2 寄给未来的信 ===== */
+.future-compose{text-align:left}
+.future-compose .letter-salute{text-align:center}
+.future-picks{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.future-picks button{min-height:40px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);
+  background:transparent;color:var(--ink2);font-size:12.5px;cursor:pointer;font-family:var(--sans)}
+.future-picks button.on{color:var(--gold-hi);border-color:rgba(242,198,109,.55);background:rgba(242,198,109,.08)}
+.future-picks button:hover{color:var(--gold-hi)}
+.future-custom{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:12px;color:var(--ink3)}
+.future-custom input{flex:1;min-height:40px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(255,255,255,.03);color:var(--gold);font-family:var(--sans);font-size:13px}
+.future-body{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;border:1px solid var(--line);
+  background:rgba(255,255,255,.03);color:var(--gold);font-family:var(--serif);font-size:14.5px;
+  line-height:1.95;resize:vertical;margin-bottom:10px}
+.future-body:focus{outline:none;border-color:rgba(242,198,109,.5)}
+/* 封着的信 */
+.sealed-letter{position:relative;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;
+  padding:13px 14px 13px 46px;border-radius:12px;border:1px solid rgba(242,198,109,.16);
+  background:linear-gradient(180deg,rgba(242,198,109,.05),rgba(242,198,109,.02));margin-bottom:8px}
+.sealed-letter.locked{cursor:default}
+.sealed-letter.due{cursor:pointer;border-color:rgba(242,198,109,.45);
+  background:linear-gradient(180deg,rgba(242,198,109,.11),rgba(242,198,109,.04))}
+.sealed-letter.due:hover{border-color:rgba(242,198,109,.7)}
+.sealed-wax{position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:#2a1a12;font-family:var(--serif);font-weight:700;
+  background:radial-gradient(circle at 35% 30%,#d9814f,#a9492b);box-shadow:0 1px 4px rgba(0,0,0,.45)}
+.sealed-letter .sl-when{font-size:12.5px;color:var(--ink2);line-height:1.7}
+.sealed-letter .sl-when b{color:var(--gold-hi);font-family:var(--sans);font-weight:600}
+.sealed-letter .sl-left{font-size:11.5px;color:var(--ink3);font-family:var(--sans)}
+.sealed-letter.due .sl-left{color:var(--gold-hi)}
+.sealed-letter .sl-tag{font-size:11px;color:var(--ink3);border:1px solid var(--line);
+  border-radius:999px;padding:4px 10px;font-family:var(--sans);white-space:nowrap}
+.sealed-letter.due .sl-tag{color:var(--gold-hi);border-color:rgba(242,198,109,.45)}
+.sealed-empty{padding:4px 0 2px}
 .letter-page .letter-poem{margin-top:28px;padding-top:18px;border-top:1px solid rgba(242,198,109,.18);
   font-family:var(--serif);font-size:14px;line-height:2;color:var(--gold-hi);text-align:center}
 .letter-page .letter-poem .poem-from{display:block;font-family:var(--sans);font-size:11px;
@@ -950,6 +985,13 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
         <div id="letterPreview"></div>
         <div class="letter-box" id="letterBox"><p class="muted" id="letterBoxEmpty">还没有过去的信。</p></div>
       </div>
+      <div class="card" id="futureLetterCard">
+        <h3>寄给未来的信</h3>
+        <p class="muted">写一封给以后的自己。封起来，到那天才拆得开。</p>
+        <div id="futureSealedList"></div>
+        <button class="btn" id="futureComposeBtn" style="margin-top:10px">写一封寄给未来的信</button>
+        <p class="muted" id="futureLetterHint" style="font-size:11.5px;margin-top:8px"></p>
+      </div>
     </div>
   </section>
   <section id="view-log" class="view">
@@ -1000,6 +1042,12 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
     </div>
     <div class="card">
       <h3>更新日志</h3>
+      <div class="logver">v1.3.2</div>
+      <div class="logdate">2026-10-28</div>
+      <ul class="loglist">
+        <li><b>寄给未来的信。</b>信笺匣多了一张卡片：写一封给以后的自己，选一个日子（一个月、三个月、半年、明年今天，或自己挑一天），封起来。到那天之前它只是一枚封着火漆的信，看不到内容；到期就能拆开读。写过的信会有编号留在列表里，拆过的显示「已读」——<b>它不会催你，也不会提醒你忘没忘，只是在那里等。</b></li>
+        <li><b>信会跟着备份走。</b>导出备份时一起带走，换台设备导入也还在；导入前会告诉你有几封寄给未来的信，重复的自动跳过。</li>
+      </ul>
       <div class="logver">v1.3.1</div>
       <div class="logdate">2026-10-26</div>
       <ul class="loglist">
@@ -1194,6 +1242,27 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
   <div class="letter-page" id="letterPage"></div>
 </div>
 
+<!-- v1.3.2 写一封寄给未来的信 -->
+<div class="letter-overlay" id="futureOverlay">
+  <div class="letter-page future-compose" id="futureCompose">
+    <button class="letter-close" id="futureComposeClose" type="button">&times;</button>
+    <div class="letter-date">寄给未来的信</div>
+    <div class="letter-salute">写给以后的自己</div>
+    <p class="muted" style="font-size:12.5px;line-height:1.9;text-align:left;margin-bottom:14px">
+      写点什么吧。等到那天，它自己会出现。
+    </p>
+    <div class="future-picks" id="futurePicks"></div>
+    <div class="future-custom">
+      <label for="futureDate">或者自己选一天</label>
+      <input type="date" id="futureDate">
+    </div>
+    <textarea id="futureBody" class="future-body" rows="7"
+      placeholder="现在的你，想对那天的人说些什么……"></textarea>
+    <p class="muted" id="futureComposeMsg" style="font-size:11.5px;min-height:16px;text-align:left"></p>
+    <button class="btn primary" id="futureSaveBtn" type="button">封好，寄出去</button>
+  </div>
+</div>
+
 <!-- 点火仪式（内容由 playIgnite 按当前链长动态生成） -->
 <div class="ignite-mask" id="igniteMask"></div>
 
@@ -1219,7 +1288,10 @@ const defaultState=()=>({
   music:{enabled:true,volume:20},
   meta:{lastExportAt:null,backupSnoozeAt:null,onboardedAt:null},
   policyTree:{version:1,nodes:[],freezes:[],checks:{},events:[],lastAddDay:null},
-  reviews:{},session:null
+  reviews:{},session:null,
+  /* v1.3.2 寄给未来的信：{id, createdAt, deliverOn:'YYYY-MM-DD', body, openedAt|null}
+     挂在 S 上就能被 persistentSnapshot() 整份带进备份，不用改导出逻辑。 */
+  futureLetters:[]
 });
 function loadInitialState(){
   try{
@@ -1321,6 +1393,9 @@ function hydrateState(){
   const activeReasons=S.precedents.filter(p=>p.active!==false).map(p=>p.reason);
   S.whitelist=[...new Set([...S.whitelist,...activeReasons])];
   S.reviews=S.reviews&&typeof S.reviews==='object'?S.reviews:{};
+  /* v1.3.2：寄给未来的信。老数据没有这个字段，兜底成空数组；
+     同时过滤掉结构不完整的项，避免一条坏数据让整个信笺匣渲染失败。 */
+  S.futureLetters=Array.isArray(S.futureLetters)?S.futureLetters.filter(x=>x&&x.id&&x.body&&x.deliverOn):[];
 }
 hydrateState();save();
 function fmt(sec){sec=Math.max(0,Math.floor(sec));const m=sec/60|0,s=sec%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
@@ -3017,6 +3092,7 @@ function openLetter(dayKeyValue){
 }
 $('#letterOverlay').onclick=function(e){if(e.target===this)this.classList.remove('on');};
 function renderLetterPanel(){
+  renderSealedLetters();   /* v1.3.2：先渲染封存的信，避免下面的提前 return 把它跳过 */
   const k=dayKey(),r=S.reviews[k];
   const preview=$('#letterPreview'),box=$('#letterBox');
   // 今日预读
@@ -3071,6 +3147,129 @@ function renderLetterPanel(){
     sec.appendChild(wrapEl);
     box.appendChild(sec);
   });
+}
+
+/* ===== v1.3.2 寄给未来的信 =====
+   为什么做：现在的信写完当天就能读，读多了就退化成日记。
+   「写给未来的自己」缺的不是文笔，是**时间差**。
+   数据：{id, createdAt, deliverOn:'YYYY-MM-DD', body, openedAt|null}
+   挂在 S 上 → persistentSnapshot() 是整份 JSON 深拷贝，备份自动带上（风险对策①无需额外代码）。 */
+const FUTURE_PRESETS=[
+  {label:'一个月后',m:1},{label:'三个月后',m:3},
+  {label:'半年后',m:6},{label:'明年今天',m:12}
+];
+let futurePick=null;
+function dateKeyOf(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function futureAddMonths(n){
+  const d=new Date(),day=d.getDate();
+  d.setMonth(d.getMonth()+n);
+  if(d.getDate()<day)d.setDate(0);   // 月末溢出（1月31日+1月）归位到该月最后一天
+  return d;
+}
+function futureDaysUntil(deliverOn){
+  const t=new Date(deliverOn+'T00:00:00'),n=new Date();n.setHours(0,0,0,0);
+  return Math.round((t-n)/86400000);
+}
+function futureLabel(deliverOn){
+  const p=String(deliverOn).split('-');
+  if(p.length!==3)return deliverOn;
+  return p[0]+' 年 '+Number(p[1])+' 月 '+Number(p[2])+' 日';
+}
+function renderSealedLetters(){
+  const list=$('#futureSealedList');
+  if(!list)return;
+  const all=(S.futureLetters||[]).slice().sort((a,b)=>a.deliverOn<b.deliverOn?-1:1);
+  list.innerHTML='';
+  if(!all.length){
+    list.innerHTML='<p class="muted sealed-empty" id="futureSealedEmpty">还没有封存过信。写一封，把它交给时间。</p>';
+  }
+  all.forEach(fl=>{
+    const left=futureDaysUntil(fl.deliverOn);
+    const due=left<=0,opened=!!fl.openedAt;
+    const row=document.createElement('div');
+    row.className='sealed-letter '+(opened||!due?'locked':'due');
+    row.innerHTML=
+      '<div class="sealed-wax">封</div>'+
+      '<div><div class="sl-when"><b>'+futureLabel(fl.deliverOn)+'</b></div>'+
+      '<div class="sl-left">'+(opened?'这封信你已经读过了'
+        :due?'今天可以拆了':'还有 '+left+' 天')+'</div></div>'+
+      '<div class="sl-tag">'+(opened?'已读':due?'拆开':'未到期')+'</div>';
+    if(!opened&&due)row.onclick=()=>openFutureLetter(fl.id);
+    list.appendChild(row);
+  });
+  /* 风险对策③：到期前 7 天温和提醒——只是提一句，不催、不弹窗、不打断 */
+  const hint=$('#futureLetterHint');
+  if(!hint)return;
+  const ready=all.filter(fl=>!fl.openedAt&&futureDaysUntil(fl.deliverOn)<=0);
+  const soon=all.filter(fl=>!fl.openedAt&&futureDaysUntil(fl.deliverOn)>0&&futureDaysUntil(fl.deliverOn)<=7);
+  if(ready.length)hint.textContent='有一封信到期了，可以拆开看看。';
+  else if(soon.length)hint.textContent=soon.length+' 封信快到期了——'+futureLabel(soon[0].deliverOn)+'。';
+  else if(all.length)hint.textContent='已封存 '+all.length+' 封。它们会在各自的日子出现。';
+  else hint.textContent='';
+}
+function openFutureCompose(){
+  const picks=$('#futurePicks'),fd=$('#futureDate'),msg=$('#futureComposeMsg');
+  if(!picks||!fd)return;
+  futurePick=null;
+  picks.innerHTML='';
+  FUTURE_PRESETS.forEach(p=>{
+    const b=document.createElement('button');
+    b.type='button';b.textContent=p.label;
+    b.onclick=()=>{
+      futurePick=dateKeyOf(futureAddMonths(p.m));
+      fd.value=futurePick;
+      $$('#futurePicks button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+    };
+    picks.appendChild(b);
+  });
+  fd.value='';$('#futureBody').value='';if(msg)msg.textContent='';
+  $('#futureOverlay').classList.add('on');
+  setTimeout(()=>{try{$('#futureBody').focus();}catch(e){}},120);
+}
+function saveFutureLetter(){
+  const msg=$('#futureComposeMsg'),box=$('#futureBody'),fd=$('#futureDate');
+  let body=(box&&box.value||'').trim();
+  const pick=(fd&&fd.value)||futurePick||'';
+  if(!body){if(msg)msg.textContent='还没写内容——写一句也可以。';return;}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(pick)){if(msg)msg.textContent='选一个未来的日子吧。';return;}
+  if(futureDaysUntil(pick)<1){if(msg)msg.textContent='要选今天以后的某一天。';return;}
+  if(body.length>4000)body=body.slice(0,4000);
+  S.futureLetters.push({id:'fl-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),
+    createdAt:Date.now(),deliverOn:pick,body:body,openedAt:null});
+  save();
+  $('#futureOverlay').classList.remove('on');
+  renderSealedLetters();
+  toast('已经封好，'+futureLabel(pick)+' 那天会出现在这里。');
+}
+function openFutureLetter(id){
+  const fl=(S.futureLetters||[]).find(x=>String(x.id)===String(id));
+  if(!fl)return;
+  if(futureDaysUntil(fl.deliverOn)>0){toast('还没到日子——它还在路上。');return;}
+  if(!fl.openedAt){fl.openedAt=Date.now();save();}
+  const page=$('#letterPage');
+  page.innerHTML=
+    `<button class="letter-close" id="letterCloseBtn">&times;</button>`+
+    `<div class="letter-date">${futureLabel(fl.deliverOn)}</div>`+
+    `<div class="letter-salute">那时的你，写给现在的你</div>`+
+    `<div class="letter-body"><div class="letter-line" style="white-space:pre-wrap">${escHtml(fl.body)}</div></div>`+
+    `<div class="letter-focus muted">写于 ${dateKeyOf(new Date(fl.createdAt)).replace(/-/g,'.')}</div>`;
+  $('#letterOverlay').classList.add('on');
+  $('#letterCloseBtn').onclick=()=>$('#letterOverlay').classList.remove('on');
+  page.scrollTop=0;
+  renderSealedLetters();
+}
+function bindFutureLetters(){
+  const cb=$('#futureComposeBtn');if(cb)cb.onclick=openFutureCompose;
+  const cc=$('#futureComposeClose');if(cc)cc.onclick=()=>$('#futureOverlay').classList.remove('on');
+  const sb=$('#futureSaveBtn');if(sb)sb.onclick=saveFutureLetter;
+  const ov=$('#futureOverlay');
+  if(ov)ov.onclick=function(e){if(e.target===this)this.classList.remove('on');};
+  const fd=$('#futureDate');
+  if(fd)fd.onchange=()=>{
+    futurePick=fd.value;
+    $$('#futurePicks button').forEach(x=>x.classList.remove('on'));
+  };
 }
 
 /* ===== 复盘 ===== */
@@ -3560,7 +3759,10 @@ function importPreview(incoming){
   const polSeen=new Set(S.policyTree.nodes.map(n=>String(n.id)));
   const np=((incoming.policyTree&&incoming.policyTree.nodes)||[]).filter(n=>n&&n.id!==undefined&&!polSeen.has(String(n.id))).length;
   const prec=(incoming.precedents||incoming.whitelist||[]).length;
-  return {nb:nb,nr:nr,nrec:nrec,nap:nap,np:np,prec:prec};
+  /* v1.3.2：寄给未来的信也要报数，否则导入时用户不知道有没有带过来 */
+  const flSeen=new Set((S.futureLetters||[]).map(x=>String(x.id)));
+  const nf=(incoming.futureLetters||[]).filter(x=>x&&x.id&&!flSeen.has(String(x.id))).length;
+  return {nb:nb,nr:nr,nrec:nrec,nap:nap,np:np,prec:prec,nf:nf};
 }
 function importBackupFile(file){
   if(!file)return;
@@ -3584,6 +3786,7 @@ function importBackupFile(file){
     if(pv.nap)parts.push(pv.nap+' 条预约');
     if(pv.np)parts.push(pv.np+' 个国策');
     if(pv.prec)parts.push(pv.prec+' 条判例');
+    if(pv.nf)parts.push(pv.nf+' 封寄给未来的信');   /* v1.3.2 风险对策②：导入前先报封信数 */
     const summary=parts.length?parts.join('、'):'没有新记录（全部重复）';
     openDialog('导入备份 · 先确认','这份备份导出于 '+when+'。将合并：'+summary+'。重复记录会自动跳过，现有数据不会被覆盖。',
       '<button class="btn primary" id="impOk" type="button">确认合并</button>'+
@@ -3647,10 +3850,20 @@ function applyImportIncoming(incoming,payload){
       S.policyTree.lastAddDay=S.policyTree.lastAddDay||incoming.policyTree.lastAddDay||null;
     }
     Object.keys(incoming.reviews).forEach(k=>{if(!S.reviews[k]){S.reviews[k]=incoming.reviews[k];addedReviews++;}});
+    /* v1.3.2：寄给未来的信按 id 去重合并——按 id 而非按日期，
+       因为同一天完全可能封存两封不同的信。 */
+    let addedFuture=0;
+    const flSeen2=new Set((S.futureLetters||[]).map(x=>String(x.id)));
+    (incoming.futureLetters||[]).forEach(x=>{
+      if(x&&x.id&&x.body&&x.deliverOn&&!flSeen2.has(String(x.id))){
+        S.futureLetters.push(x);flSeen2.add(String(x.id));addedFuture++;
+      }
+    });
     rebuildChain(Math.max(oldBest,Number(incomingBest)||0));save();takeAutoSnapshot();
     renderChain();renderReview();if(reviewView==='policy')renderPolicyTree();
     renderAutoBackupNote();renderBackupCenter();renderTodayCard();
-    $('#backupStatus').textContent=`已合并：新增 ${addedBlocks} 段专注、${addedReviews} 条复盘、${addedRecons} 次热身、${addedAppointments} 条预约、${addedPrecedents} 条判例、${addedPolicies} 个国策；重复记录已跳过。`;
+    if(typeof renderSealedLetters==='function')renderSealedLetters();
+    $('#backupStatus').textContent=`已合并：新增 ${addedBlocks} 段专注、${addedReviews} 条复盘、${addedRecons} 次热身、${addedAppointments} 条预约、${addedPrecedents} 条判例、${addedPolicies} 个国策、${addedFuture} 封寄给未来的信；重复记录已跳过。`;
   }catch(e){$('#backupStatus').textContent='合并时出错，当前数据没有被覆盖。';}
 }
 function bindBackup(){
@@ -3858,7 +4071,7 @@ function renderPoemBook(){
 /* ===== 初始化 ===== */
 buildNav();
 try{renderPoemOfDay();renderPoemBook();}catch(e){}
-try{bindFocus();bindSimple();bindSound();bindMusic();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();bindOnboarding();bindAnnualPoster();}catch(e){}
+try{bindFocus();bindSimple();bindSound();bindMusic();bindReview();bindPolicy();bindChainViews();bindBackup();bindOutcomeCard();bindOnboarding();bindAnnualPoster();bindFutureLetters();}catch(e){}
 try{restore();}catch(e){}
 try{applySimpleMode();renderBackupBanner();renderTodayCard();maybeShowOnboarding();}catch(e){}
 /* v1.2.3：启动时探一次存储。若此刻就已经写不进去（配额满 / 隐私模式），
