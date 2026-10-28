@@ -134,6 +134,16 @@ h1,h2,h3,h4{font-family:var(--serif);line-height:1.35}
 .pause-opts button{min-height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);
   color:var(--ink2);font-size:13px;cursor:pointer}
 .pause-opts button:hover{border-color:var(--gold);color:var(--gold-hi)}
+/* ===== v1.3.2 暂停不再每次问 ===== */
+.pause-remember{display:flex;align-items:flex-start;gap:9px;margin-top:14px;padding-top:12px;
+  border-top:1px solid var(--line2);font-size:12.5px;color:var(--ink2);line-height:1.7;cursor:pointer}
+.pause-remember input{width:18px;height:18px;flex:0 0 auto;margin-top:2px;accent-color:#f2c66d;cursor:pointer}
+.pause-remember .pr-note{display:block;color:var(--ink3);font-size:11.5px;margin-top:2px}
+/* 暂停态旁的「改」——一键暂停之后唯一的回头路，热区按触控标准给足 */
+.pause-edit{min-height:28px;padding:2px 10px;margin-left:6px;border-radius:999px;
+  border:1px solid var(--line);background:transparent;color:var(--gold-hi);
+  font-size:11.5px;font-family:var(--sans);cursor:pointer;vertical-align:middle}
+.pause-edit:hover{border-color:rgba(242,198,109,.55);background:rgba(242,198,109,.08)}
 .protocol-source{font-size:12px;color:var(--ink3);line-height:1.8;margin-top:10px}
 .protocol-source a{color:var(--blue)}
 .ambient-box{border-top:1px solid var(--line2);margin-top:14px;padding-top:13px}
@@ -1047,6 +1057,8 @@ textarea.input{resize:vertical;min-height:72px;line-height:1.7;font-family:var(-
       <ul class="loglist">
         <li><b>寄给未来的信。</b>信笺匣多了一张卡片：写一封给以后的自己，选一个日子（一个月、三个月、半年、明年今天，或自己挑一天），封起来。到那天之前它只是一枚封着火漆的信，看不到内容；到期就能拆开读。写过的信会有编号留在列表里，拆过的显示「已读」——<b>它不会催你，也不会提醒你忘没忘，只是在那里等。</b></li>
         <li><b>信会跟着备份走。</b>导出备份时一起带走，换台设备导入也还在；导入前会告诉你有几封寄给未来的信，重复的自动跳过。</li>
+        <li><b>接着昨天的那件事。</b>如果昨天（或更早）铸过星，今天「点火」旁边会多一个「接着昨天的《…》」，点一下就进专注，任务名已经填好——不用每天早上再敲一遍同样几个字。</li>
+        <li><b>暂停不再每次都问。</b>暂停时选一次档位，勾上「以后都这样」，之后点暂停就直接按上次的档位停，不再弹四选一。想改随时点暂停状态旁的「改」；<b>四个档位一个没少，「有纪律暂停」该给的边界也一点没减</b>——只是少问你几次。</li>
       </ul>
       <div class="logver">v1.3.1</div>
       <div class="logdate">2026-10-26</div>
@@ -1284,7 +1296,10 @@ const defaultState=()=>({
   chain:{currentNo:0,bestNo:0,genesis:null},
   blocks:[],whitelist:[],precedents:[],reservation:null,appointments:[],recons:[],
   startup:{currentNo:0,bestNo:0,lastAt:null},
-  settings:{sound:{enabled:false,type:'white',volume:22},ceremonySound:true,simpleMode:true},
+  settings:{sound:{enabled:false,type:'white',volume:22},ceremonySound:true,simpleMode:true,
+    /* v1.3.2 暂停不再每次问：默认 **false**，即保持原行为（每次弹四选一）。
+       只有用户自己在弹窗里勾了「以后都这样」才变成一键暂停 —— 不替老用户改默认。 */
+    pauseRemember:false,pauseLastMin:null},
   music:{enabled:true,volume:20},
   meta:{lastExportAt:null,backupSnoozeAt:null,onboardedAt:null},
   policyTree:{version:1,nodes:[],freezes:[],checks:{},events:[],lastAddDay:null},
@@ -1360,6 +1375,12 @@ function hydrateState(){
   S.settings=Object.assign({sound:{enabled:false,type:'white',volume:22}},S.settings||{});
   S.settings.sound=Object.assign({enabled:false,type:'white',volume:22},S.settings.sound||{});
   S.settings.ceremonySound=S.settings.ceremonySound!==false;
+  /* v1.3.2：老数据没有暂停记忆字段 —— 一律退回「每次询问」，不让升级改变原有手感 */
+  S.settings.pauseRemember=S.settings.pauseRemember===true;
+  if(S.settings.pauseLastMin!==null&&S.settings.pauseLastMin!==undefined){
+    const m=Number(S.settings.pauseLastMin);
+    S.settings.pauseLastMin=isFinite(m)&&m>=0?m:null;
+  }
   if(!['white','pink','brown','rain','waves','fire'].includes(S.settings.sound.type))S.settings.sound.type='white';
   S.settings.music=Object.assign({enabled:true,volume:20,touched:false},S.settings.music||{});
   S.settings.music.volume=Math.min(60,Math.max(0,Number(S.settings.music.volume)||20));
@@ -1782,7 +1803,18 @@ function updateSessionChrome(){
   const isRecon=cur.mode==='recon';
   $('#pauseBtn').textContent=cur.pauseTs?'继续':'暂停';
   $('#stopBtn').textContent=isRecon?'结束热身':'结束';
-  $('#ringState').textContent=cur.pauseTs?'已暂停':isRecon?'正在热身':'星链燃烧中';
+  /* v1.3.2：暂停态显示当前档位 + 一个「改」——这是一键暂停之后唯一的回头路，
+     必须常驻可见，否则用户一旦勾了「以后都这样」就再也找不到设置入口。 */
+  const rs=$('#ringState');
+  if(cur.pauseTs){
+    const min=S.settings.pauseLastMin;
+    const desc=(min>0)?('停 '+min+' 分钟'):'自由暂停';
+    rs.innerHTML='已暂停 · '+escHtml(desc)+' <button class="pause-edit" id="pauseEditBtn" type="button">改</button>';
+    const pe=$('#pauseEditBtn');
+    if(pe)pe.onclick=()=>openPauseDialog();
+  }else{
+    rs.textContent=isRecon?'正在热身':'星链燃烧中';
+  }
 }
 
 function tick(){
@@ -2031,16 +2063,25 @@ const PAUSE_OPTS=[{label:'停 15 分钟',min:15},{label:'停 30 分钟',min:30},
 function openPauseDialog(){
   if(!cur||!cur.pauseTs)return;
   const opts=PAUSE_OPTS.map(o=>`<button class="pause-opt" data-min="${o.min}">${o.label}</button>`).join('');
+  const last=S.settings.pauseLastMin;
   openDialog('有纪律暂停',
     '暂停可以，但最好给它一个边界，到点自动回来继续专注，避免一停就不回。',
     `<div class="pause-opts">${opts}</div>
-     <p class="muted" style="margin-top:8px">自由暂停不会自动到点，但暂停期间计时仍是停在原处。</p>`,
+     <p class="muted" style="margin-top:8px">自由暂停不会自动到点，但暂停期间计时仍是停在原处。</p>
+     <label class="pause-remember" for="pauseRememberChk">
+       <input type="checkbox" id="pauseRememberChk"${S.settings.pauseRemember?' checked':''}>
+       <span>以后都这样，不用再问我<span class="pr-note">（想改随时点暂停状态旁的「改」）</span></span>
+     </label>`,
     ()=>{
       $$('.pause-opt').forEach(b=>b.onclick=()=>{
         const min=+b.dataset.min;
+        /* v1.3.2：记住这次选择。勾了「以后都这样」才生效，否则下次仍弹窗。 */
+        S.settings.pauseLastMin=min;
+        const chk=$('#pauseRememberChk');
+        S.settings.pauseRemember=!!(chk&&chk.checked);
         if(min>0){cur.pauseUntilTs=Date.now()+min*60000;armPauseResume();toast('已暂停，'+min+' 分钟后自动回到专注');}
         else{cur.pauseUntilTs=null;clearPauseTimer();toast('已自由暂停，点「继续」回到专注');}
-        closeJudge();save();renderTodayCard();
+        closeJudge();save();renderTodayCard();updateSessionChrome();
       });
     });
 }
@@ -2071,8 +2112,19 @@ function togglePause(){
     stopAmbient();startMusic();   // 暂停期间回到背景乐
     updateSessionChrome();
     S.session=cur;save();tick();
-    // 有纪律暂停：弹出定时选项，给暂停一个边界；若已有自动恢复计时则不重复弹
-    if(!cur.pauseUntilTs)openPauseDialog();
+    /* v1.3.2：用户勾过「以后都这样」就直接按上次的选择暂停，不再每次弹四选一。
+       防线：只有 pauseRemember 为真 **且** 确实记过选择时才跳过弹窗；
+       任何一项不满足，都退回原来的「每次询问」行为。 */
+    const rem=S.settings.pauseRemember,lastMin=S.settings.pauseLastMin;
+    if(rem&&lastMin!==null&&lastMin!==undefined&&!cur.pauseUntilTs){
+      const min=Number(lastMin);
+      if(min>0){cur.pauseUntilTs=Date.now()+min*60000;armPauseResume();}
+      else{cur.pauseUntilTs=null;clearPauseTimer();}
+      S.session=cur;save();updateSessionChrome();
+      toast(min>0?('已暂停，'+min+' 分钟后自动回到专注'):'已自由暂停，点「继续」回到专注');
+    }else if(!cur.pauseUntilTs){
+      openPauseDialog();
+    }
   }
 }
 
@@ -2272,6 +2324,25 @@ function closeJudge(){$('#judgeMask').classList.remove('on');}
 
 /* ===== v0.9.0：今天状态卡（唯一答案：现在该做什么） ===== */
 function todayWinBlocks(){const k=dayKey();return S.blocks.filter(b=>isSuccessBlock(b)&&dayKey(new Date(b.endedAt))===k);}
+/* ===== v1.3.2 接着昨天的那件事 =====
+   解决的真实摩擦：每天开始都要重新输入任务名，哪怕这是同一件事的延续
+   （期末复习持续两周很常见）。而输入框恰好卡在「刚决定要专注」的那一刻。
+   规则：取最近一次成功铸星的任务名；若它就是今天做的，则不提示
+   ——今天刚做过的那件事由「再来一颗」接管，「接着」这个词会显得莫名其妙。 */
+function lastCarryTask(){
+  const today=dayKey();
+  const wins=S.blocks.filter(isSuccessBlock)
+    .filter(b=>b&&b.task&&String(b.task).trim())
+    .sort((a,b)=>(b.endedAt||0)-(a.endedAt||0));
+  const last=wins[0];
+  if(!last)return null;
+  const dk=dayKey(new Date(last.endedAt||Date.now()));
+  if(dk===today)return null;
+  const y=new Date();y.setDate(y.getDate()-1);
+  const isYesterday=(dk===dayKey(y));
+  return {task:String(last.task).trim().slice(0,40),day:dk,isYesterday:isYesterday,
+          label:(isYesterday?'接着昨天的':'接着上次的')};
+}
 function renderTodayCard(){
   const box=$('#todayCard');if(!box)return;
   const state=$('#tcState'),hint=$('#tcHint'),main=$('#tcMain'),links=$('#tcLinks'),dot=$('#tcDot');
@@ -2330,6 +2401,20 @@ function renderTodayCard(){
         if(b)b.click();
       },260);
     });
+    /* v1.3.2：接着昨天的那件事 —— 省掉每天一次的重复输入 */
+    const carry=lastCarryTask();
+    if(carry){
+      addLink(carry.label+'《'+carry.task+'》',()=>{
+        go('focus');
+        setTimeout(()=>{
+          const t=$('#taskInput');
+          if(t&&!S.session){
+            t.value=carry.task;
+            try{t.focus({preventScroll:true});}catch(e){}
+          }
+        },260);
+      });
+    }
   }
 }
 
