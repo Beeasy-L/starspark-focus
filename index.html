@@ -1649,6 +1649,8 @@ function startMusic(){
   const ctx=ensureMusicContext();
   if(!ctx)return;
   clearTimeout(musicFadeTimer);
+  /* R4：fetch 还没回来前，界面先说实话（正在加载…），别空着旧态显示曲名 */
+  if(!musicReady)updateMusicUI();
   loadMusicBuffer().then(()=>{
     if(!musicReady||!S.settings.music.enabled||musicMuted)return;
     if(cur&&!cur.pauseTs)return;
@@ -1716,7 +1718,9 @@ function updateMusicUI(){
   if(enabled){
     $('#musicRunningLabel').textContent=musicBroken
       ?'背景音乐加载失败（不影响其它功能）'
-      :(musicMuted?(cur&&cur.musicMuted?'已静音 · 月亮代表我的心':'背景音乐 · 已静音'):'背景音乐 · 月亮代表我的心');
+      :(musicMuted?(cur&&cur.musicMuted?'已静音 · 月亮代表我的心':'背景音乐 · 已静音')
+        :(!musicReady?'背景音乐 · 正在加载…'
+          :(!musicSrc?'背景音乐 · 即将响起':'背景音乐 · 月亮代表我的心')));
   }
 }
 function showMusicRunning(sess){
@@ -1725,7 +1729,9 @@ function showMusicRunning(sess){
     mr.style.display='flex';
     $('#musicRunningLabel').textContent=musicBroken
       ?'背景音乐加载失败（不影响其它功能）'
-      :(musicMuted?'背景音乐 · 已静音':'背景音乐 · 月亮代表我的心');
+      :(musicMuted?'背景音乐 · 已静音'
+        :(!musicReady?'背景音乐 · 正在加载…'
+          :(!musicSrc?'背景音乐 · 即将响起':'背景音乐 · 月亮代表我的心')));
   }
   else{mr.style.display='none';}
 }
